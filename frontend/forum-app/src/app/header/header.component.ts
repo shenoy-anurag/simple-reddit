@@ -13,4 +13,7 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  toggleLogIn() {
+    console.log('Log In Page');
+  }
 }
