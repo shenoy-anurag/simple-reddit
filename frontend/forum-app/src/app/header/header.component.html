@@ -2,9 +2,13 @@
     <h1>
         {{ title }}
     </h1>
+    <form action="/" id="myLogin">
+        Username: <input type="text" #usrInput name="username" id="username"><br>
+        Password: <input type="password" #usrPwd name="password" id="password"><br>
+    </form>
     <app-button
         color="green"
         text="Log In"
-        (btnClick)="toggleLogIn()">
+        (btnClick)="toggleLogIn(usrInput.value, usrPwd.value)">
     </app-button>
 </header>

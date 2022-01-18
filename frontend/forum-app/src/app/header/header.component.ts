@@ -13,7 +13,7 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  toggleLogIn() {
-    console.log('Log In Page');
+  toggleLogIn(username: string, password: string) {
+    console.log('Attempted login: USR:' + username + ' PWD:' + password);
   }
 }
