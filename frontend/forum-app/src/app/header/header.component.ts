@@ -7,7 +7,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HeaderComponent implements OnInit {
 
-  title: string = "Simple Reddit"
+  title: string = "Simple Reddit";
+  usrLoggedIn: boolean = false;
+  usr: string = "";
   constructor() { }
 
   ngOnInit(): void {
@@ -15,5 +17,7 @@ export class HeaderComponent implements OnInit {
 
   toggleLogIn(username: string, password: string) {
     console.log('Attempted login: USR:' + username + ' PWD:' + password);
+    this.usrLoggedIn = true;
+    this.usr = username;
   }
 }
