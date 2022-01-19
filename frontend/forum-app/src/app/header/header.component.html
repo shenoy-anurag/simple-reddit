@@ -4,18 +4,18 @@
     </h1>
 
     <div *ngIf='!usrLoggedIn; else elseTemplate'>
-        I can be viewable if user is not logged in
-
         <form action=" /" id="myLogin">
             Username: <input type="text" #usrInput name="username" id="username"><br>
-            Password: <input type="password" #usrPwd name="password" id="password"><br>
+            Password: <input type="password" #usrPwd name="password" id="password"><br><br>
             <app-button color="green" text="Log In" (btnClick)="toggleLogIn(usrInput.value, usrPwd.value)">
             </app-button>
         </form>
     </div>
     <div>
         <ng-template #elseTemplate>
-            {{usr + " is logged in."}}<br>
+            {{usr + " is logged in."}}<br><br>
+            <app-button color="red" text="Log Out" (btnClick)="toggleLogOut()">
+            </app-button>
         </ng-template>
     </div>
 </header>

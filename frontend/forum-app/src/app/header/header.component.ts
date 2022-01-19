@@ -20,4 +20,9 @@ export class HeaderComponent implements OnInit {
     this.usrLoggedIn = true;
     this.usr = username;
   }
+
+  toggleLogOut() {
+    this.usrLoggedIn = false;
+    this.usr = "";
+  }
 }
