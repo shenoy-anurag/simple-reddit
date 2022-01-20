@@ -1,13 +1,28 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"simple-reddit/configs"
+	"simple-reddit/users"
+
+	"github.com/gin-gonic/gin"
+)
 
 func main() {
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
+	// load environment variables
+	configs.LoadEnvVariables()
+
+	// create gin router server
+	router := gin.Default()
+
+	// ping route as a health check
+	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
 		})
 	})
-	r.Run() // listen and serve on 0.0.0.0:8080
+
+	// add various routes to the gin server
+	users.Routes(router)
+
+	router.Run() // listen and serve on 0.0.0.0:8080
 }
