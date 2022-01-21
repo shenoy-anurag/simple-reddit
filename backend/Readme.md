@@ -7,7 +7,6 @@ The backend of this project is written in Go.
 - Ganesan Santhanam
 
 ## Overview:
----
 
 ### Design Pattern: 
 We will try to adhere to Domain Driven Design (DDD) pattern.
@@ -43,7 +42,6 @@ And that's it! You have setup MongoDB service and restored the database.
 ### Running Server:
 `main.go` file (within backend folder) contains the code that will start the server. The server can be started using these commands: 
 1. `cd backend/`
-2. `go get -u github.com/gin-gonic/gin` 
-3. `go run main.go`.
+2. `go run main.go`.
 
 Now, you can follow the steps to get the frontend up and running and check out the web-app.
