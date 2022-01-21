@@ -9,7 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/crypto/bcrypt"
 )
+
+const HASHING_COST = 10
+const USER_ROUTE_PREFIX = "/users"
 
 const UsersCollectionName string = "users"
 
@@ -34,11 +38,18 @@ func CreateUser() gin.HandlerFunc {
 			return
 		}
 
+		saltedAndHashedPwd, err := bcrypt.GenerateFromPassword([]byte(user.Password), HASHING_COST)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, configs.APIResponse{Status: http.StatusInternalServerError, Message: configs.API_ERROR, Data: map[string]interface{}{"data": err.Error()}})
+			return
+		}
+
+		user.Password = string(saltedAndHashedPwd)
 		newUserStruct := ConvertUserRequestToUserDBModel(user)
 
 		result, err := userCollection.InsertOne(ctx, newUserStruct)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, configs.APIResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+			c.JSON(http.StatusInternalServerError, configs.APIResponse{Status: http.StatusInternalServerError, Message: configs.API_ERROR, Data: map[string]interface{}{"data": err.Error()}})
 			return
 		}
 
@@ -47,5 +58,5 @@ func CreateUser() gin.HandlerFunc {
 }
 
 func Routes(router *gin.Engine) {
-	router.POST("/signup", CreateUser())
+	router.POST(USER_ROUTE_PREFIX+"/signup", CreateUser())
 }
