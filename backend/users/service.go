@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -56,7 +57,37 @@ func CreateUser() gin.HandlerFunc {
 		c.JSON(http.StatusCreated, configs.APIResponse{Status: http.StatusCreated, Message: configs.API_SUCCESS, Data: map[string]interface{}{"data": result}})
 	}
 }
+func LoginUser() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		var userName string
+		var userPwd string
+		ActualsaltedAndHashedPwd := getUserDetails(userName).Password
+		ProvidedsaltedAndHashedPwd, err := bcrypt.GenerateFromPassword([]byte(userPwd), HASHING_COST)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, configs.APIResponse{Status: http.StatusInternalServerError, Message: configs.API_ERROR, Data: map[string]interface{}{"data": err.Error()}})
+			return
+		}
+		if ActualsaltedAndHashedPwd == string(ProvidedsaltedAndHashedPwd) {
+			c.JSON(http.StatusCreated, configs.APIResponse{Status: http.StatusOK, Message: configs.API_SUCCESS, Data: map[string]interface{}{"data": result}})
+		}
+	}
+}
+
+// Provide username and context as parameter to
+func getUserDetails(userName string) UserDBModel {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var user UserDBModel
+	filter := bson.D{{"username", userName}}
+	err := userCollection.FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		return user
+	}
+	return user
+}
 
 func Routes(router *gin.Engine) {
 	router.POST(USER_ROUTE_PREFIX+"/signup", CreateUser())
+	router.POST(USER_ROUTE_PREFIX+"/loginuser", LoginUser())
 }
