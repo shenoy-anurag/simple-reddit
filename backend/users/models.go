@@ -27,6 +27,11 @@ type UserDBModel struct {
 	Joined   time.Time `bson:"joined"`
 }
 
+type LoginUserRequest struct {
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}
+
 // Convertion functions to convert between different models.
 func ConvertUserRequestToUserDBModel(usrReq CreateUserRequest) UserDBModel {
 	return UserDBModel{
