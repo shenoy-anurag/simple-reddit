@@ -60,16 +60,21 @@ func CreateUser() gin.HandlerFunc {
 func LoginUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		var userName string
-		var userPwd string
-		ActualsaltedAndHashedPwd := getUserDetails(userName).Password
-		ProvidedsaltedAndHashedPwd, err := bcrypt.GenerateFromPassword([]byte(userPwd), HASHING_COST)
+		//var userName string
+		//var userPwd string
+		var loginUserReq LoginUserRequest
+		if err := c.BindJSON(&loginUserReq); err != nil {
+			c.JSON(http.StatusBadRequest, configs.APIResponse{Status: http.StatusBadRequest, Message: configs.API_ERROR, Data: map[string]interface{}{"data": err.Error()}})
+			return
+		}
+		ActualsaltedAndHashedPwd := getUserDetails(loginUserReq.Username).Password
+		ProvidedsaltedAndHashedPwd, err := bcrypt.GenerateFromPassword([]byte(loginUserReq.Password), HASHING_COST)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, configs.APIResponse{Status: http.StatusInternalServerError, Message: configs.API_ERROR, Data: map[string]interface{}{"data": err.Error()}})
 			return
 		}
 		if ActualsaltedAndHashedPwd == string(ProvidedsaltedAndHashedPwd) {
-			c.JSON(http.StatusCreated, configs.APIResponse{Status: http.StatusOK, Message: configs.API_SUCCESS, Data: map[string]interface{}{"data": result}})
+			c.JSON(http.StatusCreated, configs.APIResponse{Status: http.StatusOK, Message: configs.API_SUCCESS, Data: map[string]interface{}{"data": "shazam"}})
 		}
 	}
 }
