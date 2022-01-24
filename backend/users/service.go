@@ -67,29 +67,30 @@ func LoginUser() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, configs.APIResponse{Status: http.StatusBadRequest, Message: configs.API_ERROR, Data: map[string]interface{}{"data": err.Error()}})
 			return
 		}
-		ActualsaltedAndHashedPwd := getUserDetails(loginUserReq.Username).Password
-		ProvidedsaltedAndHashedPwd, err := bcrypt.GenerateFromPassword([]byte(loginUserReq.Password), HASHING_COST)
+		userDB, errr := getUserDetails(loginUserReq.Username)
+		if errr != nil {
+			c.JSON(http.StatusInternalServerError, configs.APIResponse{Status: http.StatusInternalServerError, Message: configs.API_ERROR, Data: map[string]interface{}{"data": errr.Error()}})
+			return
+		}
+		err := bcrypt.CompareHashAndPassword([]byte(userDB.Password), []byte(loginUserReq.Password))
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, configs.APIResponse{Status: http.StatusInternalServerError, Message: configs.API_ERROR, Data: map[string]interface{}{"data": err.Error()}})
 			return
 		}
-		if ActualsaltedAndHashedPwd == string(ProvidedsaltedAndHashedPwd) {
-			c.JSON(http.StatusCreated, configs.APIResponse{Status: http.StatusOK, Message: configs.API_SUCCESS, Data: map[string]interface{}{"data": "shazam"}})
-		}
+		c.JSON(http.StatusOK, configs.APIResponse{Status: http.StatusOK, Message: configs.API_SUCCESS, Data: map[string]interface{}{"data": "--JWD token--"}})
+		//if ActualsaltedAndHashedPwd == string(ProvidedsaltedAndHashedPwd) {
+		//}
 	}
 }
 
 // Provide username and context as parameter to
-func getUserDetails(userName string) UserDBModel {
+func getUserDetails(userName string) (UserDBModel, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var user UserDBModel
 	filter := bson.D{{"username", userName}}
 	err := userCollection.FindOne(ctx, filter).Decode(&user)
-	if err != nil {
-		return user
-	}
-	return user
+	return user, err
 }
 
 func Routes(router *gin.Engine) {
