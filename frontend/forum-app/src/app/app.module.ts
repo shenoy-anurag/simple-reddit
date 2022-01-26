@@ -7,6 +7,9 @@ import { PostComponent } from './post/post.component';
 import { PostsService } from './posts.service';
 import { HeaderComponent } from './header/header.component';
 import { ButtonComponent } from './button/button.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgMaterialModule } from './ng-material/ng-material.module';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -17,7 +20,10 @@ import { ButtonComponent } from './button/button.component';
     ButtonComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    NgMaterialModule
   ],
   providers: [PostsService],
   bootstrap: [AppComponent]
