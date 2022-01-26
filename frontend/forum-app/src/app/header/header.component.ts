@@ -15,13 +15,13 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  toggleLogIn(username: string, password: string) {
+  getLogIn(username: string, password: string) {
     console.log('Attempted login: USR:' + username + ' PWD:' + password);
     this.usrLoggedIn = true;
     this.usr = username;
   }
 
-  toggleLogOut() {
+  getLogOut() {
     this.usrLoggedIn = false;
     this.usr = "";
   }

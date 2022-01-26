@@ -5,17 +5,17 @@
 
     <div *ngIf='!usrLoggedIn; else elseTemplate'>
         <form action=" /" id="myLogin">
-            Username: <input type="text" #usrInput name="username" id="username"><br>
-            Password: <input type="password" #usrPwd name="password" id="password"><br><br>
-            <app-button color="green" text="Log In" (btnClick)="toggleLogIn(usrInput.value, usrPwd.value)">
-            </app-button>
+            <input matInput #usrInput required placeholder="username" value="Username"><br>
+            <input matInput #usrPwd required placeholder="password" value="password"><br>
+            <button mat-raised-button color="primary" (click)="getLogIn(usrInput.value, usrPwd.value)">Log In</button>
         </form>
     </div>
     <div>
-        <ng-template #elseTemplate>
-            {{usr + " is logged in."}}<br><br>
-            <app-button color="red" text="Log Out" (btnClick)="toggleLogOut()">
-            </app-button>
-        </ng-template>
+        <form>
+            <ng-template #elseTemplate>
+                {{usr + " is logged in."}}<br><br>
+                <button mat-raised-button color="warn" (click)="getLogOut()">Log Out</button>
+            </ng-template>
+        </form>
     </div>
 </header>
