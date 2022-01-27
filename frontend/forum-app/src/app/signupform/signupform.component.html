@@ -1,1 +1,30 @@
-<p>signupform works!</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Sign Up</title>
+</head>
+<body>
+    <div class="signup-form">
+        <h1>Sign Up</h1>
+        <form>
+            <label>First Name</label>
+            <input type="text" placeholder="">
+            <label>Last Name</label>
+            <input type="text" placeholder="">
+            <label>User Name</label>
+            <input type="text" placeholder="">
+            <label>Email</label>
+            <input type="text" placeholder="">
+            <label>Password</label>
+            <input type="text" placeholder="">
+            <label>Confirm Password</label>
+            <input type="text" placeholder="">
+            <button mat-raised-button color="warn" a routerLink="/popup-message">Submit</button>
+        </form>
+        <p>By clicking Sign Up you agree to our <br>
+        <a href="#">Terms and Conditions</a> and <a href="#">Policy Privacy</a>
+        </p>
+     </div>
+     <p class="para-2">Already a user? <a routerLink="/header">Login here</a></p>
+</body>
+</html>

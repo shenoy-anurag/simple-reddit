@@ -8,7 +8,8 @@
             <input matInput #usrInput required placeholder="username" value="Username"><br>
             <input matInput #usrPwd required placeholder="password" value="password"><br>
             <button mat-raised-button color="primary" (click)="getLogIn(usrInput.value, usrPwd.value)">Log In</button>
-            <button mat-raised-button color="warn">Signup</button>
+            <button mat-raised-button color="warn" a routerLink="/signupform" >Signup</button>
+
         </form>
     </div>
     <div>

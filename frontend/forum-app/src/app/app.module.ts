@@ -11,6 +11,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgMaterialModule } from './ng-material/ng-material.module';
 import { FormsModule } from '@angular/forms';
 import { SignupformComponent } from './signupform/signupform.component';
+import { PopupMessageComponent } from './popup-message/popup-message.component';
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   declarations: [
@@ -19,13 +21,15 @@ import { SignupformComponent } from './signupform/signupform.component';
     PostComponent,
     HeaderComponent,
     ButtonComponent,
-    SignupformComponent
+    SignupformComponent,
+    PopupMessageComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
-    NgMaterialModule
+    NgMaterialModule,
+    AppRoutingModule
   ],
   providers: [PostsService],
   bootstrap: [AppComponent]
