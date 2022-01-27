@@ -1,0 +1,23 @@
+body{
+  background-color:white ;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.popup-message{
+  width: 250px;
+  height:100px;
+  margin: auto;
+  background-color:cornsilk;
+  border-radius: 3px;
+}
+
+h1{
+  text-align: center;
+  padding-top: 15px;
+}
+
+
+.example-button-row button,
+.example-button-row a {
+  margin-right: 8px;
+}

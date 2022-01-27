@@ -5,7 +5,9 @@ Thumbs.db
 
 
 # IDE - VSCode
-.history/
+.history/*
+backend/.history/*
+frontend/.history/*
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -38,3 +40,7 @@ go.work
 
 
 # Angular JS
+
+
+# User defined
+*.env
