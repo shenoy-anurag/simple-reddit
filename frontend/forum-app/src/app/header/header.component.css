@@ -1,0 +1,12 @@
+.loginForm {
+    width: 100%;
+}
+
+.logoutForm {
+    width: 100%;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+  }

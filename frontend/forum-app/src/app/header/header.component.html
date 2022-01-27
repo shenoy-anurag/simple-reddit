@@ -1,17 +1,20 @@
 <header>
-    <h1>
-        {{ title }}
-    </h1>
+    <div class='center'>
+        <h1>
+            {{ title }}
+        </h1>
+    </div>
 
+    Log In
     <div *ngIf='!usrLoggedIn; else elseTemplate'>
-        <form action=" /" id="myLogin">
-            <input matInput #usrInput required placeholder="username" value="Username"><br>
-            <input matInput #usrPwd required placeholder="password" value="password"><br>
+        <form class="loginForm" action=" /" id="myLogin">
+            <input matInput #usrInput required placeholder="username" value=""><br>
+            <input matInput #usrPwd required type="password" placeholder="password" value=""><br><br>
             <button mat-raised-button color="primary" (click)="getLogIn(usrInput.value, usrPwd.value)">Log In</button>
         </form>
     </div>
     <div>
-        <form>
+        <form class="logoutForm">
             <ng-template #elseTemplate>
                 {{usr + " is logged in."}}<br><br>
                 <button mat-raised-button color="warn" (click)="getLogOut()">Log Out</button>
