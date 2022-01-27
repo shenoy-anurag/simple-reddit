@@ -5,9 +5,9 @@
         </h1>
     </div>
 
-    Log In
     <div *ngIf='!usrLoggedIn; else elseTemplate'>
         <form action=" /" id="myLogin">
+            Log In<br>
             <input matInput #usrInput required placeholder="username" value=""><br>
             <input matInput #usrPwd required placeholder="password" value=""><br>
             <button mat-raised-button color="primary" (click)="getLogIn(usrInput.value, usrPwd.value)">Log In</button>
@@ -17,7 +17,7 @@
     <div>
         <form class="logoutForm">
             <ng-template #elseTemplate>
-                {{usr + " is logged in."}}<br><br>
+                {{"You're logged in as "+usr}}<br><br>
                 <button mat-raised-button color="warn" (click)="getLogOut()">Log Out</button>
             </ng-template>
         </form>
