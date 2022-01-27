@@ -7,12 +7,12 @@ body{
     height:620px;
     margin: auto;
     background-color:cornsilk;
-    border-radius: 3px;
+    border-radius: 3px; 
 }
 
 h1{
     text-align: center;
-    padding-top: 15px;
+    padding-top:15px;
 }
 h4{
     text-align: center;
