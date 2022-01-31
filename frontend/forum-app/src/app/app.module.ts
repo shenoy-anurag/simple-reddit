@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { SignupformComponent } from './signupform/signupform.component';
 import { PopupMessageComponent } from './popup-message/popup-message.component';
 import { AppRoutingModule } from './app-routing.module';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { AppRoutingModule } from './app-routing.module';
     BrowserAnimationsModule,
     FormsModule,
     NgMaterialModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: [PostsService],
   bootstrap: [AppComponent]
