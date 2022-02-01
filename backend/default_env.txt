@@ -1,0 +1,6 @@
+MONGO_URI=mongodb://localhost:27017
+DB_NAME=simple-reddit
+DB_PORT=27017
+# DB_USERNAME=
+# DB_PASSWORD=
+APP_ENV=development
