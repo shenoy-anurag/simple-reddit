@@ -1,9 +1,11 @@
 package configs
 
 const (
-	API_SUCCESS string = "success"
-	API_FAILURE string = "failure"
-	API_ERROR   string = "error"
+	API_SUCCESS                string = "success"
+	API_FAILURE                string = "failure"
+	API_ERROR                  string = "error"
+	REQUEST_VALIDATION_ERROR   string = "request_validation_error"
+	INVALID_REQUEST_DATA_ERROR string = "request_invalid_error"
 )
 
 type APIResponse struct {

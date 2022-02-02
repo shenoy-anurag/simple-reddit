@@ -32,6 +32,10 @@ type LoginUserRequest struct {
 	Password string `json:"password" validate:"required"`
 }
 
+type CheckUsernameRequest struct {
+	Username string `json:"username" validate:"required"`
+}
+
 // Convertion functions to convert between different models.
 func ConvertUserRequestToUserDBModel(usrReq CreateUserRequest) UserDBModel {
 	return UserDBModel{
