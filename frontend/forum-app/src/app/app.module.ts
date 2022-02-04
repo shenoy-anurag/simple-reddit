@@ -14,6 +14,7 @@ import { SignupformComponent } from './signupform/signupform.component';
 import { PopupMessageComponent } from './popup-message/popup-message.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
+import { NavbarComponent } from './navbar/navbar.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { HttpClientModule } from '@angular/common/http';
     HeaderComponent,
     ButtonComponent,
     SignupformComponent,
-    PopupMessageComponent
+    PopupMessageComponent,
+    NavbarComponent
   ],
   imports: [
     BrowserModule,
