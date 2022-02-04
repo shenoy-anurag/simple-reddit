@@ -5,21 +5,19 @@
         </h1>
     </div>
 
-    <div *ngIf='!usrLoggedIn; else elseTemplate'>
+    <div class='center' *ngIf='!usrLoggedIn; else elseTemplate'>
         <form action=" /" id="myLogin">
             Log In<br>
             <input matInput #usrInput required placeholder="username" value=""><br>
-            <input matInput #usrPwd required placeholder="password" value=""><br><br>
-            <button mat-raised-button color="primary" (click)="getLogIn(usrInput.value, usrPwd.value)">Log In</button>
-            <button mat-raised-button color="warn" a routerLink="/signupform" >Signup</button>
+            <input matInput type="password" #usrPwd required placeholder="password" value=""><br><br>
+            <button class='button' mat-raised-button color="primary" (click)="getLogIn(usrInput.value, usrPwd.value)">Log In</button>
+            <button class='button' mat-raised-button color="warn" a routerLink="/signupform" >Signup</button>
         </form>
     </div>
-    <div>
-        <form class="logoutForm">
-            <ng-template #elseTemplate>
-                {{"You're logged in as "+usr}}<br><br>
-                <button mat-raised-button color="warn" (click)="getLogOut()">Log Out</button>
-            </ng-template>
-        </form>
+    <div class='center'>
+        <ng-template #elseTemplate>
+            {{"You're logged in as "+usr}}
+            <button mat-raised-button color="warn" (click)="getLogOut()">Log Out</button>
+        </ng-template>
     </div>
 </header>
