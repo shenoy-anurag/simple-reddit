@@ -8,6 +8,10 @@
     justify-content: center;
 }
 
+.navbar {
+    justify-content: center;
+}
+
 .center {
     background-color: #52baff;
     display: flex;
