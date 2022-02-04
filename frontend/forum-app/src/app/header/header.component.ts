@@ -17,8 +17,10 @@ export class HeaderComponent implements OnInit {
 
   getLogIn(username: string, password: string) {
     console.log('Attempted login: USR:' + username + ' PWD:' + password);
-    this.usrLoggedIn = true;
-    this.usr = username;
+    if (username.length > 0 && password.length > 0) {
+      this.usrLoggedIn = true;
+      this.usr = username;  
+    }
   }
 
   getLogOut() {
