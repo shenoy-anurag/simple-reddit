@@ -78,9 +78,12 @@ func LoginUser() gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, configs.APIResponse{Status: http.StatusInternalServerError, Message: configs.API_ERROR, Data: map[string]interface{}{"data": err.Error()}})
 			return
 		}
-		c.JSON(http.StatusOK, configs.APIResponse{Status: http.StatusOK, Message: configs.API_SUCCESS, Data: map[string]interface{}{"data": "--JWD token--"}})
-		//if ActualsaltedAndHashedPwd == string(ProvidedsaltedAndHashedPwd) {
-		//}
+		if err == nil {
+			//auth := true
+			token := configs.JWTAuthService().GenerateToken(userDB.Username)
+
+			c.JSON(http.StatusOK, configs.APIResponse{Status: http.StatusOK, Message: configs.API_SUCCESS, Data: map[string]interface{}{"data": token}})
+		}
 	}
 }
 
