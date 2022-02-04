@@ -7,24 +7,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HeaderComponent implements OnInit {
 
-  title: string = "Simple Reddit";
-  usrLoggedIn: boolean = false;
-  usr: string = "";
   constructor() { }
 
   ngOnInit(): void {
-  }
-
-  getLogIn(username: string, password: string) {
-    console.log('Attempted login: USR:' + username + ' PWD:' + password);
-    if (username.length > 0 && password.length > 0) {
-      this.usrLoggedIn = true;
-      this.usr = username;  
-    }
-  }
-
-  getLogOut() {
-    this.usrLoggedIn = false;
-    this.usr = "";
   }
 }
