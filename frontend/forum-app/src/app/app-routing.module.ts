@@ -1,6 +1,5 @@
 import { PopupMessageComponent } from './popup-message/popup-message.component';
 import { SignupformComponent } from './signupform/signupform.component';
-import { HeaderComponent } from './header/header.component';
 import { NgModule, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
@@ -11,7 +10,6 @@ import { ProfileComponent } from './profile/profile.component';
 
 
 const routes: Routes = [
-  {path: 'header', component: HeaderComponent},
   {path: 'login', component: LoginComponent},
   {path: 'home', component: HomeComponent},
   {path: 'subreddits', component: SubredditsComponent},

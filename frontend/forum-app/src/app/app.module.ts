@@ -6,7 +6,6 @@ import { PostsComponent } from './posts/posts.component';
 import { PostComponent } from './post/post.component';
 import { PostsService } from './posts.service';
 import { SubredditsService } from './subreddits.service';
-import { HeaderComponent } from './header/header.component';
 import { ButtonComponent } from './button/button.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgMaterialModule } from './ng-material/ng-material.module';
@@ -26,7 +25,6 @@ import { SubredditsComponent } from './subreddits/subreddits.component';
     AppComponent,
     PostsComponent,
     PostComponent,
-    HeaderComponent,
     ButtonComponent,
     SignupformComponent,
     PopupMessageComponent,
