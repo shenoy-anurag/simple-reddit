@@ -11,7 +11,6 @@ const routes: Routes = [
   {path: 'signupform', component: SignupformComponent},
   {path: 'popup-message', component: PopupMessageComponent},
   {path: '', redirectTo: '/header', pathMatch:'full'},
-
 ];
 
 
