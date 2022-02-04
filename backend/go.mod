@@ -10,6 +10,8 @@ require (
 	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce
 )
 
+require github.com/gin-contrib/cors v1.3.1 // indirect
+
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/sse v0.1.0 // indirect

@@ -4,6 +4,7 @@ import (
 	"simple-reddit/configs"
 	"simple-reddit/users"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,6 +15,7 @@ func main() {
 	// create gin router server
 	router := gin.Default()
 
+	router.Use(cors.Default())
 	// ping route as a health check
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
