@@ -36,7 +36,7 @@ Users will be able to:
 ## Documentation, API Reference and Tutorials
 [Documentation](https://github.com/shenoy-anurag/simple-reddit/wiki) ,
 [API Reference](https://github.com/shenoy-anurag/simple-reddit/wiki/API-Overview),
-[video tutorials](https://github.com/shenoy-anurag/simple-reddit/wiki/Demo).
+[Video Tutorials](https://github.com/shenoy-anurag/simple-reddit/wiki/Demo).
  
 
 ## Authors
