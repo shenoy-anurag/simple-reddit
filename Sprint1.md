@@ -12,3 +12,15 @@ User Stories for Frontend
 
 [Userstories](https://github.com/shenoy-anurag/simple-reddit/issues?q=is%3Aissue+is%3Aclosed+label%3A%22User+Stories+-+FE%22)
 
+
+Work Done
+
+* Created Navigation Bar with reserved routing
+
+* Sign Up forms
+
+* Log-In and Log-Out interface
+
+* Basic list layout for user posts and subreddit communities
+
+* Placeholders for API backend data fetch
