@@ -7,6 +7,8 @@ User Stories for backend
 The signup and login features were developed using bcrpyt, jwt and godotenv libraries.
 Signup feature checks if the username already exists, if not then it registers the user. And for login we are generating and validating a JWT token after authenticating the username and password.
 
+Demo video and wiki: <https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#sprint-1-back-end-demo>
+
 ## Frontend 
 User Stories for Frontend
 
@@ -24,3 +26,5 @@ Work Done
 * Basic list layout for user posts and subreddit communities
 
 * Placeholders for API backend data fetch
+
+Demo video and wiki: <https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#sprint-1-front-end-demo>
