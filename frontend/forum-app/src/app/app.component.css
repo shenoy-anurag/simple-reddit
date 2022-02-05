@@ -1,3 +1,15 @@
 button {
     margin-right: 3rem;
 }
+
+.center {
+    background-color: lightgray;
+    display: flex;
+    justify-content: center;
+}
+
+.body {
+    background-color: aliceblue;
+    display: flex;
+    justify-content: center;
+}
