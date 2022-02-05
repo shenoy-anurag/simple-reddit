@@ -33,8 +33,10 @@ Users will be able to:
 * [Go](https://go.dev/doc/install)
 * [MongoDB](https://docs.mongodb.com/manual/installation/)
 
-## Documentation and Tutorials
-[Documentation](https://github.com/shenoy-anurag/simple-reddit/wiki) and [video tutorials](https://github.com/shenoy-anurag/simple-reddit/wiki/Demo).
+## Documentation, API Reference and Tutorials
+[Documentation](https://github.com/shenoy-anurag/simple-reddit/wiki) ,
+[API Reference](https://github.com/shenoy-anurag/simple-reddit/wiki/API-Overview),
+[video tutorials](https://github.com/shenoy-anurag/simple-reddit/wiki/Demo).
  
 
 ## Authors
