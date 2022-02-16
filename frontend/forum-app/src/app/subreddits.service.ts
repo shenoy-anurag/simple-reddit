@@ -7,7 +7,12 @@ export class SubredditsService {
 
   getSubreddits() {
     // get data from Backend
-    return ["Subreddit 1", "Subreddit 2", "Subreddit 3", "Subreddit 4"];
+    return [
+      {"title": "Subreddit 1"},
+      {"title": "Subreddit 2"},
+      {"title": "Subreddit 3"},
+      {"title": "Subreddit 4"}
+    ]
   }
 
   constructor() { }
