@@ -8,6 +8,6 @@ export class SignupService {
 
   constructor(private WebReqService: WebRequestService) { }
   addNewAccount(username: string) {
-    return this.WebReqService.post('users/check-username', { username });
+    return this.WebReqService.post('users/signup', { username });
   }
 }

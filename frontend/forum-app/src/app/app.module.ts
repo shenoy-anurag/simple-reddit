@@ -40,7 +40,7 @@ import { SubredditsComponent } from './subreddits/subreddits.component';
     FormsModule,
     NgMaterialModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
   ],
   providers: [PostsService, SubredditsService],
   bootstrap: [AppComponent]
