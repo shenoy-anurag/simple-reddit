@@ -15,7 +15,7 @@ export class SignupformComponent implements OnInit {
 
   getSignUp(first: string, last: string, username: string, email: string, password: string): void {
     console.log(`sign up attempt with: ${first} ${last} ${username} ${email} ${password}`);
-    this.signupService.addNewAccount(email, username, password, first).subscribe((response: any) => {
+    this.signupService.addNewAccount(email, username, password, first+ " " + last).subscribe((response: any) => {
       console.log(response);
     });
   }

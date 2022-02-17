@@ -15,10 +15,18 @@ export class SignupService {
       "username": username,
       "password": password,
       "name": name
-  });
+    });
   }
 
   checkUsername(username: string) {
     return this.WebReqService.post('users/check-username', {"username": username});
+  }
+
+  checkLogIn(username: string, password: string) {
+    return this.WebReqService.post('users/loginuser', 
+    {
+      "username": username,
+      "password": password
+    })
   }
 }
