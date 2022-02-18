@@ -15,16 +15,18 @@
             <input matInput type="text" #username placeholder="JohnDoe">
             <label>Email</label>
             <input matInput type="text" #email placeholder="john.doe@email.com">
-            <mat-error *ngIf="!checkEmail(email.value)">
-                Please enter a valid email address
+            <mat-error *ngIf="checkEmail(email.value)">
+                Please enter a valid email
             </mat-error>
-
             <label>Password</label>
             <input matInput type="password" #password placeholder="">
+            <mat-error *ngIf="checkPassword(password.value, cnfrmpassword.value)">
+                Password does not match
+            </mat-error>
             <label>Confirm Password</label>
             <input matInput type="password" #cnfrmpassword placeholder="">
             <button mat-raised-button (click)="getSignUp(firstName.value, lastName.value, username.value, email.value, password.value)" color="warn" a routerLink="/popup-message">Submit</button>
-        </form>>
+        </form>
         <p>By clicking Sign Up you agree to our <br>
         <a href="#">Terms and Conditions</a> and <a href="#">Policy Privacy</a>
         </p>

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SignupService } from '../signup.service';
 
+
 @Component({
   selector: 'app-signupform',
   templateUrl: './signupform.component.html',
@@ -13,6 +14,7 @@ export class SignupformComponent implements OnInit {
   ngOnInit(): void {
   }
 
+
   getSignUp(first: string, last: string, username: string, email: string, password: string): void {
     console.log(`sign up attempt with: ${first} ${last} ${username} ${email} ${password}`);
     this.signupService.addNewAccount(email, username, password, first+ " " + last).subscribe((response: any) => {
@@ -22,5 +24,9 @@ export class SignupformComponent implements OnInit {
 
   checkEmail(email: string) {
     return email.includes("@");
+  }
+
+  checkPassword(password: string, password2: string) {
+    return password != password2;
   }
 }
