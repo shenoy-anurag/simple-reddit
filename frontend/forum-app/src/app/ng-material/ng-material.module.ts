@@ -27,7 +27,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     MatFormFieldModule,
     MatCardModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ]
 })
 export class NgMaterialModule { }

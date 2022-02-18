@@ -20,12 +20,17 @@ export class LoginComponent implements OnInit {
     console.log('Attempted login: USR:' + username + ' PWD:' + password);
     this.signupService.checkLogIn(username, password).subscribe((response: any) => {
       console.log(response);
-    })
 
-    if (username.length > 0 && password.length > 0) {
-      this.usrLoggedIn = true;
-      this.usr = username;  
-    }
+      if (response.status == 200 && response.message == "success") {
+        // LogIn Attempt Sucessful
+        this.usrLoggedIn = true;
+        this.usr = username;  
+      }
+      else {
+        // Prompt user, incorrect login
+        console.log("Failed login");
+      }
+    })
   }
 
   getLogOut() {
