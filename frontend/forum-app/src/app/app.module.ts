@@ -20,6 +20,7 @@ import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { SubredditsComponent } from './subreddits/subreddits.component';
 
+
 @NgModule({
   declarations: [
     AppComponent,
