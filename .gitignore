@@ -2,7 +2,7 @@
 .DS_STORE
 .DS_Store
 Thumbs.db
-
+db/
 
 # IDE - VSCode
 .history/*
