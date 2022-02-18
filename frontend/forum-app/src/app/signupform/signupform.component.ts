@@ -19,4 +19,8 @@ export class SignupformComponent implements OnInit {
       console.log(response);
     });
   }
+
+  checkEmail(email: string) {
+    return email.includes("@");
+  }
 }

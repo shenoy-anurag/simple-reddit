@@ -6,7 +6,8 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import {MatCardModule} from '@angular/material/card';
+import { MatCardModule} from '@angular/material/card';
+import { FormControl, FormGroupDirective } from '@angular/forms';
 
 
 @NgModule({
@@ -19,7 +20,9 @@ import {MatCardModule} from '@angular/material/card';
     MatSlideToggleModule,
     MatToolbarModule,
     MatFormFieldModule,
-    MatCardModule
+    MatCardModule,
+    // FormControl,
+    // FormGroupDirective
   ],
   exports: [
     MatButtonModule,
@@ -28,7 +31,9 @@ import {MatCardModule} from '@angular/material/card';
     MatSlideToggleModule,
     MatToolbarModule,
     MatFormFieldModule,
-    MatCardModule
+    MatCardModule,
+    // FormControl,
+    // FormGroupDirective
   ]
 })
 export class NgMaterialModule { }
