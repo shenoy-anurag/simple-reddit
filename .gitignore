@@ -2,7 +2,10 @@
 .DS_STORE
 .DS_Store
 Thumbs.db
+db/
 
+# Frontend
+node_modules/
 
 # IDE - VSCode
 .history/*
