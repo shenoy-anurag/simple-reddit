@@ -4,7 +4,8 @@ import (
 	"time"
 )
 
-// Multiple models in order to reduce coupling, implement single responsibility, and to emulate private class variables in Go.
+// Multiple models in order to reduce coupling, implement single responsibility, 
+// and to emulate private class variables in Go.
 type CreateUserRequest struct {
 	Name     string `json:"name,omitempty" validate:"required"`
 	Email    string `json:"email" validate:"required"`
