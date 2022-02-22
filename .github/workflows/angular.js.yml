@@ -33,5 +33,5 @@ jobs:
       run: |
         cd frontend/forum-app
         npm install
-        npm install -g @angular/cli
+        npm install -g @angular/cli@13.1.4
         ng build
