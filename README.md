@@ -2,6 +2,8 @@
 
 https://github.com/shenoy-anurag/simple-reddit
 
+[![Go](https://github.com/shenoy-anurag/simple-reddit/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/shenoy-anurag/simple-reddit/actions/workflows/go.yml)
+
 ### Description:
 
 Simple Reddit is inspired from THE Reddit. It is being built as semester long project for the course Software Engineering-CEN 5035 at the University of Florida. Simple Reddit is a forum for anyone to post content and comment on posts built using Angular JS, Go, and MongoDB.
