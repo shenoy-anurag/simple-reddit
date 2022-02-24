@@ -23,9 +23,7 @@ var validate = validator.New()
 
 func CreateUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		var user CreateUserRequest
-		defer cancel()
 
 		// validate the request body
 		if err := c.BindJSON(&user); err != nil {
@@ -33,7 +31,7 @@ func CreateUser() gin.HandlerFunc {
 				http.StatusBadRequest,
 				configs.APIResponse{
 					Status:  http.StatusBadRequest,
-					Message: configs.API_ERROR,
+					Message: configs.API_FAILURE,
 					Data:    map[string]interface{}{"data": err.Error()}},
 			)
 			return
@@ -45,7 +43,7 @@ func CreateUser() gin.HandlerFunc {
 				http.StatusBadRequest,
 				configs.APIResponse{
 					Status:  http.StatusBadRequest,
-					Message: configs.API_ERROR,
+					Message: configs.API_FAILURE,
 					Data:    map[string]interface{}{"data": validationErr.Error()}},
 			)
 			return
@@ -54,19 +52,17 @@ func CreateUser() gin.HandlerFunc {
 		saltedAndHashedPwd, err := bcrypt.GenerateFromPassword([]byte(user.Password), HASHING_COST)
 		if err != nil {
 			c.JSON(
-				http.StatusInternalServerError,
+				http.StatusOK,
 				configs.APIResponse{
-					Status:  http.StatusInternalServerError,
-					Message: configs.API_ERROR,
+					Status:  http.StatusOK,
+					Message: configs.API_FAILURE,
 					Data:    map[string]interface{}{"data": err.Error()}},
 			)
 			return
 		}
 
 		user.Password = string(saltedAndHashedPwd)
-		newUserStruct := ConvertUserRequestToUserDBModel(user)
-
-		result, err := userCollection.InsertOne(ctx, newUserStruct)
+		result, err := createUserInDB(user)
 		if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
@@ -107,10 +103,10 @@ func LoginUser() gin.HandlerFunc {
 		userDB, err := getUserDetails(loginUserReq.Username)
 		if err != nil {
 			c.JSON(
-				http.StatusBadRequest,
+				http.StatusOK,
 				configs.APIResponse{
-					Status:  http.StatusBadRequest,
-					Message: configs.API_ERROR,
+					Status:  http.StatusOK,
+					Message: configs.API_FAILURE,
 					Data:    map[string]interface{}{"data": err.Error()}},
 			)
 			return
@@ -118,16 +114,15 @@ func LoginUser() gin.HandlerFunc {
 		err = bcrypt.CompareHashAndPassword([]byte(userDB.Password), []byte(loginUserReq.Password))
 		if err != nil {
 			c.JSON(
-				http.StatusBadRequest,
+				http.StatusOK,
 				configs.APIResponse{
-					Status:  http.StatusBadRequest,
-					Message: configs.API_ERROR,
-					Data:    map[string]interface{}{"data": err.Error()}},
+					Status:  http.StatusOK,
+					Message: configs.API_FAILURE,
+					Data:    map[string]interface{}{"data": "Incorrect Credentials"}},
 			)
 			return
 		}
 		if err == nil {
-			//auth := true
 			token := configs.JWTAuthService().GenerateToken(userDB.Username)
 
 			c.JSON(
@@ -139,6 +134,14 @@ func LoginUser() gin.HandlerFunc {
 			)
 		}
 	}
+}
+
+func createUserInDB(user CreateUserRequest) (result *mongo.InsertOneResult, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	newUserStruct := ConvertUserRequestToUserDBModel(user)
+	result, err = userCollection.InsertOne(ctx, newUserStruct)
+	return result, err
 }
 
 // Provide username and context as parameter to
@@ -202,10 +205,10 @@ func CheckUsernameExists() gin.HandlerFunc {
 		usernameAlreadyExists, err := checkUsername(user.Username)
 		if err != nil {
 			c.JSON(
-				http.StatusBadRequest,
+				http.StatusOK,
 				configs.APIResponse{
-					Status:  http.StatusBadRequest,
-					Message: configs.API_ERROR,
+					Status:  http.StatusOK,
+					Message: configs.API_FAILURE,
 					Data:    map[string]interface{}{"data": err.Error()}},
 			)
 			return
