@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SignupService } from '../signup.service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-login',
@@ -8,7 +9,7 @@ import { SignupService } from '../signup.service';
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private signupService: SignupService) { }
+  constructor(private signupService: SignupService, private snackBar: MatSnackBar) { }
 
   usrLoggedIn: boolean = false;
   usr: string = "";
@@ -24,11 +25,12 @@ export class LoginComponent implements OnInit {
       if (response.status == 200 && response.message == "success") {
         // LogIn Attempt Sucessful
         this.usrLoggedIn = true;
-        this.usr = username;  
+        this.usr = username;
+        this.snackBar.open("Logged in as " + username, "Dismiss", {duration: 2000});
       }
       else {
         // Prompt user, incorrect login
-        console.log("Failed login");
+        this.snackBar.open("Failed login", "Dismiss");
       }
     })
   }

@@ -19,6 +19,7 @@ import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { SubredditsComponent } from './subreddits/subreddits.component';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 
 @NgModule({
@@ -42,6 +43,7 @@ import { SubredditsComponent } from './subreddits/subreddits.component';
     NgMaterialModule,
     AppRoutingModule,
     HttpClientModule,
+    MatSnackBarModule
   ],
   providers: [PostsService, SubredditsService],
   bootstrap: [AppComponent]

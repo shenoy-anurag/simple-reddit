@@ -23,38 +23,64 @@ var validate = validator.New()
 
 func CreateUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		var user CreateUserRequest
-		defer cancel()
 
 		// validate the request body
 		if err := c.BindJSON(&user); err != nil {
-			c.JSON(http.StatusBadRequest, configs.APIResponse{Status: http.StatusBadRequest, Message: configs.API_ERROR, Data: map[string]interface{}{"data": err.Error()}})
+			c.JSON(
+				http.StatusBadRequest,
+				configs.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: configs.API_FAILURE,
+					Data:    map[string]interface{}{"data": err.Error()}},
+			)
 			return
 		}
 
 		// use the validator library to validate required fields
 		if validationErr := validate.Struct(&user); validationErr != nil {
-			c.JSON(http.StatusBadRequest, configs.APIResponse{Status: http.StatusBadRequest, Message: configs.API_ERROR, Data: map[string]interface{}{"data": validationErr.Error()}})
+			c.JSON(
+				http.StatusBadRequest,
+				configs.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: configs.API_FAILURE,
+					Data:    map[string]interface{}{"data": validationErr.Error()}},
+			)
 			return
 		}
 
 		saltedAndHashedPwd, err := bcrypt.GenerateFromPassword([]byte(user.Password), HASHING_COST)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, configs.APIResponse{Status: http.StatusInternalServerError, Message: configs.API_ERROR, Data: map[string]interface{}{"data": err.Error()}})
+			c.JSON(
+				http.StatusOK,
+				configs.APIResponse{
+					Status:  http.StatusOK,
+					Message: configs.API_FAILURE,
+					Data:    map[string]interface{}{"data": err.Error()}},
+			)
 			return
 		}
 
 		user.Password = string(saltedAndHashedPwd)
-		newUserStruct := ConvertUserRequestToUserDBModel(user)
-
-		result, err := userCollection.InsertOne(ctx, newUserStruct)
+		result, err := createUserInDB(user)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, configs.APIResponse{Status: http.StatusInternalServerError, Message: configs.API_ERROR, Data: map[string]interface{}{"data": err.Error()}})
+			c.JSON(
+				http.StatusInternalServerError,
+				configs.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: configs.API_ERROR,
+					Data:    map[string]interface{}{"data": err.Error()}},
+			)
 			return
 		}
 
-		c.JSON(http.StatusCreated, configs.APIResponse{Status: http.StatusCreated, Message: configs.API_SUCCESS, Data: map[string]interface{}{"data": result}})
+		c.JSON(
+			http.StatusCreated,
+			configs.APIResponse{
+				Status:  http.StatusCreated,
+				Message: configs.API_SUCCESS,
+				Data:    map[string]interface{}{"data": result}},
+		)
 	}
 }
 
@@ -65,26 +91,57 @@ func LoginUser() gin.HandlerFunc {
 		//var userPwd string
 		var loginUserReq LoginUserRequest
 		if err := c.BindJSON(&loginUserReq); err != nil {
-			c.JSON(http.StatusBadRequest, configs.APIResponse{Status: http.StatusBadRequest, Message: configs.API_ERROR, Data: map[string]interface{}{"data": err.Error()}})
+			c.JSON(
+				http.StatusBadRequest,
+				configs.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: configs.API_ERROR,
+					Data:    map[string]interface{}{"data": err.Error()}},
+			)
 			return
 		}
-		userDB, errr := getUserDetails(loginUserReq.Username)
-		if errr != nil {
-			c.JSON(http.StatusInternalServerError, configs.APIResponse{Status: http.StatusInternalServerError, Message: configs.API_ERROR, Data: map[string]interface{}{"data": errr.Error()}})
-			return
-		}
-		err := bcrypt.CompareHashAndPassword([]byte(userDB.Password), []byte(loginUserReq.Password))
+		userDB, err := getUserDetails(loginUserReq.Username)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, configs.APIResponse{Status: http.StatusInternalServerError, Message: configs.API_ERROR, Data: map[string]interface{}{"data": err.Error()}})
+			c.JSON(
+				http.StatusOK,
+				configs.APIResponse{
+					Status:  http.StatusOK,
+					Message: configs.API_FAILURE,
+					Data:    map[string]interface{}{"data": err.Error()}},
+			)
+			return
+		}
+		err = bcrypt.CompareHashAndPassword([]byte(userDB.Password), []byte(loginUserReq.Password))
+		if err != nil {
+			c.JSON(
+				http.StatusOK,
+				configs.APIResponse{
+					Status:  http.StatusOK,
+					Message: configs.API_FAILURE,
+					Data:    map[string]interface{}{"data": "Incorrect Credentials"}},
+			)
 			return
 		}
 		if err == nil {
-			//auth := true
 			token := configs.JWTAuthService().GenerateToken(userDB.Username)
 
-			c.JSON(http.StatusOK, configs.APIResponse{Status: http.StatusOK, Message: configs.API_SUCCESS, Data: map[string]interface{}{"data": token}})
+			c.JSON(
+				http.StatusOK,
+				configs.APIResponse{
+					Status:  http.StatusOK,
+					Message: configs.API_SUCCESS,
+					Data:    map[string]interface{}{"data": token}},
+			)
 		}
 	}
+}
+
+func createUserInDB(user CreateUserRequest) (result *mongo.InsertOneResult, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	newUserStruct := ConvertUserRequestToUserDBModel(user)
+	result, err = userCollection.InsertOne(ctx, newUserStruct)
+	return result, err
 }
 
 // Provide username and context as parameter to
@@ -123,22 +180,46 @@ func CheckUsernameExists() gin.HandlerFunc {
 		var user CheckUsernameRequest
 		// validate the request body
 		if err := c.BindJSON(&user); err != nil {
-			c.JSON(http.StatusBadRequest, configs.APIResponse{Status: http.StatusBadRequest, Message: configs.API_ERROR, Data: map[string]interface{}{"data": err.Error()}})
+			c.JSON(
+				http.StatusBadRequest,
+				configs.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: configs.API_ERROR,
+					Data:    map[string]interface{}{"data": err.Error()}},
+			)
 			return
 		}
 
 		// use the validator library to validate required fields
 		if validationErr := validate.Struct(&user); validationErr != nil {
-			c.JSON(http.StatusBadRequest, configs.APIResponse{Status: http.StatusBadRequest, Message: configs.API_ERROR, Data: map[string]interface{}{"data": validationErr.Error()}})
+			c.JSON(
+				http.StatusBadRequest,
+				configs.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: configs.API_ERROR,
+					Data:    map[string]interface{}{"data": validationErr.Error()}},
+			)
 			return
 		}
 
 		usernameAlreadyExists, err := checkUsername(user.Username)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, configs.APIResponse{Status: http.StatusInternalServerError, Message: configs.API_ERROR, Data: map[string]interface{}{"data": err.Error()}})
+			c.JSON(
+				http.StatusOK,
+				configs.APIResponse{
+					Status:  http.StatusOK,
+					Message: configs.API_FAILURE,
+					Data:    map[string]interface{}{"data": err.Error()}},
+			)
 			return
 		}
-		c.JSON(http.StatusOK, configs.APIResponse{Status: http.StatusOK, Message: configs.API_SUCCESS, Data: map[string]interface{}{"usernameAlreadyExists": usernameAlreadyExists}})
+		c.JSON(
+			http.StatusOK,
+			configs.APIResponse{
+				Status:  http.StatusOK,
+				Message: configs.API_SUCCESS,
+				Data:    map[string]interface{}{"usernameAlreadyExists": usernameAlreadyExists}},
+		)
 	}
 }
 

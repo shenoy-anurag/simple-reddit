@@ -2,6 +2,7 @@ package configs
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -34,9 +35,9 @@ func JWTAuthService() JWTService {
 }
 
 func getSecretKey() string {
-	secret := os.Getenv("SECRET")
+	secret := os.Getenv("JWT_SECRET")
 	if secret == "" {
-		secret = "secret"
+		log.Fatal("No JWT secret set. Please add JWT_SECRET to .env file or export it to the shell environment prior to starting the server.")
 	}
 	return secret
 }
