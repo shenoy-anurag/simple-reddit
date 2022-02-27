@@ -1,6 +1,7 @@
 package main
 
 import (
+	"simple-reddit/communities"
 	"simple-reddit/configs"
 	"simple-reddit/users"
 
@@ -25,6 +26,7 @@ func main() {
 
 	// add various routes to the gin server
 	users.Routes(router)
+	communities.Routes(router)
 
 	router.Run() // listen and serve on 0.0.0.0:8080
 }
