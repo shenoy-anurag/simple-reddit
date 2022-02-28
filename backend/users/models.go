@@ -2,6 +2,8 @@ package users
 
 import (
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // Multiple models in order to reduce coupling, implement single responsibility,
@@ -23,12 +25,13 @@ type UserResponse struct {
 }
 
 type UserDBModel struct {
-	FirstName string    `json:"firstname,omitempty"`
-	LastName  string    `json:"lastname,omitempty"`
-	Email     string    `json:"email"`
-	Username  string    `json:"username"`
-	Password  string    `json:"password"`
-	Joined    time.Time `bson:"joined"`
+	ID        primitive.ObjectID `bson:"_id"`
+	FirstName string             `json:"firstname,omitempty"`
+	LastName  string             `json:"lastname,omitempty"`
+	Email     string             `json:"email"`
+	Username  string             `json:"username"`
+	Password  string             `json:"password"`
+	Joined    time.Time          `bson:"joined"`
 }
 
 type LoginUserRequest struct {
@@ -46,6 +49,7 @@ type CheckUsernameRequest struct {
 // Convertion functions to convert between different models.
 func ConvertUserRequestToUserDBModel(usrReq CreateUserRequest) UserDBModel {
 	return UserDBModel{
+		ID:        primitive.NewObjectID(),
 		FirstName: usrReq.FirstName,
 		LastName:  usrReq.LastName,
 		Email:     usrReq.Email,
