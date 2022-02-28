@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -149,7 +150,7 @@ func getUserDetails(userName string) (UserDBModel, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var user UserDBModel
-	filter := bson.D{{"username", userName}}
+	filter := bson.D{primitive.E{Key: "username", Value: userName}}
 	err := userCollection.FindOne(ctx, filter).Decode(&user)
 	return user, err
 }
@@ -159,7 +160,7 @@ func checkUsername(username string) (bool, error) {
 	defer cancel()
 	var alreadyExists bool
 	var user UserDBModel
-	filter := bson.D{{"username", username}}
+	filter := bson.D{primitive.E{Key: "username", Value: username}}
 	err := userCollection.FindOne(ctx, filter).Decode(&user)
 	if err == nil {
 		if user.Username == username {
