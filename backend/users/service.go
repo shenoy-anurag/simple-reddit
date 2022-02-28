@@ -202,7 +202,7 @@ func CheckUsernameExists() gin.HandlerFunc {
 			return
 		}
 
-		usernameAlreadyExists, err := checkUsername(user.Username)
+		usernameAlreadyExists, err := CheckUsername(user.Username)
 		if err != nil {
 			c.JSON(
 				http.StatusOK,
