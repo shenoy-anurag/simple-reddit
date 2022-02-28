@@ -111,7 +111,7 @@ func LoginUser() gin.HandlerFunc {
 			)
 			return
 		}
-		userDB, err := getUserDetails(loginUserReq.Username)
+		userDB, err := GetUserDetails(loginUserReq.Username)
 		if err != nil {
 			c.JSON(
 				http.StatusOK,
@@ -156,7 +156,7 @@ func createUserInDB(user CreateUserRequest) (result *mongo.InsertOneResult, err 
 }
 
 // Provide username and context as parameter to
-func getUserDetails(userName string) (UserDBModel, error) {
+func GetUserDetails(userName string) (UserDBModel, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var user UserDBModel
