@@ -62,6 +62,17 @@ func CreateUser() gin.HandlerFunc {
 		}
 
 		user.Password = string(saltedAndHashedPwd)
+		usernameAlreadyExists, err := CheckUsername(user.Username)
+		if usernameAlreadyExists == true {
+			c.JSON(
+				http.StatusOK,
+				configs.APIResponse{
+					Status:  http.StatusOK,
+					Message: configs.API_FAILURE,
+					Data:    map[string]interface{}{"usernameAlreadyExists": usernameAlreadyExists}},
+			)
+			return
+		}
 		result, err := createUserInDB(user)
 		if err != nil {
 			c.JSON(
