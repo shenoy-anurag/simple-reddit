@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 import { SignupService } from '../signup.service';
 
 
@@ -8,6 +9,7 @@ import { SignupService } from '../signup.service';
   styleUrls: ['./signupform.component.css']
 })
 export class SignupformComponent implements OnInit {
+  emailFormControl = new FormControl('', [Validators.required, Validators.email]);
 
   constructor(private signupService: SignupService) { }
 

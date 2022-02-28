@@ -3,7 +3,7 @@ button {
 }
 
 .center {
-    background-color: lightgray;
+    background-color: whitesmoke;
     display: flex;
     justify-content: center;
 }
