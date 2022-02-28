@@ -1,10 +1,25 @@
 <div class='center' *ngIf='!usrLoggedIn; else elseTemplate'>
     <form action=" /" id="myLogin">
-        Log In<br>
-        <input matInput #usrInput required placeholder="username" value=""><br>
-        <input matInput type="password" #usrPwd required placeholder="password" value=""><br><br>
-        <button class='button' mat-raised-button color="primary" (click)="getLogIn(usrInput.value, usrPwd.value)">Log In</button>
-        <button class='button' mat-raised-button color="warn" a routerLink="/signupform" >Signup</button>
+        <br>
+        <mat-form-field class="full-width" appearance="fill">
+            <mat-label>Username</mat-label>
+            <input matInput #usrInput required placeholder="username" value="">
+        </mat-form-field>
+        <mat-form-field class="full-width" appearance="fill">
+            <mat-label>Password</mat-label>
+            <input matInput type="password" #usrPwd required placeholder="password" value="">
+        </mat-form-field>
+
+        <table class="full-width" cellspacing="0">
+            <tr>
+                <td>
+                    <button class='full-width' mat-raised-button color="primary" (click)="getLogIn(usrInput.value, usrPwd.value)">Log In</button>
+                </td>
+                <td>
+                    <button class='full-width' mat-raised-button color="warn" a routerLink="/signupform" >Signup</button>
+                </td>
+            </tr>
+        </table>
     </form>
 </div>
 <div class='center'>
