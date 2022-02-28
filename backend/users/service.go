@@ -130,7 +130,7 @@ func LoginUser() gin.HandlerFunc {
 				configs.APIResponse{
 					Status:  http.StatusOK,
 					Message: configs.API_SUCCESS,
-					Data:    map[string]interface{}{"data": token}},
+					Data:    map[string]interface{}{"accessToken": token, "username": ConvertUserDBModelToUserResponse(userDB)}},
 			)
 		}
 	}
@@ -154,7 +154,7 @@ func getUserDetails(userName string) (UserDBModel, error) {
 	return user, err
 }
 
-func checkUsername(username string) (bool, error) {
+func CheckUsername(username string) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var alreadyExists bool
@@ -202,7 +202,7 @@ func CheckUsernameExists() gin.HandlerFunc {
 			return
 		}
 
-		usernameAlreadyExists, err := checkUsername(user.Username)
+		usernameAlreadyExists, err := CheckUsername(user.Username)
 		if err != nil {
 			c.JSON(
 				http.StatusOK,
