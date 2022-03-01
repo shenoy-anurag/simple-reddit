@@ -3,6 +3,7 @@ package main
 import (
 	"simple-reddit/communities"
 	"simple-reddit/configs"
+	"simple-reddit/posts"
 	"simple-reddit/users"
 
 	"github.com/gin-contrib/cors"
@@ -27,6 +28,7 @@ func main() {
 	// add various routes to the gin server
 	users.Routes(router)
 	communities.Routes(router)
+	posts.Routes(router)
 
 	router.Run() // listen and serve on 0.0.0.0:8080
 }
