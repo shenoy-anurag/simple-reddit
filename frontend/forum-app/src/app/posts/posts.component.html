@@ -1,13 +1,9 @@
-<h2>{{title}}</h2>
-
 <ul *ngFor="let post of posts">
     <mat-card>
         <mat-card-header>
-          <div mat-card-avatar></div>
           <mat-card-title>{{ post.title }}</mat-card-title>
           <mat-card-subtitle>created by {{ post.owner }}        {{ post.created_on }}</mat-card-subtitle>
         </mat-card-header>
-        <!-- <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu"> -->
         <mat-card-content>
           <p>
               {{post.body}}
