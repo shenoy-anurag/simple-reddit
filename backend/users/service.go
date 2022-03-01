@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -62,6 +63,17 @@ func CreateUser() gin.HandlerFunc {
 		}
 
 		user.Password = string(saltedAndHashedPwd)
+		usernameAlreadyExists, err := CheckUsername(user.Username)
+		if usernameAlreadyExists == true {
+			c.JSON(
+				http.StatusOK,
+				configs.APIResponse{
+					Status:  http.StatusOK,
+					Message: configs.API_FAILURE,
+					Data:    map[string]interface{}{"usernameAlreadyExists": usernameAlreadyExists}},
+			)
+			return
+		}
 		result, err := createUserInDB(user)
 		if err != nil {
 			c.JSON(
@@ -100,7 +112,7 @@ func LoginUser() gin.HandlerFunc {
 			)
 			return
 		}
-		userDB, err := getUserDetails(loginUserReq.Username)
+		userDB, err := GetUserDetails(loginUserReq.Username)
 		if err != nil {
 			c.JSON(
 				http.StatusOK,
@@ -130,7 +142,7 @@ func LoginUser() gin.HandlerFunc {
 				configs.APIResponse{
 					Status:  http.StatusOK,
 					Message: configs.API_SUCCESS,
-					Data:    map[string]interface{}{"data": token}},
+					Data:    map[string]interface{}{"accessToken": token, "username": ConvertUserDBModelToUserResponse(userDB)}},
 			)
 		}
 	}
@@ -145,21 +157,21 @@ func createUserInDB(user CreateUserRequest) (result *mongo.InsertOneResult, err 
 }
 
 // Provide username and context as parameter to
-func getUserDetails(userName string) (UserDBModel, error) {
+func GetUserDetails(userName string) (UserDBModel, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var user UserDBModel
-	filter := bson.D{{"username", userName}}
+	filter := bson.D{primitive.E{Key: "username", Value: userName}}
 	err := userCollection.FindOne(ctx, filter).Decode(&user)
 	return user, err
 }
 
-func checkUsername(username string) (bool, error) {
+func CheckUsername(username string) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var alreadyExists bool
 	var user UserDBModel
-	filter := bson.D{{"username", username}}
+	filter := bson.D{primitive.E{Key: "username", Value: username}}
 	err := userCollection.FindOne(ctx, filter).Decode(&user)
 	if err == nil {
 		if user.Username == username {
@@ -202,7 +214,7 @@ func CheckUsernameExists() gin.HandlerFunc {
 			return
 		}
 
-		usernameAlreadyExists, err := checkUsername(user.Username)
+		usernameAlreadyExists, err := CheckUsername(user.Username)
 		if err != nil {
 			c.JSON(
 				http.StatusOK,

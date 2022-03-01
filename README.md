@@ -3,6 +3,7 @@
 https://github.com/shenoy-anurag/simple-reddit
 
 [![Go](https://github.com/shenoy-anurag/simple-reddit/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/shenoy-anurag/simple-reddit/actions/workflows/go.yml)
+[![Angular](https://github.com/shenoy-anurag/simple-reddit/actions/workflows/angular.js.yml/badge.svg?branch=main)](https://github.com/shenoy-anurag/simple-reddit/actions/workflows/angular.js.yml)
 
 ### Description:
 

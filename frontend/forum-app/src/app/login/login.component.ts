@@ -28,9 +28,13 @@ export class LoginComponent implements OnInit {
         this.usr = username;
         this.snackBar.open("Logged in as " + username, "Dismiss", {duration: 2000});
       }
-      else {
+      else if (response.status == 200 && response.message == "failure" && response.data.data == 'Incorrect Credentials') {
         // Prompt user, incorrect login
-        this.snackBar.open("Failed login", "Dismiss");
+        this.snackBar.open("Failed login", "Dismiss", {duration: 2000});
+      }
+      else {
+        // Something else is wrong
+        this.snackBar.open("Something is wrong", "Alert Adminstration"), {duration: 2000};
       }
     })
   }
