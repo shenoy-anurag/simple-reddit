@@ -1,4 +1,4 @@
-package configs
+package common
 
 const (
 	API_SUCCESS                string = "success"
@@ -12,4 +12,9 @@ type APIResponse struct {
 	Status  int                    `json:"status"`
 	Message string                 `json:"message"`
 	Data    map[string]interface{} `json:"data"`
+}
+
+type APIMessage struct {
+	Status  int    `json:"status" uri:"status" validate:"required"`
+	Message string `json:"message" uri:"message" validate:"required"`
 }
