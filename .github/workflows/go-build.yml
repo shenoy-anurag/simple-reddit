@@ -1,4 +1,4 @@
-name: Go
+name: go build
 
 on:
   push:
@@ -23,8 +23,3 @@ jobs:
         cd backend
         ls
         go build main.go
-
-#     - name: Test
-#       run: |
-#         cd backend
-#         go test -v ./...

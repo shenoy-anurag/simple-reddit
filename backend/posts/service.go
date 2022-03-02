@@ -31,7 +31,7 @@ func CreatePost() gin.HandlerFunc {
 				common.APIResponse{
 					Status:  http.StatusBadRequest,
 					Message: common.API_FAILURE,
-					Data:    map[string]interface{}{"data": err.Error()}},
+					Data:    map[string]interface{}{"error": err.Error()}},
 			)
 			return
 		}
@@ -41,7 +41,7 @@ func CreatePost() gin.HandlerFunc {
 				common.APIResponse{
 					Status:  http.StatusBadRequest,
 					Message: common.API_FAILURE,
-					Data:    map[string]interface{}{"data": validationErr.Error()}},
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
 			)
 			return
 		}
@@ -52,7 +52,7 @@ func CreatePost() gin.HandlerFunc {
 				common.APIResponse{
 					Status:  http.StatusInternalServerError,
 					Message: common.API_ERROR,
-					Data:    map[string]interface{}{"data": err.Error()}},
+					Data:    map[string]interface{}{"error": err.Error()}},
 			)
 			return
 		}
@@ -62,7 +62,7 @@ func CreatePost() gin.HandlerFunc {
 			common.APIResponse{
 				Status:  http.StatusCreated,
 				Message: common.API_SUCCESS,
-				Data:    map[string]interface{}{"data": result}},
+				Data:    map[string]interface{}{"error": result}},
 		)
 
 	}
@@ -76,10 +76,10 @@ func GetPosts() gin.HandlerFunc {
 		if err := c.BindJSON(&postReq); err != nil {
 			c.JSON(
 				http.StatusBadRequest,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusBadRequest,
-					Message: configs.API_FAILURE,
-					Data:    map[string]interface{}{"data": err.Error()}},
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
 			)
 			return
 		}
@@ -88,10 +88,10 @@ func GetPosts() gin.HandlerFunc {
 		if validationErr := validate.Struct(&postReq); validationErr != nil {
 			c.JSON(
 				http.StatusBadRequest,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusBadRequest,
-					Message: configs.API_FAILURE,
-					Data:    map[string]interface{}{"data": validationErr.Error()}},
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
 			)
 			return
 		}
@@ -101,10 +101,10 @@ func GetPosts() gin.HandlerFunc {
 		if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusInternalServerError,
-					Message: configs.API_ERROR,
-					Data:    map[string]interface{}{"data": err.Error()}},
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
 			)
 			return
 		}
@@ -112,18 +112,18 @@ func GetPosts() gin.HandlerFunc {
 		if len(postDetails) > 0 {
 			c.JSON(
 				http.StatusOK,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusOK,
-					Message: configs.API_SUCCESS,
+					Message: common.API_SUCCESS,
 					Data:    map[string]interface{}{"posts": postDetails}},
 			)
 			return
 		} else {
 			c.JSON(
 				http.StatusOK,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusNotFound,
-					Message: configs.API_SUCCESS,
+					Message: common.API_SUCCESS,
 					Data:    map[string]interface{}{"posts": postDetails}},
 			)
 			return
