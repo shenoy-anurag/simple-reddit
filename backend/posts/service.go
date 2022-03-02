@@ -3,6 +3,7 @@ package posts
 import (
 	"context"
 	"net/http"
+	"simple-reddit/common"
 	"simple-reddit/configs"
 	"time"
 
@@ -24,9 +25,9 @@ func CreatePost() gin.HandlerFunc {
 		if err := c.BindJSON(&post); err != nil {
 			c.JSON(
 				http.StatusBadRequest,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusBadRequest,
-					Message: configs.API_FAILURE,
+					Message: common.API_FAILURE,
 					Data:    map[string]interface{}{"data": err.Error()}},
 			)
 			return
@@ -34,9 +35,9 @@ func CreatePost() gin.HandlerFunc {
 		if validationErr := validate.Struct(&post); validationErr != nil {
 			c.JSON(
 				http.StatusBadRequest,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusBadRequest,
-					Message: configs.API_FAILURE,
+					Message: common.API_FAILURE,
 					Data:    map[string]interface{}{"data": validationErr.Error()}},
 			)
 			return
@@ -45,9 +46,9 @@ func CreatePost() gin.HandlerFunc {
 		if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusInternalServerError,
-					Message: configs.API_ERROR,
+					Message: common.API_ERROR,
 					Data:    map[string]interface{}{"data": err.Error()}},
 			)
 			return
@@ -55,9 +56,9 @@ func CreatePost() gin.HandlerFunc {
 
 		c.JSON(
 			http.StatusCreated,
-			configs.APIResponse{
+			common.APIResponse{
 				Status:  http.StatusCreated,
-				Message: configs.API_SUCCESS,
+				Message: common.API_SUCCESS,
 				Data:    map[string]interface{}{"data": result}},
 		)
 

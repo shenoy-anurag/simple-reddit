@@ -20,8 +20,8 @@ type PostDBModel struct {
 }
 
 type CreatePostRequest struct {
-	UserName    string             `json:"username,required"`
-	CommunityID primitive.ObjectID `json:"community_id,required"`
+	UserName    string             `json:"username" validate:"required"`
+	CommunityID primitive.ObjectID `json:"community_id" validate:"required"`
 	Title       string             `json:"title"`
 	Body        string             `json:"body"`
 }

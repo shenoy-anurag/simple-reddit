@@ -26,6 +26,16 @@ type GetCommunityRequest struct {
 	Name string `json:"name" uri:"name" validate:"required"`
 }
 
+type EditCommunityRequest struct {
+	Name        string `json:"name" validate:"required"`
+	Description string `json:"description" validate:"required"`
+}
+
+type DeleteCommunityRequest struct {
+	Name     string `json:"name" uri:"name" validate:"required"`
+	UserName string `json:"username" uri:"username" validate:"required"`
+}
+
 type CommunityResponse struct {
 	ID              primitive.ObjectID `json:"_id"`
 	Name            string             `json:"name"`
@@ -55,6 +65,13 @@ func ConvertCommunityDBModelToCommunityResponse(communityDB CommunityDBModel) (C
 		Description:     communityDB.Description,
 		SubscriberCount: communityDB.SubscriberCount,
 		CreatedAt:       communityDB.CreatedAt,
+	}, err
+}
+
+func ConvertEditCommunityReqToGetCommunityReq(communityReq EditCommunityRequest) (GetCommunityRequest, error) {
+	var err error
+	return GetCommunityRequest{
+		Name: communityReq.Name,
 	}, err
 }
 
