@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -62,13 +61,13 @@ func CreatePost() gin.HandlerFunc {
 			common.APIResponse{
 				Status:  http.StatusCreated,
 				Message: common.API_SUCCESS,
-				Data:    map[string]interface{}{"error": result}},
+				Data:    map[string]interface{}{"data": result}},
 		)
 
 	}
 }
 
-func DeleteCommunity() gin.HandlerFunc {
+func DeletePost() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var delPostReq DeletePostRequest
 
@@ -224,12 +223,14 @@ func retrievePostDetails(postReq GetPostRequest) ([]PostResponse, error) {
 func deletePost(postReq DeletePostRequest) (*mongo.DeleteResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	filter := bson.D{primitive.E{Key: "username", Value: postReq.ID}}
+	//filter := bson.D{primitive.E{Key: "username", Value: postReq.UserName}}
+	filter := bson.M{"$and": []bson.M{{"username": postReq.UserName}, {"_id": postReq.ID}}}
 	result, err := postCollection.DeleteOne(ctx, filter)
 	return result, err
 }
 
 func Routes(router *gin.Engine) {
-	router.POST(POST_ROUTE_PREFIX+"/create", CreatePost())
-	router.GET(POST_ROUTE_PREFIX+"/get", GetPosts())
+	router.POST(POST_ROUTE_PREFIX, CreatePost())
+	router.GET(POST_ROUTE_PREFIX, GetPosts())
+	router.DELETE(POST_ROUTE_PREFIX, DeletePost())
 }

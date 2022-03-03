@@ -31,6 +31,11 @@ type GetPostRequest struct {
 	CommunityID primitive.ObjectID `json:"community_id" validate:"required"`
 }
 
+type DeletePostRequest struct {
+	ID       primitive.ObjectID `json:"id" validate:"required"`
+	UserName string             `json:"username" validate:"required"`
+}
+
 type PostResponse struct {
 	ID        primitive.ObjectID `json:"_id"`
 	Title     string             `json:"title"`
