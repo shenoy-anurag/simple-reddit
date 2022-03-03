@@ -1,13 +1,12 @@
 <h1>Sign Up</h1>
 <form class="form" [formGroup]="form">
-
     <!-- First and last name -->
     <table class="full-width" cellspacing="0">
         <tr>
             <td>
                 <mat-form-field class="full-width" appearance="fill">
                     <mat-label>First name</mat-label>
-                    <input matInput formControlName="firstname" type="text" #firstName placeholder="John">
+                    <input name='firstname' matInput formControlName="firstname" type="text" #firstname placeholder="John">
                     <mat-error *ngIf="f['firstname'].touched && f['firstname'].invalid">
                         Cannot be empty
                     </mat-error>
@@ -16,7 +15,7 @@
             <td>
                 <mat-form-field class="full-width" appearance="fill">
                     <mat-label>Last Name</mat-label>
-                    <input matInput formControlName="lastname" type="text" #lastName placeholder="Doe">
+                    <input name='lastname' matInput formControlName="lastname" type="text" #lastname placeholder="Doe">
                     <mat-error *ngIf="f['lastname'].touched && f['lastname'].invalid">
                         Cannot be empty
                     </mat-error>
@@ -28,7 +27,7 @@
     <!-- Email -->
     <mat-form-field class="full-width" appearance="fill">
         <mat-label>Email</mat-label>
-        <input type="email" matInput formControlName= "email" #email placeholder="john.doe@email.com">
+        <input name='email' type="email" matInput formControlName= "email" #email placeholder="john.doe@email.com">
         <mat-error *ngIf="f['email'].touched && f['email'].invalid">
             Please enter a valid email address
         </mat-error>
@@ -37,7 +36,7 @@
     <!-- Username -->
     <mat-form-field class="full-width" appearance="fill">
         <mat-label>User Name</mat-label>
-        <input matInput type="text" formControlName="username" #username placeholder="JohnDoe">
+        <input name='username' matInput type="text" formControlName="username" #username placeholder="JohnDoe">
         <mat-error *ngIf="f['username'].touched && f['username'].invalid">
             Username is not valid
         </mat-error>
@@ -46,14 +45,14 @@
     <!-- Passwords -->
     <mat-form-field class="full-width" appearance="fill">
         <mat-label>Password</mat-label>
-        <input matInput type="password" formControlName="password" #password>
+        <input name='password' matInput type="password" formControlName="password" #password>
         <mat-error *ngIf="f['password'].touched && f['password'].invalid">
             Password must contain at least 6 characters: 1 Uppercase, 1 Lowercase, 1 numeric
         </mat-error>
     </mat-form-field>
     <mat-form-field class="full-width" appearance="fill">
         <mat-label>Confirm Password</mat-label>
-        <input matInput type="password" formControlName="password2" #password2>
+        <input name='password2' matInput type="password" formControlName="password2" #password2>
         <mat-error *ngIf="f['checkIfMatchingPasswords']">
             Passwords don't match
         </mat-error>
@@ -65,7 +64,7 @@
 
 <br><br>
 <button class="full-width" mat-raised-button
-    (click)="getSignUp(firstName.value, lastName.value, username.value, email.value, password.value)" color="warn" a
+    (click)="getSignUp(firstname.value, lastname.value, username.value, email.value, password.value)" color="warn" a
     routerLink="/popup-message">Submit</button>
 
 
