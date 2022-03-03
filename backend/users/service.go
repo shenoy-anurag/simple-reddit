@@ -3,6 +3,7 @@ package users
 import (
 	"context"
 	"net/http"
+	"simple-reddit/common"
 	"simple-reddit/configs"
 	"time"
 
@@ -19,7 +20,7 @@ const USER_ROUTE_PREFIX = "/users"
 
 const UsersCollectionName string = "users"
 
-var userCollection *mongo.Collection = configs.GetCollection(configs.MongoClient, UsersCollectionName)
+var UsersCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, UsersCollectionName)
 var validate = validator.New()
 
 func CreateUser() gin.HandlerFunc {
@@ -30,10 +31,10 @@ func CreateUser() gin.HandlerFunc {
 		if err := c.BindJSON(&user); err != nil {
 			c.JSON(
 				http.StatusBadRequest,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusBadRequest,
-					Message: configs.API_FAILURE,
-					Data:    map[string]interface{}{"data": err.Error()}},
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
 			)
 			return
 		}
@@ -42,10 +43,10 @@ func CreateUser() gin.HandlerFunc {
 		if validationErr := validate.Struct(&user); validationErr != nil {
 			c.JSON(
 				http.StatusBadRequest,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusBadRequest,
-					Message: configs.API_FAILURE,
-					Data:    map[string]interface{}{"data": validationErr.Error()}},
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
 			)
 			return
 		}
@@ -54,43 +55,52 @@ func CreateUser() gin.HandlerFunc {
 		if err != nil {
 			c.JSON(
 				http.StatusOK,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusOK,
-					Message: configs.API_FAILURE,
-					Data:    map[string]interface{}{"data": err.Error()}},
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
 			)
 			return
 		}
 
 		user.Password = string(saltedAndHashedPwd)
 		usernameAlreadyExists, err := CheckUsername(user.Username)
-		if usernameAlreadyExists == true {
+		if usernameAlreadyExists {
 			c.JSON(
 				http.StatusOK,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusOK,
-					Message: configs.API_FAILURE,
-					Data:    map[string]interface{}{"usernameAlreadyExists": usernameAlreadyExists}},
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": common.ERR_USERNAME_ALREADY_EXISTS.Message, "usernameAlreadyExists": usernameAlreadyExists}},
+			)
+			return
+		} else if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
 			)
 			return
 		}
-		result, err := createUserInDB(user)
+		result, err := CreateUserInDB(user)
 		if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusInternalServerError,
-					Message: configs.API_ERROR,
-					Data:    map[string]interface{}{"data": err.Error()}},
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
 			)
 			return
 		}
 
 		c.JSON(
 			http.StatusCreated,
-			configs.APIResponse{
+			common.APIResponse{
 				Status:  http.StatusCreated,
-				Message: configs.API_SUCCESS,
+				Message: common.API_SUCCESS,
 				Data:    map[string]interface{}{"data": result}},
 		)
 	}
@@ -105,10 +115,10 @@ func LoginUser() gin.HandlerFunc {
 		if err := c.BindJSON(&loginUserReq); err != nil {
 			c.JSON(
 				http.StatusBadRequest,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusBadRequest,
-					Message: configs.API_ERROR,
-					Data:    map[string]interface{}{"data": err.Error()}},
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
 			)
 			return
 		}
@@ -116,10 +126,10 @@ func LoginUser() gin.HandlerFunc {
 		if err != nil {
 			c.JSON(
 				http.StatusOK,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusOK,
-					Message: configs.API_FAILURE,
-					Data:    map[string]interface{}{"data": err.Error()}},
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
 			)
 			return
 		}
@@ -127,10 +137,10 @@ func LoginUser() gin.HandlerFunc {
 		if err != nil {
 			c.JSON(
 				http.StatusOK,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusOK,
-					Message: configs.API_FAILURE,
-					Data:    map[string]interface{}{"data": "Incorrect Credentials"}},
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": common.ERR_INCORRECT_CREDENTIALS.Message}},
 			)
 			return
 		}
@@ -139,20 +149,20 @@ func LoginUser() gin.HandlerFunc {
 
 			c.JSON(
 				http.StatusOK,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusOK,
-					Message: configs.API_SUCCESS,
-					Data:    map[string]interface{}{"accessToken": token, "username": ConvertUserDBModelToUserResponse(userDB)}},
+					Message: common.API_SUCCESS,
+					Data:    map[string]interface{}{"accessToken": token, "user": ConvertUserDBModelToUserResponse(userDB)}},
 			)
 		}
 	}
 }
 
-func createUserInDB(user CreateUserRequest) (result *mongo.InsertOneResult, err error) {
+func CreateUserInDB(user CreateUserRequest) (result *mongo.InsertOneResult, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	newUserStruct := ConvertUserRequestToUserDBModel(user)
-	result, err = userCollection.InsertOne(ctx, newUserStruct)
+	result, err = UsersCollection.InsertOne(ctx, newUserStruct)
 	return result, err
 }
 
@@ -162,7 +172,7 @@ func GetUserDetails(userName string) (UserDBModel, error) {
 	defer cancel()
 	var user UserDBModel
 	filter := bson.D{primitive.E{Key: "username", Value: userName}}
-	err := userCollection.FindOne(ctx, filter).Decode(&user)
+	err := UsersCollection.FindOne(ctx, filter).Decode(&user)
 	return user, err
 }
 
@@ -172,7 +182,7 @@ func CheckUsername(username string) (bool, error) {
 	var alreadyExists bool
 	var user UserDBModel
 	filter := bson.D{primitive.E{Key: "username", Value: username}}
-	err := userCollection.FindOne(ctx, filter).Decode(&user)
+	err := UsersCollection.FindOne(ctx, filter).Decode(&user)
 	if err == nil {
 		if user.Username == username {
 			alreadyExists = true
@@ -194,10 +204,10 @@ func CheckUsernameExists() gin.HandlerFunc {
 		if err := c.BindJSON(&user); err != nil {
 			c.JSON(
 				http.StatusBadRequest,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusBadRequest,
-					Message: configs.API_ERROR,
-					Data:    map[string]interface{}{"data": err.Error()}},
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
 			)
 			return
 		}
@@ -206,10 +216,10 @@ func CheckUsernameExists() gin.HandlerFunc {
 		if validationErr := validate.Struct(&user); validationErr != nil {
 			c.JSON(
 				http.StatusBadRequest,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusBadRequest,
-					Message: configs.API_ERROR,
-					Data:    map[string]interface{}{"data": validationErr.Error()}},
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
 			)
 			return
 		}
@@ -218,18 +228,18 @@ func CheckUsernameExists() gin.HandlerFunc {
 		if err != nil {
 			c.JSON(
 				http.StatusOK,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusOK,
-					Message: configs.API_FAILURE,
-					Data:    map[string]interface{}{"data": err.Error()}},
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
 			)
 			return
 		}
 		c.JSON(
 			http.StatusOK,
-			configs.APIResponse{
+			common.APIResponse{
 				Status:  http.StatusOK,
-				Message: configs.API_SUCCESS,
+				Message: common.API_SUCCESS,
 				Data:    map[string]interface{}{"usernameAlreadyExists": usernameAlreadyExists}},
 		)
 	}

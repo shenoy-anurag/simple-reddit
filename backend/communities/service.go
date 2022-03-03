@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"simple-reddit/common"
 	"simple-reddit/configs"
+	"simple-reddit/users"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -18,7 +20,7 @@ const COMMUNITY_ROUTE_PREFIX = "/community"
 
 const CommunitiesCollectionName string = "communities"
 
-var communityCollection *mongo.Collection = configs.GetCollection(configs.MongoClient, CommunitiesCollectionName)
+var CommunityCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, CommunitiesCollectionName)
 var validate = validator.New()
 
 func createCommunityInDB(community CreateCommunityRequest) (result *mongo.InsertOneResult, err error) {
@@ -28,22 +30,54 @@ func createCommunityInDB(community CreateCommunityRequest) (result *mongo.Insert
 	if err != nil {
 		return result, err
 	}
-	result, err = communityCollection.InsertOne(ctx, newCommunity)
+	result, err = CommunityCollection.InsertOne(ctx, newCommunity)
 	return result, err
 }
 
-func retrieveCommunityDetails(commReq GetCommunityRequest) (CommunityResponse, error) {
+func retrieveCommunityDetails(commReq GetCommunityRequest) (CommunityDBModel, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var community CommunityDBModel
-	var commResp CommunityResponse
 	filter := bson.D{primitive.E{Key: "name", Value: commReq.Name}}
-	err := communityCollection.FindOne(ctx, filter).Decode(&community)
+	err := CommunityCollection.FindOne(ctx, filter).Decode(&community)
+	return community, err
+}
+
+func editCommunityDetails(communityReq EditCommunityRequest) (result *mongo.UpdateResult, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	getCommunityReq, err := ConvertEditCommunityReqToGetCommunityReq(communityReq)
 	if err != nil {
-		return commResp, err
+		return result, err
 	}
-	commResp, err = ConvertCommunityDBModelToCommunityResponse(community)
-	return commResp, err
+	community, err := retrieveCommunityDetails(getCommunityReq)
+	if err != nil {
+		return result, err
+	}
+	// updating the data in db
+	filter := bson.M{"_id": community.ID}
+	updateQuery := bson.D{
+		primitive.E{
+			Key: "$set",
+			Value: bson.D{
+				primitive.E{Key: "description", Value: communityReq.Description},
+			},
+		},
+	}
+	result, err = CommunityCollection.UpdateOne(
+		ctx,
+		filter,
+		updateQuery,
+	)
+	return result, err
+}
+
+func deleteCommunity(commReq DeleteCommunityRequest) (*mongo.DeleteResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	filter := bson.D{primitive.E{Key: "name", Value: commReq.Name}}
+	result, err := CommunityCollection.DeleteOne(ctx, filter)
+	return result, err
 }
 
 func checkCommunityNameExists(communityName string) (bool, error) {
@@ -52,7 +86,7 @@ func checkCommunityNameExists(communityName string) (bool, error) {
 	var alreadyExists bool
 	var community CommunityDBModel
 	filter := bson.D{primitive.E{Key: "name", Value: communityName}}
-	err := communityCollection.FindOne(ctx, filter).Decode(&community)
+	err := CommunityCollection.FindOne(ctx, filter).Decode(&community)
 	if err == nil {
 		if community.Name == communityName {
 			alreadyExists = true
@@ -67,18 +101,18 @@ func checkCommunityNameExists(communityName string) (bool, error) {
 	return alreadyExists, err
 }
 
-func CreateCommunity() gin.HandlerFunc {
+func CheckCommunityExists() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var communityReq CreateCommunityRequest
+		var communityReq GetCommunityRequest
 
 		// validate the request body
 		if err := c.BindJSON(&communityReq); err != nil {
 			c.JSON(
 				http.StatusBadRequest,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusBadRequest,
-					Message: configs.API_FAILURE,
-					Data:    map[string]interface{}{"data": err.Error()}},
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
 			)
 			return
 		}
@@ -87,25 +121,88 @@ func CreateCommunity() gin.HandlerFunc {
 		if validationErr := validate.Struct(&communityReq); validationErr != nil {
 			c.JSON(
 				http.StatusBadRequest,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusBadRequest,
-					Message: configs.API_FAILURE,
-					Data:    map[string]interface{}{"data": validationErr.Error()}},
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
 			)
 			return
 		}
 
-		communityAlreadyExists, _ := checkCommunityNameExists(communityReq.Name)
+		communityAlreadyExists, err := checkCommunityNameExists(communityReq.Name)
+		if err != nil {
+			c.JSON(
+				http.StatusOK,
+				common.APIResponse{
+					Status:  http.StatusOK,
+					Message: common.API_ERROR,
+					Data: map[string]interface{}{
+						"error": err.Error(),
+					},
+				},
+			)
+			return
+		}
+
+		c.JSON(
+			http.StatusOK,
+			common.APIResponse{
+				Status:  http.StatusOK,
+				Message: common.API_FAILURE,
+				Data:    map[string]interface{}{"communityAlreadyExists": communityAlreadyExists},
+			},
+		)
+	}
+}
+
+func CreateCommunity() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var communityReq CreateCommunityRequest
+
+		// validate the request body
+		if err := c.BindJSON(&communityReq); err != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		// use the validator library to validate required fields
+		if validationErr := validate.Struct(&communityReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
+
+		communityAlreadyExists, err := checkCommunityNameExists(communityReq.Name)
 		if communityAlreadyExists {
 			c.JSON(
 				http.StatusOK,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusOK,
-					Message: configs.API_FAILURE,
+					Message: common.API_FAILURE,
 					Data: map[string]interface{}{
-						"message":                "Community with that name already exists",
+						"error":                  common.ERR_COMMUNITY_ALREADY_EXISTS.Message,
 						"communityAlreadyExists": communityAlreadyExists,
 					}},
+			)
+			return
+		} else if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
 			)
 			return
 		}
@@ -114,20 +211,20 @@ func CreateCommunity() gin.HandlerFunc {
 		if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusInternalServerError,
-					Message: configs.API_ERROR,
-					Data:    map[string]interface{}{"data": err.Error()}},
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
 			)
 			return
 		}
 
 		c.JSON(
 			http.StatusCreated,
-			configs.APIResponse{
+			common.APIResponse{
 				Status:  http.StatusCreated,
-				Message: configs.API_SUCCESS,
-				Data:    map[string]interface{}{"data": result, "community_name": communityReq.Name}},
+				Message: common.API_SUCCESS,
+				Data:    map[string]interface{}{"created": result, "community_name": communityReq.Name}},
 		)
 	}
 }
@@ -140,10 +237,10 @@ func GetCommunity() gin.HandlerFunc {
 		if err := c.BindUri(&communityReq); err != nil {
 			c.JSON(
 				http.StatusBadRequest,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusBadRequest,
-					Message: configs.API_FAILURE,
-					Data:    map[string]interface{}{"data": err.Error()}},
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
 			)
 			return
 		}
@@ -152,22 +249,33 @@ func GetCommunity() gin.HandlerFunc {
 		if validationErr := validate.Struct(&communityReq); validationErr != nil {
 			c.JSON(
 				http.StatusBadRequest,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusBadRequest,
-					Message: configs.API_FAILURE,
-					Data:    map[string]interface{}{"data": validationErr.Error()}},
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
 			)
 			return
 		}
 		fmt.Println(communityReq)
-		communityDetails, err := retrieveCommunityDetails(communityReq)
+		communityDB, err := retrieveCommunityDetails(communityReq)
+		if err == mongo.ErrNoDocuments {
+			c.JSON(
+				http.StatusOK,
+				common.APIResponse{
+					Status:  http.StatusOK,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": common.ERR_COMMUNITY_NOT_FOUND.Message}},
+			)
+			return
+		}
+		communityDetails, err := ConvertCommunityDBModelToCommunityResponse(communityDB)
 		if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusInternalServerError,
-					Message: configs.API_ERROR,
-					Data:    map[string]interface{}{"data": err.Error()}},
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
 			)
 			return
 		}
@@ -175,18 +283,18 @@ func GetCommunity() gin.HandlerFunc {
 		if communityDetails.ID != primitive.NilObjectID {
 			c.JSON(
 				http.StatusOK,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusOK,
-					Message: configs.API_SUCCESS,
+					Message: common.API_SUCCESS,
 					Data:    map[string]interface{}{"community": communityDetails}},
 			)
 			return
 		} else {
 			c.JSON(
 				http.StatusOK,
-				configs.APIResponse{
+				common.APIResponse{
 					Status:  http.StatusOK,
-					Message: configs.API_SUCCESS,
+					Message: common.API_SUCCESS,
 					Data:    map[string]interface{}{"community": communityDetails}},
 			)
 			return
@@ -194,7 +302,147 @@ func GetCommunity() gin.HandlerFunc {
 	}
 }
 
+func EditCommunity() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var communityReq EditCommunityRequest
+
+		// validate the request body
+		if err := c.BindJSON(&communityReq); err != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		// use the validator library to validate required fields
+		if validationErr := validate.Struct(&communityReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
+
+		communityAlreadyExists, err := checkCommunityNameExists(communityReq.Name)
+		if communityAlreadyExists {
+			c.JSON(
+				http.StatusOK,
+				common.APIResponse{
+					Status:  http.StatusOK,
+					Message: common.API_FAILURE,
+					Data: map[string]interface{}{
+						"message":                "Community with that name already exists",
+						"communityAlreadyExists": communityAlreadyExists,
+					}},
+			)
+			return
+		} else if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		result, err := editCommunityDetails(communityReq)
+		if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		c.JSON(
+			http.StatusOK,
+			common.APIResponse{
+				Status:  http.StatusOK,
+				Message: common.API_SUCCESS,
+				Data:    map[string]interface{}{"updated": result, "community_name": communityReq.Name}},
+		)
+	}
+}
+
+func DeleteCommunity() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var delCommunityReq DeleteCommunityRequest
+
+		// validate the request body
+		if err := c.BindJSON(&delCommunityReq); err != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		// use the validator library to validate required fields
+		if validationErr := validate.Struct(&delCommunityReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
+
+		// TODO: add check whether correct user is deleting the community after adding JWT verification.
+		user, err := users.GetUserDetails(delCommunityReq.UserName)
+		// TODO: replace this check with a check against username within claims of JWT token.
+		if user.Username != delCommunityReq.UserName {
+			c.JSON(
+				http.StatusUnauthorized,
+				common.APIResponse{
+					Status:  http.StatusUnauthorized,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+		result, err := deleteCommunity(delCommunityReq)
+		if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		c.JSON(
+			http.StatusOK,
+			common.APIResponse{
+				Status:  http.StatusOK,
+				Message: common.API_SUCCESS,
+				Data:    map[string]interface{}{"deleted": result, "community_name": delCommunityReq.Name}},
+		)
+	}
+}
+
 func Routes(router *gin.Engine) {
 	router.POST(COMMUNITY_ROUTE_PREFIX, CreateCommunity())
+	router.POST(COMMUNITY_ROUTE_PREFIX+"/check-name", CheckCommunityExists())
 	router.GET(COMMUNITY_ROUTE_PREFIX+"/:name", GetCommunity())
+	router.PATCH(COMMUNITY_ROUTE_PREFIX, EditCommunity())
+	router.DELETE(COMMUNITY_ROUTE_PREFIX, DeleteCommunity())
 }
