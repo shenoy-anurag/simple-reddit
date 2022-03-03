@@ -20,7 +20,7 @@ const COMMUNITY_ROUTE_PREFIX = "/community"
 
 const CommunitiesCollectionName string = "communities"
 
-var communityCollection *mongo.Collection = configs.GetCollection(configs.MongoClient, CommunitiesCollectionName)
+var CommunityCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, CommunitiesCollectionName)
 var validate = validator.New()
 
 func createCommunityInDB(community CreateCommunityRequest) (result *mongo.InsertOneResult, err error) {
@@ -30,7 +30,7 @@ func createCommunityInDB(community CreateCommunityRequest) (result *mongo.Insert
 	if err != nil {
 		return result, err
 	}
-	result, err = communityCollection.InsertOne(ctx, newCommunity)
+	result, err = CommunityCollection.InsertOne(ctx, newCommunity)
 	return result, err
 }
 
@@ -39,7 +39,7 @@ func retrieveCommunityDetails(commReq GetCommunityRequest) (CommunityDBModel, er
 	defer cancel()
 	var community CommunityDBModel
 	filter := bson.D{primitive.E{Key: "name", Value: commReq.Name}}
-	err := communityCollection.FindOne(ctx, filter).Decode(&community)
+	err := CommunityCollection.FindOne(ctx, filter).Decode(&community)
 	return community, err
 }
 
@@ -64,7 +64,7 @@ func editCommunityDetails(communityReq EditCommunityRequest) (result *mongo.Upda
 			},
 		},
 	}
-	result, err = communityCollection.UpdateOne(
+	result, err = CommunityCollection.UpdateOne(
 		ctx,
 		filter,
 		updateQuery,
@@ -76,7 +76,7 @@ func deleteCommunity(commReq DeleteCommunityRequest) (*mongo.DeleteResult, error
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	filter := bson.D{primitive.E{Key: "name", Value: commReq.Name}}
-	result, err := communityCollection.DeleteOne(ctx, filter)
+	result, err := CommunityCollection.DeleteOne(ctx, filter)
 	return result, err
 }
 
@@ -86,7 +86,7 @@ func checkCommunityNameExists(communityName string) (bool, error) {
 	var alreadyExists bool
 	var community CommunityDBModel
 	filter := bson.D{primitive.E{Key: "name", Value: communityName}}
-	err := communityCollection.FindOne(ctx, filter).Decode(&community)
+	err := CommunityCollection.FindOne(ctx, filter).Decode(&community)
 	if err == nil {
 		if community.Name == communityName {
 			alreadyExists = true
