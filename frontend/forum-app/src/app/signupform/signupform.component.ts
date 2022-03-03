@@ -24,25 +24,45 @@ export function passwordValidator(): ValidatorFn {
   };
 }
 
-export function usernameValidator(signupService: any, username: any): ValidatorFn {
+export function passwordConValidator(password: any): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const value = control.value;
+    console.log("password: " + password + " " + "pass2: " + value);
+    if (!value) {
+      return null;
+    }
+
+    console.log(password);
+    console.log(value);
+    const isPasswordValid = password == value;
+
+    return !isPasswordValid ? { passwordValid: true } : null;
+  };
+}
+
+export function usernameValidator(signupService: any): ValidatorFn {
+  let temp: any = true;
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    console.log("this is the value " + value)
 
     if (!value) {
       return null;
     }
 
-    signupService.checkUsername(username).subscribe((response: any) => {
-      console.log(response);
-      if (response.status == 200 && response.message == "success" && response.data == {"data": {"usernameAlreadyExists": true}}) {
-        return null;
+    signupService.checkUsername(value).subscribe((response: any) => {
+      console.log(response)
+      if (response.status == 200 && response.message == "success" && response.data.usernameAlreadyExists == true) {
+        console.log("BREAK");
+        temp = null;
       }
       else {
-        return { usernameValid: true };
+        console.log("VALID");
+        temp = { usernameValid: true };
       }
     });
 
-    return null;
+    return temp;
   };
 }
 
@@ -58,8 +78,11 @@ export class SignupformComponent implements OnInit {
 
   constructor(private signupService: SignupService, private fb: FormBuilder) {
     this.form = this.fb.group({
-      username: ['', [Validators.required, usernameValidator(signupService, this.username)]],
+      firstname: ['', [Validators.required]],
+      lastname: ['', [Validators.required]],
+      username: ['', [Validators.required, usernameValidator(signupService)]],
       password: ['', [Validators.required, passwordValidator(), Validators.minLength(6)]],
+      password2: ['', [Validators.required, passwordConValidator(this.password)]],
       email: ['', [Validators.required, Validators.email]]
     })
   }
@@ -71,31 +94,8 @@ export class SignupformComponent implements OnInit {
     return this.form.controls;
   }
 
-  get username() {
-    return this.form.controls['username']
-  }
-
-  get email() {
-    return this.form.controls['email'];
-  }
-
   get password() {
     return this.form.controls['password'];
-  }
-
-  get password2() {
-    return this.form.controls['password2'];
-  }
-
-  checkUsername(username: string) {
-    this.signupService.checkUsername(username).subscribe((response: any) => {
-      if (response.status == 200 && response.message == "success") {
-        return false;
-      }
-      else {
-        return true;
-      }
-    });
   }
 
   getSignUp(first: string, last: string, username: string, email: string, password: string): void {

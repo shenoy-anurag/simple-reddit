@@ -7,13 +7,19 @@
             <td>
                 <mat-form-field class="full-width" appearance="fill">
                     <mat-label>First name</mat-label>
-                    <input matInput type="text" #firstName placeholder="John">
+                    <input matInput formControlName="firstname" type="text" #firstName placeholder="John">
+                    <mat-error *ngIf="f['firstname'].touched && f['firstname'].invalid">
+                        Cannot be empty
+                    </mat-error>
                 </mat-form-field>
             </td>
             <td>
                 <mat-form-field class="full-width" appearance="fill">
                     <mat-label>Last Name</mat-label>
-                    <input matInput type="text" #lastName placeholder="Doe">
+                    <input matInput formControlName="lastname" type="text" #lastName placeholder="Doe">
+                    <mat-error *ngIf="f['lastname'].touched && f['lastname'].invalid">
+                        Cannot be empty
+                    </mat-error>
                 </mat-form-field>
             </td>
         </tr>
@@ -48,6 +54,9 @@
     <mat-form-field class="full-width" appearance="fill">
         <mat-label>Confirm Password</mat-label>
         <input matInput type="password" formContorlName="password2" #cnfrmpassword>
+        <mat-error *ngIf="f['password2'].touched && f['password2'].invalid">
+            Password does not match
+        </mat-error>
     </mat-form-field>
     <button class="full-width" mat-raised-button
         (click)="getSignUp(firstName.value, lastName.value, username.value, email.value, password.value)" color="warn" a
