@@ -26,7 +26,10 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
 
 ## Running Cypress tests
-Run `npx cypress open` to open cypress
+Run `npx cypress open` in bash to open cypress
+Locate the simple-reddit-frontend-testing.js in Test Runner.
+
+Run the test, visuals will display on the right. Cypress allows developers to view each test frame by frame as well as snapshots of the test in process.
 
 ## Further help
 

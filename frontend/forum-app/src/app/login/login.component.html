@@ -1,13 +1,19 @@
 <div class='center' *ngIf='!usrLoggedIn; else elseTemplate'>
-    <form action=" /" id="myLogin">
+    <form action=" /" id="myLogin" [formGroup]="form">
         <br>
         <mat-form-field class="full-width" appearance="fill">
             <mat-label>Username</mat-label>
-            <input name='username' matInput #usrInput required placeholder="username" value="">
+            <input name='username' formControlName="username" matInput #usrInput required placeholder="username" value="">
+            <mat-error *ngIf="f['username'].touched && f['username'].invalid">
+                Username cannot be empty
+            </mat-error>
         </mat-form-field>
         <mat-form-field class="full-width" appearance="fill">
             <mat-label>Password</mat-label>
-            <input name='password' matInput type="password" #usrPwd required placeholder="password" value="">
+            <input name='password' formControlName="password" matInput type="password" #usrPwd required placeholder="password" value="">
+            <mat-error *ngIf="f['password'].touched && f['password'].invalid">
+                Password cannot be empty
+            </mat-error>
         </mat-form-field>
 
         <table class="full-width" cellspacing="0">
