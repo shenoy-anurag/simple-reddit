@@ -36,6 +36,13 @@ type DeletePostRequest struct {
 	UserName string             `json:"username" validate:"required"`
 }
 
+type EditPostRequest struct {
+	ID       primitive.ObjectID `json:"id" validate:"required"`
+	UserName string             `json:"username" validate:"required"`
+	Title    string             `json:"title"validate:"required"`
+	Body     string             `json:"body"validate:"required"`
+}
+
 type PostResponse struct {
 	ID        primitive.ObjectID `json:"_id"`
 	Title     string             `json:"title"`
@@ -68,5 +75,13 @@ func ConvertPostDBModelToPostResponse(postDB PostDBModel) (PostResponse, error) 
 		Upvotes:   postDB.Upvotes,
 		Downvotes: postDB.Downvotes,
 		CreatedAt: postDB.CreatedAt,
+	}, err
+}
+
+func ConvertEditPostReqToDeletePostReq(postReq EditPostRequest) (DeletePostRequest, error) {
+	var err error
+	return DeletePostRequest{
+		ID:       postReq.ID,
+		UserName: postReq.UserName,
 	}, err
 }

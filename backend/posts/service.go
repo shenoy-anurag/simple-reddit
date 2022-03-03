@@ -2,6 +2,7 @@ package posts
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"simple-reddit/common"
 	"simple-reddit/configs"
@@ -11,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -189,6 +191,56 @@ func GetPosts() gin.HandlerFunc {
 	}
 }
 
+func EditPost() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var postReq EditPostRequest
+
+		// validate the request body
+		if err := c.BindJSON(&postReq); err != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+		fmt.Println("done1")
+		// use the validator library to validate required fields
+		if validationErr := validate.Struct(&postReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
+		fmt.Println("done2")
+		result, err := editCommunityDetails(postReq)
+		if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		c.JSON(
+			http.StatusOK,
+			common.APIResponse{
+				Status:  http.StatusOK,
+				Message: common.API_SUCCESS,
+				Data:    map[string]interface{}{"updated": result}},
+		)
+	}
+}
+
 func createPostInDB(post CreatePostRequest) (result *mongo.InsertOneResult, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -198,6 +250,19 @@ func createPostInDB(post CreatePostRequest) (result *mongo.InsertOneResult, err 
 	}
 	result, err = postCollection.InsertOne(ctx, newPost)
 	return result, err
+}
+
+func CheckPostExists(postReq DeletePostRequest) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var post PostDBModel
+	filter := bson.M{"$and": []bson.M{{"username": postReq.UserName}, {"_id": postReq.ID}}}
+	//cursor, err := postCollection.FindOne(ctx, filter)
+	err := postCollection.FindOne(ctx, filter).Decode(&post)
+	if err != nil {
+		return false, err
+	}
+	return true, err
 }
 
 func retrievePostDetails(postReq GetPostRequest) ([]PostResponse, error) {
@@ -229,8 +294,34 @@ func deletePost(postReq DeletePostRequest) (*mongo.DeleteResult, error) {
 	return result, err
 }
 
+func editCommunityDetails(postReq EditPostRequest) (result *mongo.UpdateResult, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	// updating the data in db
+	delPostReq, err := ConvertEditPostReqToDeletePostReq(postReq)
+	fmt.Println("delreq created")
+	postExists, err := CheckPostExists(delPostReq)
+	if postExists != true {
+		return result, err
+	}
+	fmt.Println("got true")
+	filter := bson.M{"$and": []bson.M{{"username": postReq.UserName}, {"_id": postReq.ID}}}
+	updateQuery := bson.D{
+		primitive.E{
+			Key: "$set",
+			Value: bson.D{
+				primitive.E{Key: "title", Value: postReq.Title},
+				primitive.E{Key: "body", Value: postReq.Body},
+			},
+		},
+	}
+	result, err = postCollection.UpdateOne(ctx, filter, updateQuery)
+	return result, err
+}
+
 func Routes(router *gin.Engine) {
 	router.POST(POST_ROUTE_PREFIX, CreatePost())
 	router.GET(POST_ROUTE_PREFIX, GetPosts())
 	router.DELETE(POST_ROUTE_PREFIX, DeletePost())
+	router.PATCH(POST_ROUTE_PREFIX, EditPost())
 }
