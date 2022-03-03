@@ -26,6 +26,7 @@ var validate = validator.New()
 func createCommunityInDB(community CreateCommunityRequest) (result *mongo.InsertOneResult, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+	
 	newCommunity, err := ConvertCommunityRequestToCommunityDBModel(community)
 	if err != nil {
 		return result, err
@@ -37,6 +38,7 @@ func createCommunityInDB(community CreateCommunityRequest) (result *mongo.Insert
 func retrieveCommunityDetails(commReq GetCommunityRequest) (CommunityDBModel, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
 	var community CommunityDBModel
 	filter := bson.D{primitive.E{Key: "name", Value: commReq.Name}}
 	err := CommunityCollection.FindOne(ctx, filter).Decode(&community)
@@ -46,10 +48,9 @@ func retrieveCommunityDetails(commReq GetCommunityRequest) (CommunityDBModel, er
 func editCommunityDetails(communityReq EditCommunityRequest) (result *mongo.UpdateResult, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	getCommunityReq, err := ConvertEditCommunityReqToGetCommunityReq(communityReq)
-	if err != nil {
-		return result, err
-	}
+
+	getCommunityReq := ConvertEditCommunityReqToGetCommunityReq(communityReq)
+
 	community, err := retrieveCommunityDetails(getCommunityReq)
 	if err != nil {
 		return result, err
@@ -268,7 +269,7 @@ func GetCommunity() gin.HandlerFunc {
 			)
 			return
 		}
-		communityDetails, err := ConvertCommunityDBModelToCommunityResponse(communityDB)
+		communityDetails := ConvertCommunityDBModelToCommunityResponse(communityDB)
 		if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,

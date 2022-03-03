@@ -71,7 +71,10 @@ func CreateUser() gin.HandlerFunc {
 				common.APIResponse{
 					Status:  http.StatusOK,
 					Message: common.API_FAILURE,
-					Data:    map[string]interface{}{"error": common.ERR_USERNAME_ALREADY_EXISTS.Message, "usernameAlreadyExists": usernameAlreadyExists}},
+					Data: map[string]interface{}{
+						"error":                 common.ERR_USERNAME_ALREADY_EXISTS.Message,
+						"usernameAlreadyExists": usernameAlreadyExists},
+				},
 			)
 			return
 		} else if err != nil {
@@ -152,7 +155,10 @@ func LoginUser() gin.HandlerFunc {
 				common.APIResponse{
 					Status:  http.StatusOK,
 					Message: common.API_SUCCESS,
-					Data:    map[string]interface{}{"accessToken": token, "user": ConvertUserDBModelToUserResponse(userDB)}},
+					Data: map[string]interface{}{
+						"accessToken": token,
+						"user":        ConvertUserDBModelToUserResponse(userDB)},
+				},
 			)
 		}
 	}

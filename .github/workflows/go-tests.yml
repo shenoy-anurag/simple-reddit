@@ -1,0 +1,37 @@
+name: go tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v2
+
+    - name: Start MongoDB
+      uses: supercharge/mongodb-github-action@1.7.0
+      with:
+        mongodb-version: '5.0'
+    
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
+
+    - name: Run Tests
+      run: go test -v ./tests
+      env:
+        CI: true
+        MONGO_URI: 'mongodb://localhost:27017'
+        DB_NAME: 'simple-reddit'
+        DB_PORT: 27017
+        TEST_DB_NAME: 'test-simple-reddit'
+        TEST_DB_PORT: 27017
+        APP_ENV: 'development'
+        JWT_SECRET: 'my-local-secret'
