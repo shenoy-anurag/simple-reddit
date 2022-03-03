@@ -5,11 +5,13 @@ import (
 	"net/http"
 	"simple-reddit/common"
 	"simple-reddit/configs"
+	"simple-reddit/users"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -63,6 +65,69 @@ func CreatePost() gin.HandlerFunc {
 				Data:    map[string]interface{}{"error": result}},
 		)
 
+	}
+}
+
+func DeleteCommunity() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var delPostReq DeletePostRequest
+
+		// validate the request body
+		if err := c.BindJSON(&delPostReq); err != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		// use the validator library to validate required fields
+		if validationErr := validate.Struct(&delPostReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
+
+		// TODO: add check whether correct user is deleting the community after adding JWT verification.
+		user, err := users.GetUserDetails(delPostReq.UserName)
+		// TODO: replace this check with a check against username within claims of JWT token.
+		if user.Username != delPostReq.UserName {
+			c.JSON(
+				http.StatusUnauthorized,
+				common.APIResponse{
+					Status:  http.StatusUnauthorized,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+		result, err := deletePost(delPostReq)
+		if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		c.JSON(
+			http.StatusOK,
+			common.APIResponse{
+				Status:  http.StatusOK,
+				Message: common.API_SUCCESS,
+				Data:    map[string]interface{}{"deleted": result}},
+		)
 	}
 }
 
@@ -141,7 +206,7 @@ func retrievePostDetails(postReq GetPostRequest) ([]PostResponse, error) {
 	defer cancel()
 	var posts []PostDBModel
 	var postResp []PostResponse
-	filter := bson.M{"$or": []bson.M{{"username": postReq.UserName}, {"community_id": postReq.CommunityID}}} //bson.D{primitive.E{Key: "community_id", Value: postReq.CommunityID}, primitive.E{Key: "username", Value: postReq.UserName}}
+	filter := bson.M{"$and": []bson.M{{"username": postReq.UserName}, {"community_id": postReq.CommunityID}}} //bson.D{primitive.E{Key: "community_id", Value: postReq.CommunityID}, primitive.E{Key: "username", Value: postReq.UserName}}
 	cursor, err := postCollection.Find(ctx, filter)
 	if err = cursor.All(ctx, &posts); err != nil {
 		return postResp, err
@@ -154,6 +219,14 @@ func retrievePostDetails(postReq GetPostRequest) ([]PostResponse, error) {
 		postResp = append(postResp, item)
 	}
 	return postResp, err
+}
+
+func deletePost(postReq DeletePostRequest) (*mongo.DeleteResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	filter := bson.D{primitive.E{Key: "username", Value: postReq.ID}}
+	result, err := postCollection.DeleteOne(ctx, filter)
+	return result, err
 }
 
 func Routes(router *gin.Engine) {
