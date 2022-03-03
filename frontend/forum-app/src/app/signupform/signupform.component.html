@@ -7,13 +7,19 @@
             <td>
                 <mat-form-field class="full-width" appearance="fill">
                     <mat-label>First name</mat-label>
-                    <input matInput type="text" #firstName placeholder="John">
+                    <input matInput formControlName="firstname" type="text" #firstName placeholder="John">
+                    <mat-error *ngIf="f['firstname'].touched && f['firstname'].invalid">
+                        Cannot be empty
+                    </mat-error>
                 </mat-form-field>
             </td>
             <td>
                 <mat-form-field class="full-width" appearance="fill">
                     <mat-label>Last Name</mat-label>
-                    <input matInput type="text" #lastName placeholder="Doe">
+                    <input matInput formControlName="lastname" type="text" #lastName placeholder="Doe">
+                    <mat-error *ngIf="f['lastname'].touched && f['lastname'].invalid">
+                        Cannot be empty
+                    </mat-error>
                 </mat-form-field>
             </td>
         </tr>
@@ -47,12 +53,21 @@
     </mat-form-field>
     <mat-form-field class="full-width" appearance="fill">
         <mat-label>Confirm Password</mat-label>
-        <input matInput type="password" formContorlName="password2" #cnfrmpassword>
+        <input matInput type="password" formControlName="password2" #password2>
+        <mat-error *ngIf="f['checkIfMatchingPasswords']">
+            Passwords don't match
+        </mat-error>
+        <mat-error *ngIf="password.value != password2.value">
+            Passwords don't match
+        </mat-error>
     </mat-form-field>
-    <button class="full-width" mat-raised-button
-        (click)="getSignUp(firstName.value, lastName.value, username.value, email.value, password.value)" color="warn" a
-        routerLink="/popup-message">Submit</button>
 </form>
+
+<br><br>
+<button class="full-width" mat-raised-button
+    (click)="getSignUp(firstName.value, lastName.value, username.value, email.value, password.value)" color="warn" a
+    routerLink="/popup-message">Submit</button>
+
 
 <!-- Routing Links -->
 <p>By clicking Sign Up you agree to our <br>

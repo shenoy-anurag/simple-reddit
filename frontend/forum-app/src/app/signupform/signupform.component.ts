@@ -2,6 +2,20 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators, FormArray, FormBuilder, ValidatorFn, AbstractControl, Validator, ValidationErrors, FormGroup } from '@angular/forms';
 import { SignupService } from '../signup.service';
 
+export function checkIfMatchingPasswords(passwordKey: string, passwordConfirmationKey: string) {
+  return (group: FormGroup) => {
+    let passwordInput = group.controls[passwordKey],
+        passwordConfirmationInput = group.controls[passwordConfirmationKey];
+    if (passwordInput.value !== passwordConfirmationInput.value) {
+      return passwordConfirmationInput.setErrors({notEquivalent: true})
+    }
+    else {
+        return passwordConfirmationInput.setErrors(null);
+    }
+  }
+}
+
+
 export function passwordValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const value = control.value;
@@ -16,15 +30,30 @@ export function passwordValidator(): ValidatorFn {
 
     const hasNumeric = /[0-9]+/.test(value);
 
-    const hasMatch = "password" == "password";
-
-    const isPasswordValid = hasUpperCase && hasLowerCase && hasNumeric && hasMatch;
+    const isPasswordValid = hasUpperCase && hasLowerCase && hasNumeric;
 
     return !isPasswordValid ? { passwordValid: true } : null;
   };
 }
 
-export function usernameValidator(signupService: any, username: any): ValidatorFn {
+export function ConfirmedValidator(password: any): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+
+    if (!value) {
+      return null;
+    }
+    
+    console.log(password);
+    console.log(value);
+    console.log(password == value);
+
+    return password == value ? { passwordValid: true } : null;
+  };
+}
+
+export function usernameValidator(signupService: any): ValidatorFn {
+  let temp: any = true;
   return (control: AbstractControl): ValidationErrors | null => {
     const value = control.value;
 
@@ -32,17 +61,16 @@ export function usernameValidator(signupService: any, username: any): ValidatorF
       return null;
     }
 
-    signupService.checkUsername(username).subscribe((response: any) => {
-      console.log(response);
-      if (response.status == 200 && response.message == "success" && response.data == {"data": {"usernameAlreadyExists": true}}) {
-        return null;
+    signupService.checkUsername(value).subscribe((response: any) => {
+      console.log(response)
+      if (response.status == 200 && response.message == "success" && response.data.usernameAlreadyExists == true) {
+        temp = null;
       }
       else {
-        return { usernameValid: true };
+        temp = { usernameValid: true };
       }
     });
-
-    return null;
+    return temp;
   };
 }
 
@@ -58,9 +86,15 @@ export class SignupformComponent implements OnInit {
 
   constructor(private signupService: SignupService, private fb: FormBuilder) {
     this.form = this.fb.group({
-      username: ['', [Validators.required, usernameValidator(signupService, this.username)]],
+      firstname: ['', [Validators.required]],
+      lastname: ['', [Validators.required]],
+      username: ['', [Validators.required, usernameValidator(signupService)]],
       password: ['', [Validators.required, passwordValidator(), Validators.minLength(6)]],
+      password2: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]]
+    },
+    {
+      validator: checkIfMatchingPasswords('password', 'password2')
     })
   }
 
@@ -71,32 +105,14 @@ export class SignupformComponent implements OnInit {
     return this.form.controls;
   }
 
-  get username() {
-    return this.form.controls['username']
-  }
-
-  get email() {
-    return this.form.controls['email'];
-  }
-
   get password() {
-    return this.form.controls['password'];
+    console.log("GETTING: "+ this.form.get('password'));
+    return this.form.get('password');
   }
 
-  get password2() {
-    return this.form.controls['password2'];
-  }
-
-  checkUsername(username: string) {
-    this.signupService.checkUsername(username).subscribe((response: any) => {
-      if (response.status == 200 && response.message == "success") {
-        return false;
-      }
-      else {
-        return true;
-      }
-    });
-  }
+  // get password2() {
+  //   return this.form.controls['password2'];
+  // }
 
   getSignUp(first: string, last: string, username: string, email: string, password: string): void {
     console.log(`sign up attempt with: ${first} ${last} ${username} ${email} ${password}`);
