@@ -2,7 +2,6 @@ package posts
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"simple-reddit/common"
 	"simple-reddit/configs"
@@ -11,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -71,7 +69,6 @@ func CreatePost() gin.HandlerFunc {
 func GetPosts() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var postReq GetPostRequest
-
 		// validate the request body
 		if err := c.BindJSON(&postReq); err != nil {
 			c.JSON(
@@ -83,7 +80,6 @@ func GetPosts() gin.HandlerFunc {
 			)
 			return
 		}
-		fmt.Println("bind passed")
 		// use the validator library to validate required fields
 		if validationErr := validate.Struct(&postReq); validationErr != nil {
 			c.JSON(
@@ -95,9 +91,7 @@ func GetPosts() gin.HandlerFunc {
 			)
 			return
 		}
-		fmt.Println("validation done")
 		postDetails, err := retrievePostDetails(postReq)
-		fmt.Println(postDetails)
 		if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
@@ -147,21 +141,17 @@ func retrievePostDetails(postReq GetPostRequest) ([]PostResponse, error) {
 	defer cancel()
 	var posts []PostDBModel
 	var postResp []PostResponse
-	filter := bson.D{primitive.E{Key: "community_id", Value: postReq.CommunityID}, primitive.E{Key: "username", Value: postReq.UserName}}
+	filter := bson.M{"$or": []bson.M{{"username": postReq.UserName}, {"community_id": postReq.CommunityID}}} //bson.D{primitive.E{Key: "community_id", Value: postReq.CommunityID}, primitive.E{Key: "username", Value: postReq.UserName}}
 	cursor, err := PostsCollection.Find(ctx, filter)
 	if err = cursor.All(ctx, &posts); err != nil {
 		return postResp, err
 	}
-	fmt.Println("posts")
-	fmt.Println(posts)
 	for _, post := range posts {
 		item, err := ConvertPostDBModelToPostResponse(post)
 		if err != nil {
 			return postResp, err
 		}
-		fmt.Print(item)
 		postResp = append(postResp, item)
-
 	}
 	return postResp, err
 }
@@ -169,5 +159,4 @@ func retrievePostDetails(postReq GetPostRequest) ([]PostResponse, error) {
 func Routes(router *gin.Engine) {
 	router.POST(POST_ROUTE_PREFIX+"/create", CreatePost())
 	router.GET(POST_ROUTE_PREFIX+"/get", GetPosts())
-
 }
