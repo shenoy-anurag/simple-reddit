@@ -53,15 +53,21 @@
     </mat-form-field>
     <mat-form-field class="full-width" appearance="fill">
         <mat-label>Confirm Password</mat-label>
-        <input matInput type="password" formContorlName="password2" #cnfrmpassword>
-        <mat-error *ngIf="f['password2'].touched && f['password2'].invalid">
-            Password does not match
+        <input matInput type="password" formControlName="password2" #password2>
+        <mat-error *ngIf="f['checkIfMatchingPasswords']">
+            Passwords don't match
+        </mat-error>
+        <mat-error *ngIf="password.value != password2.value">
+            Passwords don't match
         </mat-error>
     </mat-form-field>
-    <button class="full-width" mat-raised-button
-        (click)="getSignUp(firstName.value, lastName.value, username.value, email.value, password.value)" color="warn" a
-        routerLink="/popup-message">Submit</button>
 </form>
+
+<br><br>
+<button class="full-width" mat-raised-button
+    (click)="getSignUp(firstName.value, lastName.value, username.value, email.value, password.value)" color="warn" a
+    routerLink="/popup-message">Submit</button>
+
 
 <!-- Routing Links -->
 <p>By clicking Sign Up you agree to our <br>
