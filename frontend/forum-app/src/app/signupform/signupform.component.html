@@ -1,51 +1,74 @@
 <h1>Sign Up</h1>
-<form class="form">
+<form class="form" [formGroup]="form">
+    <!-- First and last name -->
     <table class="full-width" cellspacing="0">
         <tr>
             <td>
                 <mat-form-field class="full-width" appearance="fill">
                     <mat-label>First name</mat-label>
-                    <input matInput type="text" #firstName placeholder="John">
+                    <input name='firstname' matInput formControlName="firstname" type="text" #firstname placeholder="John">
+                    <mat-error *ngIf="f['firstname'].touched && f['firstname'].invalid">
+                        Cannot be empty
+                    </mat-error>
                 </mat-form-field>
             </td>
             <td>
                 <mat-form-field class="full-width" appearance="fill">
                     <mat-label>Last Name</mat-label>
-                    <input matInput type="text" #lastName placeholder="Doe">
+                    <input name='lastname' matInput formControlName="lastname" type="text" #lastname placeholder="Doe">
+                    <mat-error *ngIf="f['lastname'].touched && f['lastname'].invalid">
+                        Cannot be empty
+                    </mat-error>
                 </mat-form-field>
             </td>
         </tr>
     </table>
 
+    <!-- Email -->
     <mat-form-field class="full-width" appearance="fill">
         <mat-label>Email</mat-label>
-        <input type="email" matInput [formControl]="emailFormControl" #email placeholder="john.doe@email.com">
-        <mat-error *ngIf="emailFormControl.hasError('email') && !emailFormControl.hasError('required')">
+        <input name='email' type="email" matInput formControlName= "email" #email placeholder="john.doe@email.com">
+        <mat-error *ngIf="f['email'].touched && f['email'].invalid">
             Please enter a valid email address
         </mat-error>
-        <mat-error *ngIf="emailFormControl.hasError('required')">
-            Email is <strong>required</strong>
-        </mat-error>
     </mat-form-field>
+
+    <!-- Username -->
     <mat-form-field class="full-width" appearance="fill">
         <mat-label>User Name</mat-label>
-        <input matInput type="text" #username placeholder="JohnDoe">
+        <input name='username' matInput type="text" formControlName="username" #username placeholder="JohnDoe">
+        <mat-error *ngIf="f['username'].touched && f['username'].invalid">
+            Username is not valid
+        </mat-error>
     </mat-form-field>
+
+    <!-- Passwords -->
     <mat-form-field class="full-width" appearance="fill">
         <mat-label>Password</mat-label>
-        <input matInput type="password" #password placeholder="">
-        <mat-error *ngIf="checkPassword(password.value, cnfrmpassword.value)">
-            Password does not match
+        <input name='password' matInput type="password" formControlName="password" #password>
+        <mat-error *ngIf="f['password'].touched && f['password'].invalid">
+            Password must contain at least 6 characters: 1 Uppercase, 1 Lowercase, 1 numeric
         </mat-error>
     </mat-form-field>
     <mat-form-field class="full-width" appearance="fill">
         <mat-label>Confirm Password</mat-label>
-        <input matInput type="password" #cnfrmpassword placeholder="">
+        <input name='password2' matInput type="password" formControlName="password2" #password2>
+        <mat-error *ngIf="f['checkIfMatchingPasswords']">
+            Passwords don't match
+        </mat-error>
+        <mat-error *ngIf="password.value != password2.value">
+            Passwords don't match
+        </mat-error>
     </mat-form-field>
-    <button class="full-width" mat-raised-button
-        (click)="getSignUp(firstName.value, lastName.value, username.value, email.value, password.value)"
-        color="warn" a routerLink="/popup-message">Submit</button>
 </form>
+
+<br><br>
+<button class="full-width" mat-raised-button
+    (click)="getSignUp(firstname.value, lastname.value, username.value, email.value, password.value)" color="warn" a
+    routerLink="/popup-message">Submit</button>
+
+
+<!-- Routing Links -->
 <p>By clicking Sign Up you agree to our <br>
     <a href="#">Terms and Conditions</a> and <a href="#">Policy Privacy</a>
 </p>

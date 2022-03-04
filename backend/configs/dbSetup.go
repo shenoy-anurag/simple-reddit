@@ -15,7 +15,7 @@ func CreateClient() *mongo.Client {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	client, err := mongo.Connect(
-		ctx, 
+		ctx,
 		options.Client().ApplyURI(os.Getenv("MONGO_URI")),
 	)
 	if err != nil {
@@ -31,9 +31,10 @@ func CreateClient() *mongo.Client {
 
 // MongoDB client instance
 var MongoClient *mongo.Client = CreateClient()
+var MongoDB *mongo.Database = MongoClient.Database(os.Getenv("DB_NAME"))
 
 // get database collections
-func GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
-	collection := client.Database(os.Getenv("DB_NAME")).Collection(collectionName)
+func GetCollection(db *mongo.Database, collectionName string) *mongo.Collection {
+	collection := db.Collection(collectionName)
 	return collection
 }

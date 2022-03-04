@@ -20,7 +20,7 @@ const POST_ROUTE_PREFIX = "/post"
 
 const PostsCollectionName string = "posts"
 
-var postCollection *mongo.Collection = configs.GetCollection(configs.MongoClient, PostsCollectionName)
+var PostsCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, PostsCollectionName)
 var validate = validator.New()
 
 func CreatePost() gin.HandlerFunc {
@@ -248,7 +248,7 @@ func createPostInDB(post CreatePostRequest) (result *mongo.InsertOneResult, err 
 	if err != nil {
 		return result, err
 	}
-	result, err = postCollection.InsertOne(ctx, newPost)
+	result, err = PostsCollection.InsertOne(ctx, newPost)
 	return result, err
 }
 
@@ -270,6 +270,7 @@ func retrievePostDetails(postReq GetPostRequest) ([]PostResponse, error) {
 	defer cancel()
 	var posts []PostDBModel
 	var postResp []PostResponse
+  
 	filter := bson.M{"$and": []bson.M{{"username": postReq.UserName}, {"community_id": postReq.CommunityID}}} //bson.D{primitive.E{Key: "community_id", Value: postReq.CommunityID}, primitive.E{Key: "username", Value: postReq.UserName}}
 	cursor, err := postCollection.Find(ctx, filter)
 	if err = cursor.All(ctx, &posts); err != nil {
