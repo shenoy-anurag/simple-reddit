@@ -9,7 +9,7 @@ import (
 // Models for Communities
 type CommunityDBModel struct {
 	ID              primitive.ObjectID `bson:"_id"`
-	UserID          primitive.ObjectID `bson:"user_id"`
+	UserName    string             `json:"username" validate:"required"`
 	Name            string             `bson:"name"`
 	Description     string             `bson:"description"`
 	SubscriberCount int                `bson:"subscriber_count"`
@@ -17,13 +17,14 @@ type CommunityDBModel struct {
 }
 
 type CreateCommunityRequest struct {
-	UserID      string `json:"user_id" validate:"required"`
+	UserName    string             `json:"username" validate:"required"`
 	Name        string `json:"name" validate:"required"`
 	Description string `json:"description" validate:"required"`
 }
 
 type GetCommunityRequest struct {
 	Name string `json:"name" uri:"name" validate:"required"`
+	isUser bool `json:"isuser" validate:"required"`
 }
 
 type EditCommunityRequest struct {
@@ -45,16 +46,16 @@ type CommunityResponse struct {
 }
 
 // Convertion functions to convert between different models.
-func ConvertCommunityRequestToCommunityDBModel(communityReq CreateCommunityRequest) (CommunityDBModel, error) {
-	user_id, err := primitive.ObjectIDFromHex(communityReq.UserID)
+func ConvertCommunityRequestToCommunityDBModel(communityReq CreateCommunityRequest) (CommunityDBModel){//, error) {
+	//user_id, err := primitive.ObjectIDFromHex(communityReq.UserID)
 	return CommunityDBModel{
 		ID:              primitive.NewObjectID(),
-		UserID:          user_id,
+		UserName:        communityReq.UserName,
 		Name:            communityReq.Name,
 		Description:     communityReq.Description,
 		SubscriberCount: 0,
 		CreatedAt:       time.Now().UTC(),
-	}, err
+	}//, err
 }
 
 func ConvertCommunityDBModelToCommunityResponse(communityDB CommunityDBModel) CommunityResponse {
