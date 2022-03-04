@@ -39,8 +39,8 @@ type DeletePostRequest struct {
 type EditPostRequest struct {
 	ID       primitive.ObjectID `json:"id" validate:"required"`
 	UserName string             `json:"username" validate:"required"`
-	Title    string             `json:"title"validate:"required"`
-	Body     string             `json:"body"validate:"required"`
+	Title    string             `json:"title" validate:"required"`
+	Body     string             `json:"body" validate:"required"`
 }
 
 type PostResponse struct {

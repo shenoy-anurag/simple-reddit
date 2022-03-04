@@ -20,7 +20,7 @@ const USER_ROUTE_PREFIX = "/users"
 
 const UsersCollectionName string = "users"
 
-var userCollection *mongo.Collection = configs.GetCollection(configs.MongoClient, UsersCollectionName)
+var UsersCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, UsersCollectionName)
 var validate = validator.New()
 
 func CreateUser() gin.HandlerFunc {
@@ -84,7 +84,7 @@ func CreateUser() gin.HandlerFunc {
 			)
 			return
 		}
-		result, err := createUserInDB(user)
+		result, err := CreateUserInDB(user)
 		if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
@@ -152,17 +152,17 @@ func LoginUser() gin.HandlerFunc {
 				common.APIResponse{
 					Status:  http.StatusOK,
 					Message: common.API_SUCCESS,
-					Data:    map[string]interface{}{"accessToken": token, "username": ConvertUserDBModelToUserResponse(userDB)}},
+					Data:    map[string]interface{}{"accessToken": token, "user": ConvertUserDBModelToUserResponse(userDB)}},
 			)
 		}
 	}
 }
 
-func createUserInDB(user CreateUserRequest) (result *mongo.InsertOneResult, err error) {
+func CreateUserInDB(user CreateUserRequest) (result *mongo.InsertOneResult, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	newUserStruct := ConvertUserRequestToUserDBModel(user)
-	result, err = userCollection.InsertOne(ctx, newUserStruct)
+	result, err = UsersCollection.InsertOne(ctx, newUserStruct)
 	return result, err
 }
 
@@ -172,7 +172,7 @@ func GetUserDetails(userName string) (UserDBModel, error) {
 	defer cancel()
 	var user UserDBModel
 	filter := bson.D{primitive.E{Key: "username", Value: userName}}
-	err := userCollection.FindOne(ctx, filter).Decode(&user)
+	err := UsersCollection.FindOne(ctx, filter).Decode(&user)
 	return user, err
 }
 
@@ -182,7 +182,7 @@ func CheckUsername(username string) (bool, error) {
 	var alreadyExists bool
 	var user UserDBModel
 	filter := bson.D{primitive.E{Key: "username", Value: username}}
-	err := userCollection.FindOne(ctx, filter).Decode(&user)
+	err := UsersCollection.FindOne(ctx, filter).Decode(&user)
 	if err == nil {
 		if user.Username == username {
 			alreadyExists = true

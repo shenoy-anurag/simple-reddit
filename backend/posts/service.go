@@ -20,7 +20,7 @@ const POST_ROUTE_PREFIX = "/post"
 
 const PostsCollectionName string = "posts"
 
-var postCollection *mongo.Collection = configs.GetCollection(configs.MongoClient, PostsCollectionName)
+var PostsCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, PostsCollectionName)
 var validate = validator.New()
 
 func CreatePost() gin.HandlerFunc {
@@ -248,7 +248,7 @@ func createPostInDB(post CreatePostRequest) (result *mongo.InsertOneResult, err 
 	if err != nil {
 		return result, err
 	}
-	result, err = postCollection.InsertOne(ctx, newPost)
+	result, err = PostsCollection.InsertOne(ctx, newPost)
 	return result, err
 }
 
@@ -258,7 +258,7 @@ func CheckPostExists(postReq DeletePostRequest) (bool, error) {
 	var post PostDBModel
 	filter := bson.M{"$and": []bson.M{{"username": postReq.UserName}, {"_id": postReq.ID}}}
 	//cursor, err := postCollection.FindOne(ctx, filter)
-	err := postCollection.FindOne(ctx, filter).Decode(&post)
+	err := PostsCollection.FindOne(ctx, filter).Decode(&post)
 	if err != nil {
 		return false, err
 	}
@@ -271,7 +271,7 @@ func retrievePostDetails(postReq GetPostRequest) ([]PostResponse, error) {
 	var posts []PostDBModel
 	var postResp []PostResponse
 	filter := bson.M{"$and": []bson.M{{"username": postReq.UserName}, {"community_id": postReq.CommunityID}}} //bson.D{primitive.E{Key: "community_id", Value: postReq.CommunityID}, primitive.E{Key: "username", Value: postReq.UserName}}
-	cursor, err := postCollection.Find(ctx, filter)
+	cursor, err := PostsCollection.Find(ctx, filter)
 	if err = cursor.All(ctx, &posts); err != nil {
 		return postResp, err
 	}
@@ -290,7 +290,7 @@ func deletePost(postReq DeletePostRequest) (*mongo.DeleteResult, error) {
 	defer cancel()
 	//filter := bson.D{primitive.E{Key: "username", Value: postReq.UserName}}
 	filter := bson.M{"$and": []bson.M{{"username": postReq.UserName}, {"_id": postReq.ID}}}
-	result, err := postCollection.DeleteOne(ctx, filter)
+	result, err := PostsCollection.DeleteOne(ctx, filter)
 	return result, err
 }
 
@@ -301,7 +301,7 @@ func editCommunityDetails(postReq EditPostRequest) (result *mongo.UpdateResult, 
 	delPostReq, err := ConvertEditPostReqToDeletePostReq(postReq)
 	fmt.Println("delreq created")
 	postExists, err := CheckPostExists(delPostReq)
-	if postExists != true {
+	if !postExists {
 		return result, err
 	}
 	fmt.Println("got true")
@@ -315,7 +315,7 @@ func editCommunityDetails(postReq EditPostRequest) (result *mongo.UpdateResult, 
 			},
 		},
 	}
-	result, err = postCollection.UpdateOne(ctx, filter, updateQuery)
+	result, err = PostsCollection.UpdateOne(ctx, filter, updateQuery)
 	return result, err
 }
 
