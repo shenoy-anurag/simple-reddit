@@ -8,6 +8,7 @@ import { HomeComponent } from './home/home.component';
 import { SubredditsComponent } from './subreddits/subreddits.component';
 import { ProfileComponent } from './profile/profile.component';
 import { DeleteuserformComponent } from './deleteuserform/deleteuserform.component';
+import { NewpostformComponent } from './newpostform/newpostform.component';
 
 
 const routes: Routes = [
@@ -18,6 +19,7 @@ const routes: Routes = [
   {path: 'signupform', component: SignupformComponent},
   {path: 'popup-message', component: PopupMessageComponent},
   {path: 'delete-user', component: DeleteuserformComponent},
+  {path: 'newpostform', component: NewpostformComponent},
   {path: '', redirectTo: '/home', pathMatch:'full'},
 ];
 

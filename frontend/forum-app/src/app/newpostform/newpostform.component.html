@@ -1,0 +1,22 @@
+<form [formGroup]="form">
+    <br>
+    <!-- Username, until cookies are made -->
+    <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Username</mat-label>
+        <input name='username' formControlName="username" matInput #username required placeholder="JohnDoe" value="">
+    </mat-form-field>
+
+    <!-- Post Title -->
+    <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Title</mat-label>
+        <input name='title' formControlName="title" matInput #title required placeholder="MyTitle" value="">
+    </mat-form-field>
+
+    <!-- Post Body -->
+    <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Body</mat-label>
+        <textarea name='body' formControlName="body" matInput type="text" #body required placeholder="This is my body comment." value="">
+        </textarea>
+    </mat-form-field>
+    <button class='full-width' mat-raised-button color="warn" (click)="createPost(username.value, title.value, body.value)">Create Post</button>
+</form>

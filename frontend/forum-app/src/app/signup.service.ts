@@ -36,4 +36,14 @@ export class SignupService {
     //   "username": username
     // });
   }
+
+  createPost(username: string, community_id: string, title: string, body: string) {
+    return this.WebReqService.post('post/create',
+    {
+      "username": username,
+    	"community_id": community_id,
+	    "title" : title,
+      "body" : body
+    })
+  }
 }

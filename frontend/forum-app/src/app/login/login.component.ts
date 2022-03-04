@@ -38,6 +38,8 @@ export class LoginComponent implements OnInit {
         this.usrLoggedIn = true;
         this.usr = username;
         this.snackBar.open("Logged in as " + username, "Dismiss", { duration: 2000 });
+
+        // update profile page
       }
       else if (response.status == 200 && response.message == "failure" && response.data.data == 'Incorrect Credentials') {
         // Prompt user, incorrect login

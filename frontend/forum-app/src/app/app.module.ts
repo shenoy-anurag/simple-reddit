@@ -20,6 +20,7 @@ import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { SubredditsComponent } from './subreddits/subreddits.component';
 import { DeleteuserformComponent } from './deleteuserform/deleteuserform.component';
+import { NewpostformComponent } from './newpostform/newpostform.component';
 
 
 @NgModule({
@@ -36,6 +37,7 @@ import { DeleteuserformComponent } from './deleteuserform/deleteuserform.compone
     ProfileComponent,
     SubredditsComponent,
     DeleteuserformComponent,
+    NewpostformComponent,
   ],
   imports: [
     BrowserModule,
