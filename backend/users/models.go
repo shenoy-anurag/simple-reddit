@@ -72,7 +72,7 @@ func ConvertUserDBModelToProfileDBModel(userDB UserDBModel) profiles.ProfileDBMo
 		FirstName: userDB.FirstName,
 		LastName:  userDB.LastName,
 		Email:     userDB.Email,
-		Username:  userDB.Username,
+		UserName:  userDB.Username,
 		Karma:     0,
 		Birthday:  userDB.Joined,
 	}

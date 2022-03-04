@@ -2,7 +2,6 @@ package posts
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"simple-reddit/common"
 	"simple-reddit/configs"
@@ -206,7 +205,6 @@ func EditPost() gin.HandlerFunc {
 			)
 			return
 		}
-		fmt.Println("done1")
 		// use the validator library to validate required fields
 		if validationErr := validate.Struct(&postReq); validationErr != nil {
 			c.JSON(
@@ -218,8 +216,7 @@ func EditPost() gin.HandlerFunc {
 			)
 			return
 		}
-		fmt.Println("done2")
-		result, err := editCommunityDetails(postReq)
+		result, err := editPostDetails(postReq)
 		if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
@@ -294,17 +291,15 @@ func deletePost(postReq DeletePostRequest) (*mongo.DeleteResult, error) {
 	return result, err
 }
 
-func editCommunityDetails(postReq EditPostRequest) (result *mongo.UpdateResult, err error) {
+func editPostDetails(postReq EditPostRequest) (result *mongo.UpdateResult, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	// updating the data in db
 	delPostReq, err := ConvertEditPostReqToDeletePostReq(postReq)
-	fmt.Println("delreq created")
 	postExists, err := CheckPostExists(delPostReq)
 	if !postExists {
 		return result, err
 	}
-	fmt.Println("got true")
 	filter := bson.M{"$and": []bson.M{{"username": postReq.UserName}, {"_id": postReq.ID}}}
 	updateQuery := bson.D{
 		primitive.E{

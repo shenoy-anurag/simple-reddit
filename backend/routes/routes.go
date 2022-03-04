@@ -4,6 +4,7 @@ import (
 	"simple-reddit/communities"
 	"simple-reddit/posts"
 	"simple-reddit/users"
+	"simple-reddit/profiles"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -25,6 +26,7 @@ func SetupRouter() *gin.Engine {
 	users.Routes(router)
 	communities.Routes(router)
 	posts.Routes(router)
+	profiles.Routes(router)
 
 	return router
 }
