@@ -1,0 +1,20 @@
+<div>
+    <form action=" /" id="myLogin" [formGroup]="form">
+        <br>
+        <mat-form-field class="full-width" appearance="fill">
+            <mat-label>Username</mat-label>
+            <input name='username' formControlName="username" matInput #usrInput required placeholder="username" value="">
+            <mat-error *ngIf="f['username'].touched && f['username'].invalid">
+                Username cannot be empty
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="full-width" appearance="fill">
+            <mat-label>Password</mat-label>
+            <input name='password' formControlName="password" matInput type="password" #usrPwd required placeholder="password" value="">
+            <mat-error *ngIf="f['password'].touched && f['password'].invalid">
+                Password cannot be empty
+            </mat-error>
+        </mat-form-field>
+        <button class='full-width' mat-raised-button color="warn" (click)="checkAuth(usrInput.value, usrPwd.value)">Delete User</button>
+    </form>
+</div>

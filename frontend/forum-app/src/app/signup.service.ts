@@ -29,4 +29,11 @@ export class SignupService {
       "password": password
     })
   }
+
+  deleteUser(username: string) {
+    // return this.WebReqService.delete('users/user',
+    // {
+    //   "username": username
+    // });
+  }
 }

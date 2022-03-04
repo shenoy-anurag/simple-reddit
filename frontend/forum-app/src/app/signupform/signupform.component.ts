@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators, FormArray, FormBuilder, ValidatorFn, AbstractControl, Validator, ValidationErrors, FormGroup } from '@angular/forms';
 import { SignupService } from '../signup.service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 export function checkIfMatchingPasswords(passwordKey: string, passwordConfirmationKey: string) {
   return (group: FormGroup) => {
@@ -83,7 +84,7 @@ export function usernameValidator(signupService: any): ValidatorFn {
 export class SignupformComponent implements OnInit {
   form: FormGroup = new FormGroup({});
 
-  constructor(private signupService: SignupService, private fb: FormBuilder) {
+  constructor(private snackBar: MatSnackBar, private signupService: SignupService, private fb: FormBuilder) {
     this.form = this.fb.group({
       firstname: ['', [Validators.required]],
       lastname: ['', [Validators.required]],
@@ -117,6 +118,13 @@ export class SignupformComponent implements OnInit {
     console.log(`sign up attempt with: ${first} ${last} ${username} ${email} ${password}`);
     this.signupService.addNewAccount(email, username, password, first + " " + last).subscribe((response: any) => {
       console.log(response);
+      if (response.status == 201 && response.message == "success") {
+        this.snackBar.open("Sign Up Successfull", "Dismiss", { duration: 1000});
+      }
+      
+      else if (response.status == 200 && response.data.usernameAlreadyExists == true) {
+          this.snackBar.open("Sign Up Failed. Username is already taken.", "Dismiss", { duration: 2000});
+      }
     });
   }
 }
