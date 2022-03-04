@@ -24,6 +24,7 @@ type ProfileResponse struct {
 	LastName  string    `json:"lastname,omitempty"`
 	Email     string    `json:"email"`
 	UserName  string    `json:"username"`
+	Karma     int        `json:"karma"`
 	Birthday    time.Time `json:"joined"`
 }
 
@@ -51,6 +52,7 @@ func ConvertProfileDBModelToProfileResponse(profileDB  ProfileDBModel) ProfileRe
 		LastName:  profileDB.LastName,
 		Email:     profileDB.Email,
 		UserName:  profileDB.UserName,
+		Karma: profileDB.Karma,
 		Birthday: profileDB.Birthday,
 	}
 }
