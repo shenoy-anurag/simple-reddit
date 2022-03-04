@@ -53,7 +53,7 @@ export function ConfirmedValidator(password: any): ValidatorFn {
 }
 
 export function usernameValidator(signupService: any): ValidatorFn {
-  let temp: any = true;
+  let temp: any = null;
   return (control: AbstractControl): ValidationErrors | null => {
     const value = control.value;
 
@@ -62,15 +62,14 @@ export function usernameValidator(signupService: any): ValidatorFn {
     }
 
     signupService.checkUsername(value).subscribe((response: any) => {
-      console.log(response)
-      if (response.status == 200 && response.message == "success" && response.data.usernameAlreadyExists == true) {
-        temp = null;
+      if (response.data.usernameAlreadyExists == false) {
+        temp = true;
       }
-      else {
-        temp = { usernameValid: true };
+      else if (response.status == 200 && response.message == "success" && response.data.usernameAlreadyExists == true) {
+        temp = false;
       }
     });
-    return temp;
+    return temp ? { usernameValid: true } : null;
   };
 }
 

@@ -1,22 +1,28 @@
 <div class='center' *ngIf='!usrLoggedIn; else elseTemplate'>
-    <form action=" /" id="myLogin">
+    <form action=" /" id="myLogin" [formGroup]="form">
         <br>
         <mat-form-field class="full-width" appearance="fill">
             <mat-label>Username</mat-label>
-            <input matInput #usrInput required placeholder="username" value="">
+            <input name='username' formControlName="username" matInput #usrInput required placeholder="username" value="">
+            <mat-error *ngIf="f['username'].touched && f['username'].invalid">
+                Username cannot be empty
+            </mat-error>
         </mat-form-field>
         <mat-form-field class="full-width" appearance="fill">
             <mat-label>Password</mat-label>
-            <input matInput type="password" #usrPwd required placeholder="password" value="">
+            <input name='password' formControlName="password" matInput type="password" #usrPwd required placeholder="password" value="">
+            <mat-error *ngIf="f['password'].touched && f['password'].invalid">
+                Password cannot be empty
+            </mat-error>
         </mat-form-field>
 
         <table class="full-width" cellspacing="0">
             <tr>
                 <td>
-                    <button class='full-width' mat-raised-button color="primary" (click)="getLogIn(usrInput.value, usrPwd.value)">Log In</button>
+                    <button name='loginbutton' class='full-width' mat-raised-button color="primary" (click)="getLogIn(usrInput.value, usrPwd.value)">Log In</button>
                 </td>
                 <td>
-                    <button class='full-width' mat-raised-button color="warn" a routerLink="/signupform" >Signup</button>
+                    <button class='full-width' mat-raised-button color="warn" a routerLink="/signupform" >Sign Up</button>
                 </td>
             </tr>
         </table>
@@ -24,7 +30,7 @@
 </div>
 <div class='center'>
     <ng-template #elseTemplate>
-        {{"You're logged in as "+usr}}
+        <a mat-button routerLink="/home">Home</a>
         <button mat-raised-button color="warn" (click)="getLogOut()">Log Out</button>
     </ng-template>
 </div>
