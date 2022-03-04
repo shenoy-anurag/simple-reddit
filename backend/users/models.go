@@ -2,6 +2,7 @@ package users
 
 import (
 	"time"
+	"simple-reddit/profiles"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -43,9 +44,6 @@ type CheckUsernameRequest struct {
 	Username string `json:"username" validate:"required"`
 }
 
-// type ProfileDBModel struct {
-// }
-
 // Convertion functions to convert between different models.
 func ConvertUserRequestToUserDBModel(usrReq CreateUserRequest) UserDBModel {
 	return UserDBModel{
@@ -66,5 +64,17 @@ func ConvertUserDBModelToUserResponse(userDB UserDBModel) UserResponse {
 		Email:     userDB.Email,
 		Username:  userDB.Username,
 		Joined:    userDB.Joined,
+	}
+}
+
+func ConvertUserDBModelToProfileDBModel(userDB UserDBModel) profiles.ProfileDBModel {
+	return profiles.ProfileDBModel{
+		ID:        userDB.ID,
+		FirstName: userDB.FirstName,
+		LastName:  userDB.LastName,
+		Email:     userDB.Email,
+		Username:  userDB.Username,
+		Karma:     0,
+		Birthday:  userDB.Joined,
 	}
 }
