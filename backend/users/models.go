@@ -7,8 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// Multiple models in order to reduce coupling, implement single responsibility,
-// and to emulate private class variables in Go.
+// Multiple models in order to reduce coupling, and implement single responsibility.
 type CreateUserRequest struct {
 	FirstName string `json:"firstname,omitempty"`
 	LastName  string `json:"lastname,omitempty"`
