@@ -27,6 +27,24 @@ type ProfileResponse struct {
 	Birthday    time.Time `json:"joined"`
 }
 
+type EditProfileRequest struct {
+	FirstName string             `json:"firstname" validate:"required"`
+	LastName  string             `json:"lastname" validate:"required"`
+	Email     string             `json:"email" validate:"required"`
+	UserName  string             `json:"username" validate:"required"`
+}
+
+// Convertion functions to convert between different models.
+
+func ConvertEditProfileRequestToProfileDBModel(editProfile EditProfileRequest) ProfileDBModel {
+	return ProfileDBModel{
+		FirstName: editProfile.FirstName,
+		LastName:  editProfile.LastName,
+		Email:     editProfile.Email,
+		UserName:  editProfile.UserName,
+	}
+}
+
 func ConvertProfileDBModelToProfileResponse(profileDB  ProfileDBModel) ProfileResponse {
 	return ProfileResponse{
 		FirstName: profileDB.FirstName,
