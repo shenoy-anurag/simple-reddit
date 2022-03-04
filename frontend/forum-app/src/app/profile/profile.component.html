@@ -4,8 +4,11 @@
     </mat-card-title>
     <mat-card-subtitle>
         {{ profile.username }}
-    </mat-card-subtitle>
+    </mat-card-subtitle><br>
     <mat-card-content>
         {{"email: " + profile.email }}
     </mat-card-content>
+    <button mat-raised-button color="warn" a routerLink="/delete-user">
+        Delete User
+    </button>
 </mat-card>
