@@ -57,22 +57,20 @@ func ConvertCommunityRequestToCommunityDBModel(communityReq CreateCommunityReque
 	}, err
 }
 
-func ConvertCommunityDBModelToCommunityResponse(communityDB CommunityDBModel) (CommunityResponse, error) {
-	var err error
+func ConvertCommunityDBModelToCommunityResponse(communityDB CommunityDBModel) CommunityResponse {
 	return CommunityResponse{
 		ID:              communityDB.ID,
 		Name:            communityDB.Name,
 		Description:     communityDB.Description,
 		SubscriberCount: communityDB.SubscriberCount,
 		CreatedAt:       communityDB.CreatedAt,
-	}, err
+	}
 }
 
-func ConvertEditCommunityReqToGetCommunityReq(communityReq EditCommunityRequest) (GetCommunityRequest, error) {
-	var err error
+func ConvertEditCommunityReqToGetCommunityReq(communityReq EditCommunityRequest) GetCommunityRequest {
 	return GetCommunityRequest{
 		Name: communityReq.Name,
-	}, err
+	}
 }
 
 type CommunitySubscriberDBModel struct {

@@ -2,12 +2,12 @@ package users
 
 import (
 	"time"
+	"simple-reddit/profiles"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// Multiple models in order to reduce coupling, implement single responsibility,
-// and to emulate private class variables in Go.
+// Multiple models in order to reduce coupling, and implement single responsibility.
 type CreateUserRequest struct {
 	FirstName string `json:"firstname,omitempty"`
 	LastName  string `json:"lastname,omitempty"`
@@ -43,9 +43,6 @@ type CheckUsernameRequest struct {
 	Username string `json:"username" validate:"required"`
 }
 
-// type ProfileDBModel struct {
-// }
-
 // Convertion functions to convert between different models.
 func ConvertUserRequestToUserDBModel(usrReq CreateUserRequest) UserDBModel {
 	return UserDBModel{
@@ -66,5 +63,17 @@ func ConvertUserDBModelToUserResponse(userDB UserDBModel) UserResponse {
 		Email:     userDB.Email,
 		Username:  userDB.Username,
 		Joined:    userDB.Joined,
+	}
+}
+
+func ConvertUserDBModelToProfileDBModel(userDB UserDBModel) profiles.ProfileDBModel {
+	return profiles.ProfileDBModel{
+		ID:        userDB.ID,
+		FirstName: userDB.FirstName,
+		LastName:  userDB.LastName,
+		Email:     userDB.Email,
+		UserName:  userDB.Username,
+		Karma:     0,
+		Birthday:  userDB.Joined,
 	}
 }

@@ -6,8 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// Multiple models in order to reduce coupling, implement single responsibility,
-// and to emulate private class variables in Go.
+// Multiple models in order to reduce coupling, and implement single responsibility.
 type PostDBModel struct {
 	ID          primitive.ObjectID `bson:"_id"`
 	CommunityID primitive.ObjectID `bson:"community_id"`
@@ -29,6 +28,18 @@ type CreatePostRequest struct {
 type GetPostRequest struct {
 	UserName    string             `json:"username" validate:"required"`
 	CommunityID primitive.ObjectID `json:"community_id" validate:"required"`
+}
+
+type DeletePostRequest struct {
+	ID       primitive.ObjectID `json:"id" validate:"required"`
+	UserName string             `json:"username" validate:"required"`
+}
+
+type EditPostRequest struct {
+	ID       primitive.ObjectID `json:"id" validate:"required"`
+	UserName string             `json:"username" validate:"required"`
+	Title    string             `json:"title" validate:"required"`
+	Body     string             `json:"body" validate:"required"`
 }
 
 type PostResponse struct {
@@ -63,5 +74,13 @@ func ConvertPostDBModelToPostResponse(postDB PostDBModel) (PostResponse, error) 
 		Upvotes:   postDB.Upvotes,
 		Downvotes: postDB.Downvotes,
 		CreatedAt: postDB.CreatedAt,
+	}, err
+}
+
+func ConvertEditPostReqToDeletePostReq(postReq EditPostRequest) (DeletePostRequest, error) {
+	var err error
+	return DeletePostRequest{
+		ID:       postReq.ID,
+		UserName: postReq.UserName,
 	}, err
 }

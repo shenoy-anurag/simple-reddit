@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"simple-reddit/common"
 	"simple-reddit/configs"
+	"simple-reddit/profiles"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -71,7 +72,10 @@ func CreateUser() gin.HandlerFunc {
 				common.APIResponse{
 					Status:  http.StatusOK,
 					Message: common.API_FAILURE,
-					Data:    map[string]interface{}{"error": common.ERR_USERNAME_ALREADY_EXISTS.Message, "usernameAlreadyExists": usernameAlreadyExists}},
+					Data: map[string]interface{}{
+						"error":                 common.ERR_USERNAME_ALREADY_EXISTS.Message,
+						"usernameAlreadyExists": usernameAlreadyExists},
+				},
 			)
 			return
 		} else if err != nil {
@@ -95,7 +99,19 @@ func CreateUser() gin.HandlerFunc {
 			)
 			return
 		}
-
+		userCreatedDB, err := GetUserDetails(user.Username)
+		profileCreatedReq := ConvertUserDBModelToProfileDBModel(userCreatedDB)
+		isCreated := profiles.CreateProfile(profileCreatedReq)
+		if !isCreated {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
 		c.JSON(
 			http.StatusCreated,
 			common.APIResponse{
@@ -152,7 +168,10 @@ func LoginUser() gin.HandlerFunc {
 				common.APIResponse{
 					Status:  http.StatusOK,
 					Message: common.API_SUCCESS,
-					Data:    map[string]interface{}{"accessToken": token, "user": ConvertUserDBModelToUserResponse(userDB)}},
+					Data: map[string]interface{}{
+						"accessToken": token,
+						"user":        ConvertUserDBModelToUserResponse(userDB)},
+				},
 			)
 		}
 	}
