@@ -6,8 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// Multiple models in order to reduce coupling, implement single responsibility,
-// and to emulate private class variables in Go.
+// Multiple models in order to reduce coupling, and implement single responsibility.
 type PostDBModel struct {
 	ID          primitive.ObjectID `bson:"_id"`
 	CommunityID primitive.ObjectID `bson:"community_id"`
