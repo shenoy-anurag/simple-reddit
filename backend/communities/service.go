@@ -236,7 +236,7 @@ func EditCommunity() gin.HandlerFunc {
 		}
 
 		communityAlreadyExists, err := checkCommunityNameExists(communityReq.Name)
-		if communityAlreadyExists {
+		if !communityAlreadyExists {
 			c.JSON(
 				http.StatusOK,
 				common.APIResponse{
