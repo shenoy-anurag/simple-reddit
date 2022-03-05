@@ -3,7 +3,6 @@ package communities
 import (
 	"context"
 	"net/http"
-	"fmt"
 	"simple-reddit/common"
 	"simple-reddit/configs"
 	"simple-reddit/users"
@@ -126,10 +125,8 @@ func GetCommunity() gin.HandlerFunc {
 			)
 			return
 		}
-		fmt.Println(communityReq)
-		if communityReq.isUser {
+		if communityReq.IsUser {
 			allCommunities, err := retrieveAllCommuntities(communityReq)
-			fmt.Println("allCommunities")
 			if err == mongo.ErrNoDocuments {
 				c.JSON(
 					http.StatusOK,
@@ -371,7 +368,6 @@ func GetCommunityPosts() gin.HandlerFunc {
 			)
 			return
 		}
-		fmt.Println(commPostReq)
 		communityPosts, err := retrieveAllPosts(commPostReq)
 		if err == mongo.ErrNoDocuments {
 			c.JSON(
@@ -388,10 +384,9 @@ func GetCommunityPosts() gin.HandlerFunc {
 			common.APIResponse{
 				Status:  http.StatusOK,
 				Message: common.API_SUCCESS,
-				Data:	map[string]interface{}{"posts": communityPosts}},
-			)
-			return
-		}
+				Data:    map[string]interface{}{"posts": communityPosts}},
+		)
+	}
 }
 
 func createCommunityInDB(community CreateCommunityRequest) (result *mongo.InsertOneResult, err error) {
@@ -423,7 +418,9 @@ func retrieveAllCommuntities(commReq GetCommunityRequest) ([]CommunityResponse, 
 	var communitiesResponses []CommunityResponse
 	filter := bson.M{"username": commReq.Name}
 	cursor, err := CommunityCollection.Find(ctx, filter)
-	fmt.Println(cursor)
+	if err != nil {
+		return communitiesResponses, err
+	}
 	if err = cursor.All(ctx, &communities); err != nil {
 		return communitiesResponses, err
 	}
@@ -445,10 +442,14 @@ func retrieveAllPosts(postReq GetPostsRequest) ([]PostResponse, error) {
 	var community CommunityDBModel
 	communityFilter := bson.D{primitive.E{Key: "name", Value: postReq.Name}}
 	err := CommunityCollection.FindOne(ctx, communityFilter).Decode(&community)
-	fmt.Println("community")
-	fmt.Println(community)
+	if err != nil {
+		return postResp, err
+	}
 	postFilter := bson.M{"community_id": community.ID}
 	cursor, err := PostsCollection.Find(ctx, postFilter)
+	if err != nil {
+		return postResp, err
+	}
 	if err = cursor.All(ctx, &posts); err != nil {
 		return postResp, err
 	}

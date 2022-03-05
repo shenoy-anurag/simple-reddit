@@ -24,7 +24,7 @@ type CreateCommunityRequest struct {
 
 type GetCommunityRequest struct {
 	Name string `json:"name" uri:"name" validate:"required"`
-	isUser bool `json:"isuser" validate:"required"`
+	IsUser bool `json:"isuser" validate:"required"`
 }
 
 type GetPostsRequest struct{
