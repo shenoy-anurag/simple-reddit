@@ -566,7 +566,7 @@ func CheckCommunityExists() gin.HandlerFunc {
 			http.StatusOK,
 			common.APIResponse{
 				Status:  http.StatusOK,
-				Message: common.API_FAILURE,
+				Message: common.API_SUCCESS,
 				Data:    map[string]interface{}{"communityAlreadyExists": communityAlreadyExists},
 			},
 		)
