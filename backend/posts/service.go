@@ -16,6 +16,7 @@ import (
 )
 
 const POST_ROUTE_PREFIX = "/post"
+const HOME_ROUTE_PREFIX = "/home"
 
 const PostsCollectionName string = "posts"
 
@@ -190,6 +191,43 @@ func GetPosts() gin.HandlerFunc {
 	}
 }
 
+func GetAllPosts() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		postDetails, err := retrieveAllPostDetails()
+		if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		if len(postDetails) > 0 {
+			c.JSON(
+				http.StatusOK,
+				common.APIResponse{
+					Status:  http.StatusOK,
+					Message: common.API_SUCCESS,
+					Data:    map[string]interface{}{"posts": postDetails}},
+			)
+			return
+		} else {
+			c.JSON(
+				http.StatusOK,
+				common.APIResponse{
+					Status:  http.StatusNotFound,
+					Message: common.API_SUCCESS,
+					Data:    map[string]interface{}{"posts": postDetails}},
+			)
+			return
+		}
+	}
+}
+
 func EditPost() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var postReq EditPostRequest
@@ -282,6 +320,26 @@ func retrievePostDetails(postReq GetPostRequest) ([]PostResponse, error) {
 	return postResp, err
 }
 
+func retrieveAllPostDetails() ([]PostResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var posts []PostDBModel
+	var postResp []PostResponse
+	filter := bson.M{}
+	cursor, err := PostsCollection.Find(ctx, filter)
+	if err = cursor.All(ctx, &posts); err != nil {
+		return postResp, err
+	}
+	for _, post := range posts {
+		item, err := ConvertPostDBModelToPostResponse(post)
+		if err != nil {
+			return postResp, err
+		}
+		postResp = append(postResp, item)
+	}
+	return postResp, err
+}
+
 func deletePost(postReq DeletePostRequest) (*mongo.DeleteResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -317,6 +375,7 @@ func editPostDetails(postReq EditPostRequest) (result *mongo.UpdateResult, err e
 func Routes(router *gin.Engine) {
 	router.POST(POST_ROUTE_PREFIX, CreatePost())
 	router.GET(POST_ROUTE_PREFIX, GetPosts())
+	router.GET(HOME_ROUTE_PREFIX, GetAllPosts())
 	router.DELETE(POST_ROUTE_PREFIX, DeletePost())
 	router.PATCH(POST_ROUTE_PREFIX, EditPost())
 }

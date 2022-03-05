@@ -2,8 +2,8 @@ package communities
 
 import (
 	"context"
-	"fmt"
 	"net/http"
+	"fmt"
 	"simple-reddit/common"
 	"simple-reddit/configs"
 	"simple-reddit/users"
@@ -19,142 +19,11 @@ import (
 const COMMUNITY_ROUTE_PREFIX = "/community"
 
 const CommunitiesCollectionName string = "communities"
+const PostsCollectionName string = "posts"
 
 var CommunityCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, CommunitiesCollectionName)
+var PostsCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, PostsCollectionName)
 var validate = validator.New()
-
-func createCommunityInDB(community CreateCommunityRequest) (result *mongo.InsertOneResult, err error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	
-	newCommunity, err := ConvertCommunityRequestToCommunityDBModel(community)
-	if err != nil {
-		return result, err
-	}
-	result, err = CommunityCollection.InsertOne(ctx, newCommunity)
-	return result, err
-}
-
-func retrieveCommunityDetails(commReq GetCommunityRequest) (CommunityDBModel, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	var community CommunityDBModel
-	filter := bson.D{primitive.E{Key: "name", Value: commReq.Name}}
-	err := CommunityCollection.FindOne(ctx, filter).Decode(&community)
-	return community, err
-}
-
-func editCommunityDetails(communityReq EditCommunityRequest) (result *mongo.UpdateResult, err error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	getCommunityReq := ConvertEditCommunityReqToGetCommunityReq(communityReq)
-
-	community, err := retrieveCommunityDetails(getCommunityReq)
-	if err != nil {
-		return result, err
-	}
-	// updating the data in db
-	filter := bson.M{"_id": community.ID}
-	updateQuery := bson.D{
-		primitive.E{
-			Key: "$set",
-			Value: bson.D{
-				primitive.E{Key: "description", Value: communityReq.Description},
-			},
-		},
-	}
-	result, err = CommunityCollection.UpdateOne(
-		ctx,
-		filter,
-		updateQuery,
-	)
-	return result, err
-}
-
-func deleteCommunity(commReq DeleteCommunityRequest) (*mongo.DeleteResult, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	filter := bson.D{primitive.E{Key: "name", Value: commReq.Name}}
-	result, err := CommunityCollection.DeleteOne(ctx, filter)
-	return result, err
-}
-
-func checkCommunityNameExists(communityName string) (bool, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	var alreadyExists bool
-	var community CommunityDBModel
-	filter := bson.D{primitive.E{Key: "name", Value: communityName}}
-	err := CommunityCollection.FindOne(ctx, filter).Decode(&community)
-	if err == nil {
-		if community.Name == communityName {
-			alreadyExists = true
-		} else {
-			alreadyExists = false
-		}
-	} else {
-		if err == mongo.ErrNoDocuments {
-			err = nil
-		}
-	}
-	return alreadyExists, err
-}
-
-func CheckCommunityExists() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var communityReq GetCommunityRequest
-
-		// validate the request body
-		if err := c.BindJSON(&communityReq); err != nil {
-			c.JSON(
-				http.StatusBadRequest,
-				common.APIResponse{
-					Status:  http.StatusBadRequest,
-					Message: common.API_FAILURE,
-					Data:    map[string]interface{}{"error": err.Error()}},
-			)
-			return
-		}
-
-		// use the validator library to validate required fields
-		if validationErr := validate.Struct(&communityReq); validationErr != nil {
-			c.JSON(
-				http.StatusBadRequest,
-				common.APIResponse{
-					Status:  http.StatusBadRequest,
-					Message: common.API_FAILURE,
-					Data:    map[string]interface{}{"error": validationErr.Error()}},
-			)
-			return
-		}
-
-		communityAlreadyExists, err := checkCommunityNameExists(communityReq.Name)
-		if err != nil {
-			c.JSON(
-				http.StatusOK,
-				common.APIResponse{
-					Status:  http.StatusOK,
-					Message: common.API_ERROR,
-					Data: map[string]interface{}{
-						"error": err.Error(),
-					},
-				},
-			)
-			return
-		}
-
-		c.JSON(
-			http.StatusOK,
-			common.APIResponse{
-				Status:  http.StatusOK,
-				Message: common.API_FAILURE,
-				Data:    map[string]interface{}{"communityAlreadyExists": communityAlreadyExists},
-			},
-		)
-	}
-}
 
 func CreateCommunity() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -258,6 +127,41 @@ func GetCommunity() gin.HandlerFunc {
 			return
 		}
 		fmt.Println(communityReq)
+		if communityReq.isUser {
+			allCommunities, err := retrieveAllCommuntities(communityReq)
+			fmt.Println("allCommunities")
+			if err == mongo.ErrNoDocuments {
+				c.JSON(
+					http.StatusOK,
+					common.APIResponse{
+						Status:  http.StatusOK,
+						Message: common.API_FAILURE,
+						Data:    map[string]interface{}{"error": common.ERR_COMMUNITY_NOT_FOUND.Message}},
+				)
+				return
+			}
+
+			if len(allCommunities) > 0 {
+				c.JSON(
+					http.StatusOK,
+					common.APIResponse{
+						Status:  http.StatusOK,
+						Message: common.API_SUCCESS,
+						Data:    map[string]interface{}{"communitites": allCommunities}},
+				)
+				return
+			} else {
+				c.JSON(
+					http.StatusOK,
+					common.APIResponse{
+						Status:  http.StatusNotFound,
+						Message: common.API_SUCCESS,
+						Data:    map[string]interface{}{"communitites": allCommunities}},
+				)
+				return
+			}
+
+		}
 		communityDB, err := retrieveCommunityDetails(communityReq)
 		if err == mongo.ErrNoDocuments {
 			c.JSON(
@@ -440,10 +344,240 @@ func DeleteCommunity() gin.HandlerFunc {
 	}
 }
 
+func GetCommunityPosts() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var commPostReq GetPostsRequest
+
+		// validate the request body
+		if err := c.BindUri(&commPostReq); err != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		// use the validator library to validate required fields
+		if validationErr := validate.Struct(&commPostReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
+		fmt.Println(commPostReq)
+		communityPosts, err := retrieveAllPosts(commPostReq)
+		if err == mongo.ErrNoDocuments {
+			c.JSON(
+				http.StatusOK,
+				common.APIResponse{
+					Status:  http.StatusOK,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": common.ERR_COMMUNITY_NOT_FOUND.Message}},
+			)
+			return
+		}
+		c.JSON(
+			http.StatusOK,
+			common.APIResponse{
+				Status:  http.StatusOK,
+				Message: common.API_SUCCESS,
+				Data:	map[string]interface{}{"posts": communityPosts}},
+			)
+			return
+		}
+}
+
+func createCommunityInDB(community CreateCommunityRequest) (result *mongo.InsertOneResult, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	newCommunity := ConvertCommunityRequestToCommunityDBModel(community) //, err := ConvertCommunityRequestToCommunityDBModel(community)
+	// if err != nil {
+	// 	return result, err
+	// }
+	result, err = CommunityCollection.InsertOne(ctx, newCommunity)
+	return result, err
+}
+
+func retrieveCommunityDetails(commReq GetCommunityRequest) (CommunityDBModel, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var community CommunityDBModel
+	filter := bson.D{primitive.E{Key: "name", Value: commReq.Name}}
+	err := CommunityCollection.FindOne(ctx, filter).Decode(&community)
+	return community, err
+}
+
+func retrieveAllCommuntities(commReq GetCommunityRequest) ([]CommunityResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var communities []CommunityDBModel
+	var communitiesResponses []CommunityResponse
+	filter := bson.M{"username": commReq.Name}
+	cursor, err := CommunityCollection.Find(ctx, filter)
+	fmt.Println(cursor)
+	if err = cursor.All(ctx, &communities); err != nil {
+		return communitiesResponses, err
+	}
+	for _, community := range communities {
+		item := ConvertCommunityDBModelToCommunityResponse(community)
+		if err != nil {
+			return communitiesResponses, err
+		}
+		communitiesResponses = append(communitiesResponses, item)
+	}
+	return communitiesResponses, err
+}
+
+func retrieveAllPosts(postReq GetPostsRequest) ([]PostResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var posts []PostDBModel
+	var postResp []PostResponse
+	var community CommunityDBModel
+	communityFilter := bson.D{primitive.E{Key: "name", Value: postReq.Name}}
+	err := CommunityCollection.FindOne(ctx, communityFilter).Decode(&community)
+	fmt.Println("community")
+	fmt.Println(community)
+	postFilter := bson.M{"community_id": community.ID}
+	cursor, err := PostsCollection.Find(ctx, postFilter)
+	if err = cursor.All(ctx, &posts); err != nil {
+		return postResp, err
+	}
+	for _, post := range posts {
+		item, err := ConvertPostDBModelToPostResponse(post)
+		if err != nil {
+			return postResp, err
+		}
+		postResp = append(postResp, item)
+	}
+	return postResp, err
+}
+
+func editCommunityDetails(communityReq EditCommunityRequest) (result *mongo.UpdateResult, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	getCommunityReq := ConvertEditCommunityReqToGetCommunityReq(communityReq)
+
+	community, err := retrieveCommunityDetails(getCommunityReq)
+	if err != nil {
+		return result, err
+	}
+	// updating the data in db
+	filter := bson.M{"_id": community.ID}
+	updateQuery := bson.D{
+		primitive.E{
+			Key: "$set",
+			Value: bson.D{
+				primitive.E{Key: "description", Value: communityReq.Description},
+			},
+		},
+	}
+	result, err = CommunityCollection.UpdateOne(
+		ctx,
+		filter,
+		updateQuery,
+	)
+	return result, err
+}
+
+func deleteCommunity(commReq DeleteCommunityRequest) (*mongo.DeleteResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	filter := bson.D{primitive.E{Key: "name", Value: commReq.Name}}
+	result, err := CommunityCollection.DeleteOne(ctx, filter)
+	return result, err
+}
+
+func checkCommunityNameExists(communityName string) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var alreadyExists bool
+	var community CommunityDBModel
+	filter := bson.D{primitive.E{Key: "name", Value: communityName}}
+	err := CommunityCollection.FindOne(ctx, filter).Decode(&community)
+	if err == nil {
+		if community.Name == communityName {
+			alreadyExists = true
+		} else {
+			alreadyExists = false
+		}
+	} else {
+		if err == mongo.ErrNoDocuments {
+			err = nil
+		}
+	}
+	return alreadyExists, err
+}
+
+func CheckCommunityExists() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var communityReq GetCommunityRequest
+
+		// validate the request body
+		if err := c.BindJSON(&communityReq); err != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		// use the validator library to validate required fields
+		if validationErr := validate.Struct(&communityReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
+
+		communityAlreadyExists, err := checkCommunityNameExists(communityReq.Name)
+		if err != nil {
+			c.JSON(
+				http.StatusOK,
+				common.APIResponse{
+					Status:  http.StatusOK,
+					Message: common.API_ERROR,
+					Data: map[string]interface{}{
+						"error": err.Error(),
+					},
+				},
+			)
+			return
+		}
+
+		c.JSON(
+			http.StatusOK,
+			common.APIResponse{
+				Status:  http.StatusOK,
+				Message: common.API_FAILURE,
+				Data:    map[string]interface{}{"communityAlreadyExists": communityAlreadyExists},
+			},
+		)
+	}
+}
+
 func Routes(router *gin.Engine) {
 	router.POST(COMMUNITY_ROUTE_PREFIX, CreateCommunity())
 	router.POST(COMMUNITY_ROUTE_PREFIX+"/check-name", CheckCommunityExists())
 	router.GET(COMMUNITY_ROUTE_PREFIX+"/:name", GetCommunity())
+	router.GET(COMMUNITY_ROUTE_PREFIX+"/home", GetCommunityPosts())
 	router.PATCH(COMMUNITY_ROUTE_PREFIX, EditCommunity())
 	router.DELETE(COMMUNITY_ROUTE_PREFIX, DeleteCommunity())
 }
