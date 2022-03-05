@@ -14,5 +14,5 @@ export class PostsService {
     return [
       {"title" : "Fake Post", "body" : "This is a fake post with fake body", "owner": "John", "created_on" : "02/11/2022"},
       {"title" : "Another Fake Post", "body" : "This is a second fake post with fake body", "owner": "John 2", "created_on" : "02/12/2022"}];
-    }
+  }
 }

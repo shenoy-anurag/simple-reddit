@@ -15,7 +15,7 @@
         <mat-card-actions>
             <button mat-button>Upvote</button>
             <button mat-button>Downvote</button>
-            <button mat-button color="warn"><mat-icon>delete</mat-icon></button>
+            <button mat-button color="warn"(click)="deletePost(post.owner, post.title)"><mat-icon>delete</mat-icon></button>
           </mat-card-actions>
       </mat-card>
 </ul>
