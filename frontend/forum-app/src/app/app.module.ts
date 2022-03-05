@@ -21,6 +21,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { SubredditsComponent } from './subreddits/subreddits.component';
 import { DeleteuserformComponent } from './deleteuserform/deleteuserform.component';
 import { NewpostformComponent } from './newpostform/newpostform.component';
+import { NewsubredditsformComponent } from './newsubredditsform/newsubredditsform.component';
 
 
 @NgModule({
@@ -38,6 +39,7 @@ import { NewpostformComponent } from './newpostform/newpostform.component';
     SubredditsComponent,
     DeleteuserformComponent,
     NewpostformComponent,
+    NewsubredditsformComponent,
   ],
   imports: [
     BrowserModule,
