@@ -9,8 +9,4 @@ describe('SubredditsService', () => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(SubredditsService);
   });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
 });

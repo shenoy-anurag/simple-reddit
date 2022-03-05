@@ -9,8 +9,4 @@ describe('WebRequestService', () => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(WebRequestService);
   });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
 });
