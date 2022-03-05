@@ -36,6 +36,7 @@ CRUD tasks for posts, communities and profile has been created with exception of
 #### Go Tests:
 - Added testing and unit-testing (using testing, testify, and net/http packages)
 - Testing: User module (Signup, Login), Posts (Create, Delete, Edit, Get)
+
 Checkout the test results [here](https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#testing).
 
 #### Bugs:
