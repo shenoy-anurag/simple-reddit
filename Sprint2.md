@@ -2,34 +2,64 @@
 ## Backend
 User Stories for backend
 
-[Userstories](https://github.com/shenoy-anurag/simple-reddit/issues?q=is%3Aissue+label%3A%22User+Stories+-+BE%22+is%3Aclosed)
+[Userstories and Issues Closed](https://github.com/shenoy-anurag/simple-reddit/issues?q=is%3Aissue+is%3Aclosed+label%3Asprint2+label%3A%22User+Stories+-+BE%22)
 
 The backend has taken up user stories pertaining to communities, profile and posts
 So now the API to create, edit, get, delete posts, communities and profile has been created. Go tests cases are created for the posts, signup and login for the sprint.
 CRUD tasks for posts, communities and profile has been created with exception of DELETE Profile.
 
-#### Posts
-##### API : CreatePost, EditPost, GetPost, DeletePost, GetAllPosts
+### Accomplishments:
 
 #### Communities
-##### API : CreateCommunity, GetCommunity, EditCommunity, DeleteCommunity, CheckCommunityExists
+- Create Community
+- Get Community Details
+- Edit Community Details
+- Delete Community Details
 
-##### Profile
-###### API : CreateProfile, Edit Profile
-###### Note: DeleteProfile is moved to Sprint 3 as it depends on token authorization apart from username match.
+#### Posts
+- Create Post
+- Get Post
+- Get All Posts
+- Edit Post
+- Delete Post
 
-##### GoTests
-###### Tests : User module (Signup, Login), Posts (Create, Delete, Edit, Get)
+#### Profile
+- Create Profile
+- Get Profile Details
+##### Note: DeleteProfile is moved to Sprint 3 as it depends on token authorization apart from username match.
 
-Demo video and wiki: <https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#sprint-1-back-end-demo>
+#### Users
+- Signup
+- Login
+- Check-Username
+
+#### Go Tests:
+- Added testing and unit-testing (using testing, testify, and net/http packages)
+- Testing: User module (Signup, Login), Posts (Create, Delete, Edit, Get)
+Checkout the test results [here](https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#testing).
+
+#### Bugs:
+- Signup allows duplicate users
+- Community creation allows duplicates
+
+
+#### Bugs
+- Signup allows duplicate users
+- Community creation allows duplicates
+
+Demo video and wiki: <https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#sprint-2-back-end-demo>
 
 ## Frontend
 User Stories for Frontend
 
-[Userstories](Link)
+[Userstories and Issues Closed](https://github.com/shenoy-anurag/simple-reddit/issues?q=is%3Aissue+is%3Aclosed+label%3Asprint2+label%3A%22User+Stories+-+FE%22)
 
-Work Done
+### Accomplishments:
 
-*
+#### Testing using Cypress:
+- Navigation Menu Routing
+- Proper New User SignUp
+- Proper User Login
+- Proper User Logout
 
-Demo video and wiki: <link>
+Demo video and wiki: <https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#sprint-2-frontend-testing-using-cypress>
