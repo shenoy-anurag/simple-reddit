@@ -19,8 +19,10 @@ import (
 const COMMUNITY_ROUTE_PREFIX = "/community"
 
 const CommunitiesCollectionName string = "communities"
+const PostsCollectionName string = "posts"
 
 var CommunityCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, CommunitiesCollectionName)
+var PostsCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, PostsCollectionName)
 var validate = validator.New()
 
 func CreateCommunity() gin.HandlerFunc {
@@ -342,6 +344,56 @@ func DeleteCommunity() gin.HandlerFunc {
 	}
 }
 
+func GetCommunityPosts() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var commPostReq GetPostsRequest
+
+		// validate the request body
+		if err := c.BindUri(&commPostReq); err != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		// use the validator library to validate required fields
+		if validationErr := validate.Struct(&commPostReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
+		fmt.Println(commPostReq)
+		communityPosts, err := retrieveAllPosts(commPostReq)
+		if err == mongo.ErrNoDocuments {
+			c.JSON(
+				http.StatusOK,
+				common.APIResponse{
+					Status:  http.StatusOK,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": common.ERR_COMMUNITY_NOT_FOUND.Message}},
+			)
+			return
+		}
+		c.JSON(
+			http.StatusOK,
+			common.APIResponse{
+				Status:  http.StatusOK,
+				Message: common.API_SUCCESS,
+				Data:	map[string]interface{}{"posts": communityPosts}},
+			)
+			return
+		}
+}
+
 func createCommunityInDB(community CreateCommunityRequest) (result *mongo.InsertOneResult, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -383,6 +435,31 @@ func retrieveAllCommuntities(commReq GetCommunityRequest) ([]CommunityResponse, 
 		communitiesResponses = append(communitiesResponses, item)
 	}
 	return communitiesResponses, err
+}
+
+func retrieveAllPosts(postReq GetPostsRequest) ([]PostResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var posts []PostDBModel
+	var postResp []PostResponse
+	var community CommunityDBModel
+	communityFilter := bson.D{primitive.E{Key: "name", Value: postReq.Name}}
+	err := CommunityCollection.FindOne(ctx, communityFilter).Decode(&community)
+	fmt.Println("community")
+	fmt.Println(community)
+	postFilter := bson.M{"community_id": community.ID}
+	cursor, err := PostsCollection.Find(ctx, postFilter)
+	if err = cursor.All(ctx, &posts); err != nil {
+		return postResp, err
+	}
+	for _, post := range posts {
+		item, err := ConvertPostDBModelToPostResponse(post)
+		if err != nil {
+			return postResp, err
+		}
+		postResp = append(postResp, item)
+	}
+	return postResp, err
 }
 
 func editCommunityDetails(communityReq EditCommunityRequest) (result *mongo.UpdateResult, err error) {
@@ -500,6 +577,7 @@ func Routes(router *gin.Engine) {
 	router.POST(COMMUNITY_ROUTE_PREFIX, CreateCommunity())
 	router.POST(COMMUNITY_ROUTE_PREFIX+"/check-name", CheckCommunityExists())
 	router.GET(COMMUNITY_ROUTE_PREFIX+"/:name", GetCommunity())
+	router.GET(COMMUNITY_ROUTE_PREFIX+"/home", GetCommunityPosts())
 	router.PATCH(COMMUNITY_ROUTE_PREFIX, EditCommunity())
 	router.DELETE(COMMUNITY_ROUTE_PREFIX, DeleteCommunity())
 }
