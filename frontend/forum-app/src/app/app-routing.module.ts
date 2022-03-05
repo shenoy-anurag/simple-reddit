@@ -9,6 +9,7 @@ import { SubredditsComponent } from './subreddits/subreddits.component';
 import { ProfileComponent } from './profile/profile.component';
 import { DeleteuserformComponent } from './deleteuserform/deleteuserform.component';
 import { NewpostformComponent } from './newpostform/newpostform.component';
+import { NewsubredditsformComponent} from './newsubredditsform/newsubredditsform.component';
 
 
 const routes: Routes = [
@@ -20,6 +21,7 @@ const routes: Routes = [
   {path: 'popup-message', component: PopupMessageComponent},
   {path: 'delete-user', component: DeleteuserformComponent},
   {path: 'newpostform', component: NewpostformComponent},
+  {path: 'newsubredditsform', component: NewsubredditsformComponent},
   {path: '', redirectTo: '/home', pathMatch:'full'},
 ];
 
