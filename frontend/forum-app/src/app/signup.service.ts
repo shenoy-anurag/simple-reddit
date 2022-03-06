@@ -57,7 +57,7 @@ export class SignupService {
   }
 
   createdeleteSubreddit(username: string, name: string) {
-    return this.WebReqService.post('deletecommunity', 
+    return this.WebReqService.post('community/science', 
     {
       "username": "albert",
       "name": "science"
