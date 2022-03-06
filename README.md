@@ -44,6 +44,12 @@ More on how to setup the Front-end can be found [here](https://github.com/shenoy
 [API Reference](https://github.com/shenoy-anurag/simple-reddit/wiki/API-Overview), 
 [Video Tutorials](https://github.com/shenoy-anurag/simple-reddit/wiki/Demo).
 
+## Sprint 1
+Summary of Sprint 2 is [here](https://github.com/shenoy-anurag/simple-reddit/blob/800f7f3ab01ff884d0130f8386bbea5ba3a27b0c/Sprint1.md).
+
+## Sprint 2
+Summary of Sprint 2 is [here](https://github.com/shenoy-anurag/simple-reddit/blob/main/Sprint2.md).
+
 ## Authors
 * **Manoj Jampana** - [manojjampana](https://github.com/manojjampana)
 * **John Ng** - [NgJohn15](https://github.com/NgJohn15)
