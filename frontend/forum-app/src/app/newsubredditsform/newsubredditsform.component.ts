@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validator, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { SignupService } from '../signup.service';
 
-
 @Component({
   selector: 'app-newsubredditsform',
   templateUrl: './newsubredditsform.component.html',
@@ -19,17 +18,18 @@ export class NewsubredditsformComponent implements OnInit {
       description: ['', [Validators.required]],
     })
   }
-    get f() {
-      return this.form.controls;
-    }
-
-    createSubreddit()
-    {
-        
-    }
-
-   ngOnInit(): void {
-   }
-
+  get f() 
+  {  
+  return this.form.controls;
   }
+
+  ngOnInit(): void {
+  }
+
+
+  createSubreddit()
+  {
+  
+  }
+}
 
