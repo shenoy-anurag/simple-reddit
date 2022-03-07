@@ -12,7 +12,7 @@
     <!-- Subreddit Name -->
     <mat-form-field class="full-width" appearance="fill">
         <mat-label>Name</mat-label>
-        <input name='name' formControlName="name" matInput #title required placeholder="Name" value="">
+        <input name='name' formControlName="name" matInput #title required placeholder="Subreddit Name" value="">
         <mat-error *ngIf="f['name'].touched && f['name'].invalid">
             Name cannot be empty
         </mat-error>
