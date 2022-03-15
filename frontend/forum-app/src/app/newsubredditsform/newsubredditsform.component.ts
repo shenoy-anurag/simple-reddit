@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validator, Validators } from '@angular/forms';
-import { Title } from '@angular/platform-browser';
 import { SignupService } from '../signup.service';
+import { FormBuilder, FormGroup, Validator, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-newsubredditsform',
@@ -15,21 +14,25 @@ export class NewsubredditsformComponent implements OnInit {
     this.form = this.fb.group({
       user_id: ['', [Validators.required]],
       name: ['', [Validators.required]],
-      description: ['', [Validators.required]],
+      description: ['', [Validators.required]]
     })
   }
+  
   get f() 
   {  
   return this.form.controls;
   }
 
-  ngOnInit(): void {
+  ngOnInit(): void 
+  {
   }
 
-
-  createSubreddit()
+  createSubreddit(user_id: string, name: string, description: string)
   {
-  
+    // console.log("new subreddit: " + name + " " + description);
+    this.signupService.createcommunity(user_id, name, description).subscribe((response: any) => {
+    console.log(response);
+    })
   }
 }
 

@@ -9,8 +9,7 @@ import { SignupService } from '../signup.service';
   styleUrls: ['./deletesubredditsform.component.css']
 })
 export class DeletesubredditsformComponent implements OnInit {
-  public username: any;
-  public name: any;
+
   form: FormGroup = new FormGroup({});
   constructor(public signupService: SignupService, public snackBar: MatSnackBar, public fb: FormBuilder) {
     this.form = this.fb.group({
@@ -27,7 +26,7 @@ export class DeletesubredditsformComponent implements OnInit {
   }
 
   createdeletesubreddit(username: string, name: string) {
-    this.signupService.createdeleteSubreddit(username, name).subscribe((response: any) => {
+    this.signupService.deletecommunity(username, name).subscribe((response: any) => {
       console.log(response);
     })
 
