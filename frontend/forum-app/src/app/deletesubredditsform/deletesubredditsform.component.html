@@ -12,7 +12,7 @@
     <!-- Name -->
     <mat-form-field class="full-width" appearance="fill">
         <mat-label>Name</mat-label>
-        <textarea name='name' formControlName="name" matInput type="text" #body required placeholder="Community Name" value="">
+        <textarea name='name' formControlName="name" matInput type="text" #name required placeholder="Community Name" value="">
         </textarea>
         <mat-error *ngIf="f['name'].touched && f['name'].invalid">
             Name cannot be empty

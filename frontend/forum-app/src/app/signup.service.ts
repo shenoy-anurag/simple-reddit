@@ -8,6 +8,7 @@ import { WebRequestService } from './web-request.service';
 export class SignupService {
 
   constructor(private WebReqService: WebRequestService) { }
+  
   addNewAccount(email: string, username: string, password: string, name: string) {
     return this.WebReqService.post('users/signup', 
     {
@@ -47,16 +48,16 @@ export class SignupService {
     })
   }
 
-  createSubreddit(user_id: string, name: string, description: string) {
-    return this.WebReqService.post('community', 
+  createcommunity(user_id: string, name: string, description: string) {
+    return this.WebReqService.post('community',
     {
       "user_id": user_id,
       "name": name,
       "description": description
-    })
+    });
   }
 
-  createdeleteSubreddit(username: string, name: string) {
+  deletecommunity(username: string, name: string) {
     return this.WebReqService.post('community', 
     {
       "username": username,
