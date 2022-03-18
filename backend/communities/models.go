@@ -2,14 +2,14 @@ package communities
 
 import (
 	"time"
-
+	// "github.com/go-playground/validator"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // Models for Communities
 type CommunityDBModel struct {
 	ID              primitive.ObjectID `bson:"_id"`
-	UserName    string             `json:"username" validate:"required"`
+	UserName        string             `json:"username" validate:"required"`
 	Name            string             `bson:"name"`
 	Description     string             `bson:"description"`
 	SubscriberCount int                `bson:"subscriber_count"`
@@ -17,18 +17,18 @@ type CommunityDBModel struct {
 }
 
 type CreateCommunityRequest struct {
-	UserName    string             `json:"username" validate:"required"`
+	UserName    string `json:"username" validate:"required"`
 	Name        string `json:"name" validate:"required"`
 	Description string `json:"description" validate:"required"`
 }
 
 type GetCommunityRequest struct {
-	Name string `json:"name" uri:"name" validate:"required"`
-	isUser bool `json:"isuser" validate:"required"`
+	Name   string `json:"name" validate:"required"`
+	IsUser bool   `json:"isuser" validate:"exists"`
 }
 
-type GetPostsRequest struct{
-	Name        string `json:"name" validate:"required"`
+type GetPostsRequest struct {
+	Name string `json:"name" validate:"required"`
 }
 
 type EditCommunityRequest struct {
@@ -49,8 +49,17 @@ type CommunityResponse struct {
 	CreatedAt       time.Time          `json:"created_at"`
 }
 
+// use a single instance of Validate, it caches struct info
+// var valdate *validator.Validate
+
+// Validate validate input data
+// func ValidateGetCommunityRequest(gcr *GetCommunityRequest) (Validate(), error) {
+// 	valdate := validator.New()
+// 	return valdate.Struct(gcr)
+// }
+
 // Convertion functions to convert between different models.
-func ConvertCommunityRequestToCommunityDBModel(communityReq CreateCommunityRequest) (CommunityDBModel){//, error) {
+func ConvertCommunityRequestToCommunityDBModel(communityReq CreateCommunityRequest) CommunityDBModel { //, error) {
 	//user_id, err := primitive.ObjectIDFromHex(communityReq.UserID)
 	return CommunityDBModel{
 		ID:              primitive.NewObjectID(),
@@ -59,7 +68,7 @@ func ConvertCommunityRequestToCommunityDBModel(communityReq CreateCommunityReque
 		Description:     communityReq.Description,
 		SubscriberCount: 0,
 		CreatedAt:       time.Now().UTC(),
-	}//, err
+	} //, err
 }
 
 func ConvertCommunityDBModelToCommunityResponse(communityDB CommunityDBModel) CommunityResponse {
