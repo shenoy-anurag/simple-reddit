@@ -9,7 +9,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-
+  public showPassword: boolean = false;
   form: FormGroup = new FormGroup({});
   constructor(private signupService: SignupService, private snackBar: MatSnackBar, private fb: FormBuilder) {
     this.form = this.fb.group({
@@ -22,6 +22,10 @@ export class LoginComponent implements OnInit {
   usr: string = "";
 
   ngOnInit(): void {
+  }
+
+  public togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 
   get f() {
