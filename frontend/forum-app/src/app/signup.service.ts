@@ -45,7 +45,7 @@ export class SignupService {
     	"community_id": community_id,
 	    "title" : title,
       "body" : body
-    })
+    });
   }
 
   createcommunity(user_id: string, name: string, description: string) {
@@ -62,7 +62,7 @@ export class SignupService {
     {
       "username": username,
       "name": name
-    })
+    });
   }
 
 }
