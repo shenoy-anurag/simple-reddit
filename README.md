@@ -56,6 +56,14 @@ Summary of Sprint 2 is [here](https://github.com/shenoy-anurag/simple-reddit/blo
 * **Ganesan Santhanam** - [ganesansanthanam](https://github.com/ganesansanthanam)
 * **Anurag Shenoy** - [shenoy-anurag](https://github.com/shenoy-anurag)
 
+## Backend Developers
+* [Anurag Shenoy](https://github.com/shenoy-anurag)
+* [Ganesan Santhanam](https://github.com/ganesansanthanam)
+
+## Frontend Developers
+* [John Ng](https://github.com/NgJohn15)
+* [Manoj Jampana](https://github.com/manojjampana)
+
 See also the list of [contributors](https://github.com/shenoy-anurag/forum/graphs/contributors) who participated in this project.
 
 ## Contact information:
