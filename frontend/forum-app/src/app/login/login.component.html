@@ -1,4 +1,4 @@
-<div class='center' *ngIf='!usrLoggedIn; else elseTemplate'>
+<div class='center' *ngIf='!getLogInStatus(); else elseTemplate'>
     <form action=" /" id="myLogin" [formGroup]="form">
         <br>
         <!-- Username -->
