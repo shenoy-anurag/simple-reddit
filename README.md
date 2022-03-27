@@ -45,7 +45,7 @@ More on how to setup the Front-end can be found [here](https://github.com/shenoy
 [Video Tutorials](https://github.com/shenoy-anurag/simple-reddit/wiki/Demo).
 
 ## Sprint 1
-Summary of Sprint 2 is [here](https://github.com/shenoy-anurag/simple-reddit/blob/800f7f3ab01ff884d0130f8386bbea5ba3a27b0c/Sprint1.md).
+Summary of Sprint 1 is [here](https://github.com/shenoy-anurag/simple-reddit/blob/800f7f3ab01ff884d0130f8386bbea5ba3a27b0c/Sprint1.md).
 
 ## Sprint 2
 Summary of Sprint 2 is [here](https://github.com/shenoy-anurag/simple-reddit/blob/main/Sprint2.md).
@@ -55,6 +55,14 @@ Summary of Sprint 2 is [here](https://github.com/shenoy-anurag/simple-reddit/blo
 * **John Ng** - [NgJohn15](https://github.com/NgJohn15)
 * **Ganesan Santhanam** - [ganesansanthanam](https://github.com/ganesansanthanam)
 * **Anurag Shenoy** - [shenoy-anurag](https://github.com/shenoy-anurag)
+
+## Backend Developers
+* [Anurag Shenoy](https://github.com/shenoy-anurag)
+* [Ganesan Santhanam](https://github.com/ganesansanthanam)
+
+## Frontend Developers
+* [John Ng](https://github.com/NgJohn15)
+* [Manoj Jampana](https://github.com/manojjampana)
 
 See also the list of [contributors](https://github.com/shenoy-anurag/forum/graphs/contributors) who participated in this project.
 
