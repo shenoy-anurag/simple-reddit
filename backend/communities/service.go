@@ -15,6 +15,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const COMMUNITY_ROUTE_PREFIX = "/community"
@@ -348,10 +349,10 @@ func DeleteCommunity() gin.HandlerFunc {
 
 func GetCommunityPosts() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var commPostReq GetPostsRequest
+		var feedReq GetFeedRequest
 
 		// validate the request body
-		if err := c.BindUri(&commPostReq); err != nil {
+		if err := c.BindJSON(&feedReq); err != nil {
 			c.JSON(
 				http.StatusBadRequest,
 				common.APIResponse{
@@ -363,7 +364,7 @@ func GetCommunityPosts() gin.HandlerFunc {
 		}
 
 		// use the validator library to validate required fields
-		if validationErr := validate.Struct(&commPostReq); validationErr != nil {
+		if validationErr := validate.Struct(&feedReq); validationErr != nil {
 			c.JSON(
 				http.StatusBadRequest,
 				common.APIResponse{
@@ -373,7 +374,7 @@ func GetCommunityPosts() gin.HandlerFunc {
 			)
 			return
 		}
-		communityPosts, err := retrieveAllPosts(commPostReq)
+		communityPosts, err := retrievePostsFeed(feedReq) //retrieveAllPosts(feedReq)
 		if err == mongo.ErrNoDocuments {
 			c.JSON(
 				http.StatusOK,
@@ -437,16 +438,27 @@ func retrieveAllCommuntities(commReq GetCommunityRequest) ([]CommunityResponse, 
 	return communitiesResponses, err
 }
 
-func retrieveAllPosts(postReq GetPostsRequest) ([]PostResponse, error) {
+func retrievePostsFeed(feedReq GetFeedRequest) ([]PostResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var posts []PostDBModel
 	var postResp []PostResponse
-	var community CommunityDBModel
-	communityFilter := bson.D{primitive.E{Key: "name", Value: postReq.Name}}
-	err := CommunityCollection.FindOne(ctx, communityFilter).Decode(&community)
-	postFilter := bson.M{"community_id": community.ID}
-	cursor, err := PostsCollection.Find(ctx, postFilter)
+	//var skipPosts int
+	feedFilter := bson.D{primitive.E{}}
+	feedOptions := options.Find()
+	if feedReq.NumberOfPosts > 0 {
+		feedOptions.SetLimit(int64(feedReq.NumberOfPosts))
+	}
+	if feedReq.NumberOfPosts < 1 {
+		feedOptions.SetLimit(10)
+	}
+	if feedReq.PageNumber > 1 {
+		feedOptions.SetSkip(int64((feedReq.PageNumber - 1) * feedReq.NumberOfPosts))
+	}
+	if feedReq.PageNumber < 2 {
+		feedOptions.SetSkip(0)
+	}
+	cursor, err := PostsCollection.Find(ctx, feedFilter, feedOptions)
 	if err = cursor.All(ctx, &posts); err != nil {
 		return postResp, err
 	}
