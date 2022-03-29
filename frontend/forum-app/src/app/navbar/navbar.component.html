@@ -3,6 +3,6 @@
     <div class="spacer"></div>
         <a mat-button routerLink="home">Home</a>
         <a mat-button routerLink="subreddits">Subreddits</a>
-        <a mat-button routerLink="profile">Profile</a>
+        <a *ngIf='getLoginStatus()'mat-button routerLink="profile">Profile</a>
         <a mat-raised-button color='accent' routerLink="login">Log In</a>
 </mat-toolbar>    
