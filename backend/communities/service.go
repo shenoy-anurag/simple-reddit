@@ -350,7 +350,7 @@ func DeleteCommunity() gin.HandlerFunc {
 func GetCommunityPosts() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var feedReq GetFeedRequest
-
+		fmt.Println(feedReq)
 		// validate the request body
 		if err := c.BindJSON(&feedReq); err != nil {
 			c.JSON(
@@ -362,7 +362,7 @@ func GetCommunityPosts() gin.HandlerFunc {
 			)
 			return
 		}
-
+		fmt.Println("after bind")
 		// use the validator library to validate required fields
 		if validationErr := validate.Struct(&feedReq); validationErr != nil {
 			c.JSON(
@@ -374,6 +374,7 @@ func GetCommunityPosts() gin.HandlerFunc {
 			)
 			return
 		}
+		fmt.Println("after validate")
 		communityPosts, err := retrievePostsFeed(feedReq) //retrieveAllPosts(feedReq)
 		if err == mongo.ErrNoDocuments {
 			c.JSON(
@@ -443,20 +444,27 @@ func retrievePostsFeed(feedReq GetFeedRequest) ([]PostResponse, error) {
 	defer cancel()
 	var posts []PostDBModel
 	var postResp []PostResponse
-	//var skipPosts int
+	fmt.Println("in function")
 	feedFilter := bson.D{primitive.E{}}
 	feedOptions := options.Find()
+	if feedReq.Mode == "latest" {
+		fmt.Println("in feedReq.Mode == 'latest'")
+		feedOptions.SetSort(bson.M{"created_at": -1})
+	}
+	if feedReq.PageNumber > 0 {
+		fmt.Println("in feedReq.PageNumber > 0")
+		feedOptions.SetSkip(int64((feedReq.PageNumber - 1) * feedReq.NumberOfPosts))
+	}
+	if feedReq.PageNumber < 1 {
+		fmt.Println("in feedReq.PageNumber < 1")
+		feedOptions.SetSkip(0)
+	}
 	if feedReq.NumberOfPosts > 0 {
 		feedOptions.SetLimit(int64(feedReq.NumberOfPosts))
 	}
 	if feedReq.NumberOfPosts < 1 {
+		fmt.Println("in feedReq.NumberOfPosts < 1")
 		feedOptions.SetLimit(10)
-	}
-	if feedReq.PageNumber > 1 {
-		feedOptions.SetSkip(int64((feedReq.PageNumber - 1) * feedReq.NumberOfPosts))
-	}
-	if feedReq.PageNumber < 2 {
-		feedOptions.SetSkip(0)
 	}
 	cursor, err := PostsCollection.Find(ctx, feedFilter, feedOptions)
 	if err = cursor.All(ctx, &posts); err != nil {

@@ -50,8 +50,9 @@ type CommunityResponse struct {
 }
 
 type GetFeedRequest struct {
-	PageNumber    int `json:"pagenumber" validate:"required"`
-	NumberOfPosts int `json:"numberofposts" validate:"required"`
+	PageNumber    int    `json:"pagenumber"`
+	NumberOfPosts int    `json:"numberofposts"`
+	Mode          string `json:"mode"`
 }
 
 // use a single instance of Validate, it caches struct info
