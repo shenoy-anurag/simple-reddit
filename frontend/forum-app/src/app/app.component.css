@@ -3,7 +3,6 @@ button {
 }
 
 .center {
-    background-color: whitesmoke;
     display: flex;
     justify-content: center;
 }
@@ -12,4 +11,11 @@ button {
     background-color: aliceblue;
     display: flex;
     justify-content: center;
+}
+
+iframe {
+position: fixed;
+top: 50%;
+left:50%;
+transform: translate(-50%, -50%);
 }
