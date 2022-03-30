@@ -1,3 +1,39 @@
 .spacer {
     flex: 1 1 auto;
 }
+
+.mat-icon {
+    /* background-repeat: no-repeat; */
+    display: inline-block;
+    fill: currentColor;
+    height: 24px;
+    width: 24px;
+    }
+
+.example-label {
+    /* display: table-cell; */
+    font-size:28px;
+    margin-left: 1px;
+    min-width: 90px;
+  }
+
+.assign {
+    min-height: 40px;
+    margin-left: 20px;
+}
+
+.hover-class:hover {
+    background-color: rgb(148, 231, 40);
+  }
+
+.hover-class1:hover {
+    background-color: rgb(235, 147, 15);
+}
+
+.hover-class2:hover {
+    background-color: rgb(223, 238, 11);
+}
+
+.hover-class3:hover {
+    background-color: rgb(236, 12, 12);
+}

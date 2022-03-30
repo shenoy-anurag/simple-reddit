@@ -1,6 +1,7 @@
-<button mat-raised-button a routerLink="/newpostform">
+<!-- <button mat-raised-button a routerLink="/newpostform">
   Create New Post
-</button>
+</button> -->
+
 <ul *ngFor="let post of posts">
     <mat-card>
         <mat-card-header>
@@ -19,3 +20,5 @@
           </mat-card-actions>
       </mat-card>
 </ul>
+
+<button mat-flat-button color="primary" class="hover-class" class="center" routerLink="/newpostform">Create New Post</button>
