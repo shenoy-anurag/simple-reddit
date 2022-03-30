@@ -4,13 +4,19 @@ button {
 
 .center {
     display: flex;
-    justify-content: center;
+    justify-content: center;  
 }
 
 .body {
     background-color: aliceblue;
     display: flex;
     justify-content: center;
+}
+
+.WebContainer{
+    width:100%;
+    min-width:1000px;
+    height:auto;
 }
 
 iframe {
