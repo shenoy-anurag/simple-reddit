@@ -1,7 +1,25 @@
-<button mat-raised-button a routerLink="/newsubredditsform">
+<br>
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+
+<!-- <button mat-raised-button a routerLink="/newsubredditsform">
+    Create New Subreddit
+</button> -->
+
+<button mat-raised-button color="primary" class="hover-class3" a routerLink="/newsubredditsform">
     Create New Subreddit
 </button>
-<button mat-raised-button a routerLink="/deletesubredditsform">
+&nbsp;
+&nbsp;
+<!-- <button mat-raised-button a routerLink="/deletesubredditsform">
+    Delete Subreddit
+</button> -->
+
+<button mat-raised-button color="" class="hover-class4" a routerLink="/deletesubredditsform">
     Delete Subreddit
 </button>
 <ul *ngFor="let subreddit of subreddits">
@@ -16,8 +34,16 @@
           </p>
         </mat-card-content>
         <mat-card-actions>
-            <button mat-button>Upvote</button>
-            <button mat-button>Downvote</button>
+            <!-- <button mat-button>Upvote</button> -->
+            <button mat-flat-button color="primary" class="hover-class1">
+                Upvote
+            </button>
+            &nbsp;
+            &nbsp;
+            <!-- <button mat-button>Downvote</button> -->
+            <button mat-flat-button color="primary" class="hover-class2">
+                Downvote
+            </button>
           </mat-card-actions>
       </mat-card>
 </ul>
