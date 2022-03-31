@@ -55,6 +55,8 @@ User Stories for Frontend
 - Added Unit testing and Cypress frontend testing
 - Added Delete User Frontend
 - Added Create Post Functionality
+- Added Create Community Functionality
+- Added Delete Subreddit Functionality
 - Fixed Sign Up forms to dynamically change with user input
 - SignUp now verifies username with database
 - Connected Frontend and Backend processes with APIs
