@@ -1,3 +1,15 @@
 .center {
     justify-content: center;
 }
+
+.hover-class1:hover {
+    background-color: red;
+}
+
+.hover-class2:hover {
+    background-color: rgb(24, 138, 24);
+}
+
+.hover-class3:hover {
+    background-color: rgba(255, 0, 0, 0.952);
+}

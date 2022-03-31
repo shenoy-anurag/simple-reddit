@@ -5,3 +5,7 @@
 td {
     padding-right: 8px;
 }
+
+.hover-class:hover {
+    background-color: rgb(241, 14, 14);
+}

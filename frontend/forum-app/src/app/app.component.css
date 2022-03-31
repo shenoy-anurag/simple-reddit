@@ -3,13 +3,25 @@ button {
 }
 
 .center {
-    background-color: whitesmoke;
     display: flex;
-    justify-content: center;
+    justify-content: center;  
 }
 
 .body {
     background-color: aliceblue;
     display: flex;
     justify-content: center;
+}
+
+.WebContainer{
+    width:100%;
+    min-width:1000px;
+    height:auto;
+}
+
+iframe {
+position: fixed;
+top: 50%;
+left:50%;
+transform: translate(-50%, -50%);
 }

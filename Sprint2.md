@@ -52,10 +52,18 @@ Demo video and wiki: <https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#s
 
 ## Frontend
 User Stories for Frontend
-
+- Added Unit testing and Cypress frontend testing
+- Added Delete User Frontend
+- Added Create Post Functionality
+- Added Create Community Functionality
+- Added Delete Subreddit Functionality
+- Fixed Sign Up forms to dynamically change with user input
+- SignUp now verifies username with database
+- Connected Frontend and Backend processes with APIs
 [Userstories and Issues Closed](https://github.com/shenoy-anurag/simple-reddit/issues?q=is%3Aissue+is%3Aclosed+label%3Asprint2+label%3A%22User+Stories+-+FE%22)
 
 ### Accomplishments:
+
 
 #### Testing using Cypress:
 - Navigation Menu Routing

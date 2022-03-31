@@ -1,6 +1,7 @@
-<button mat-raised-button a routerLink="/newpostform">
+<!-- <button mat-raised-button a routerLink="/newpostform">
   Create New Post
-</button>
+</button> -->
+
 <ul *ngFor="let post of posts">
     <mat-card>
         <mat-card-header>
@@ -13,9 +14,22 @@
           </p>
         </mat-card-content>
         <mat-card-actions>
-            <button mat-button>Upvote</button>
-            <button mat-button>Downvote</button>
-            <button mat-button color="warn"(click)="deletePost(post.owner, post.title)"><mat-icon>delete</mat-icon></button>
-          </mat-card-actions>
+            <!-- <button mat-button>Upvote</button> -->
+            <button mat-flat-button color="primary" class="hover-class2">
+              Upvote
+            </button>
+            &nbsp; &nbsp;
+            <!-- <button mat-button>Downvote</button> -->
+            <button mat-flat-button color="primary" class="hover-class3">
+              Downvote
+            </button>
+            <button mat-button color="warn"(click)="deletePost(post.owner, post.title)"><mat-icon>
+              delete
+            </mat-icon></button>
+        </mat-card-actions>
       </mat-card>
 </ul>
+
+<button mat-flat-button color="primary" class="hover-class1"  routerLink="/newpostform">
+  Create New Post
+</button>
