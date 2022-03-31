@@ -49,6 +49,12 @@ type CommunityResponse struct {
 	CreatedAt       time.Time          `json:"created_at"`
 }
 
+type GetFeedRequest struct {
+	PageNumber    int    `json:"pagenumber"`
+	NumberOfPosts int    `json:"numberofposts"`
+	Mode          string `json:"mode"`
+}
+
 // use a single instance of Validate, it caches struct info
 // var valdate *validator.Validate
 
