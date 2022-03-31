@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SignupService } from '../signup.service';
 import { FormControl, Validators, FormArray, FormBuilder, ValidatorFn, AbstractControl, Validator, ValidationErrors, FormGroup } from '@angular/forms';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Storage } from '../storage';
 
 @Component({
   selector: 'app-login',
@@ -9,7 +10,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-
+  public showPassword: boolean = false;
   form: FormGroup = new FormGroup({});
   constructor(private signupService: SignupService, private snackBar: MatSnackBar, private fb: FormBuilder) {
     this.form = this.fb.group({
@@ -18,10 +19,18 @@ export class LoginComponent implements OnInit {
     })
   }
 
-  usrLoggedIn: boolean = false;
+  usrLoggedIn: boolean = Storage.isLoggedIn;
   usr: string = "";
 
+  getLogInStatus() {
+    return Storage.isLoggedIn;
+  }
+
   ngOnInit(): void {
+  }
+
+  public togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 
   get f() {
@@ -35,7 +44,7 @@ export class LoginComponent implements OnInit {
 
       if (response.status == 200 && response.message == "success") {
         // LogIn Attempt Sucessful
-        this.usrLoggedIn = true;
+        Storage.isLoggedIn = true;
         this.usr = username;
         this.snackBar.open("Logged in as " + username, "Dismiss", { duration: 2000 });
 
@@ -53,7 +62,7 @@ export class LoginComponent implements OnInit {
   }
 
   getLogOut() {
-    this.usrLoggedIn = false;
+    Storage.isLoggedIn = false;
     this.usr = "";
   }
 }

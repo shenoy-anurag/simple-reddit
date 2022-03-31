@@ -8,6 +8,7 @@ import { WebRequestService } from './web-request.service';
 export class SignupService {
 
   constructor(private WebReqService: WebRequestService) { }
+  
   addNewAccount(email: string, username: string, password: string, name: string) {
     return this.WebReqService.post('users/signup', 
     {
@@ -44,24 +45,24 @@ export class SignupService {
     	"community_id": community_id,
 	    "title" : title,
       "body" : body
-    })
+    });
   }
 
-  createSubreddit(user_id: string, name: string, description: string) {
+  createcommunity(user_id: string, name: string, description: string) {
+    return this.WebReqService.post('community',
+    {
+      "user_id": user_id,
+      "name": name,
+      "description": description
+    });
+  }
+
+  deletecommunity(username: string, name: string) {
     return this.WebReqService.post('community', 
     {
-      "user_id": "6217146a9b60fde368166137",
-      "name": "science",
-      "description": "This community is a place to share and discuss new scientific research. Read about the latest advances in astronomy, biology, medicine, physics, social science, and more. Find and submit new publications and popular science coverage of current research."
-  })
-  }
-
-  createdeleteSubreddit(username: string, name: string) {
-    return this.WebReqService.post('deletecommunity', 
-    {
-      "username": "albert",
-      "name": "science"
-  })
+      "username": username,
+      "name": name
+    });
   }
 
 }

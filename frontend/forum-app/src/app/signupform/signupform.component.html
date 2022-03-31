@@ -45,7 +45,10 @@
     <!-- Passwords -->
     <mat-form-field class="full-width" appearance="fill">
         <mat-label>Password</mat-label>
-        <input name='password' matInput type="password" formControlName="password" #password>
+        <input matInput [type]="showPassword ? 'text' : 'password'" name="password" formControlName=password #password>
+        <mat-icon matSuffix (click)="togglePasswordVisibility()">
+            {{showPassword?'visibility_off':'visibility'}}
+        </mat-icon>
         <mat-error *ngIf="f['password'].touched && f['password'].invalid">
             Password must contain at least 6 characters: 1 Uppercase, 1 Lowercase, 1 numeric
         </mat-error>
@@ -53,9 +56,6 @@
     <mat-form-field class="full-width" appearance="fill">
         <mat-label>Confirm Password</mat-label>
         <input name='password2' matInput type="password" formControlName="password2" #password2>
-        <mat-error *ngIf="f['checkIfMatchingPasswords']">
-            Passwords don't match
-        </mat-error>
         <mat-error *ngIf="password.value != password2.value">
             Passwords don't match
         </mat-error>

@@ -3,6 +3,8 @@ package communities
 import (
 	"context"
 	"net/http"
+
+	"fmt"
 	"simple-reddit/common"
 	"simple-reddit/configs"
 	"simple-reddit/users"
@@ -101,9 +103,9 @@ func CreateCommunity() gin.HandlerFunc {
 func GetCommunity() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var communityReq GetCommunityRequest
-
+		// communityReq.IsUser = bool(c.Request.URL.Query().Get("isuser"))
 		// validate the request body
-		if err := c.BindUri(&communityReq); err != nil {
+		if err := c.BindJSON(&communityReq); err != nil {
 			c.JSON(
 				http.StatusBadRequest,
 				common.APIResponse{
@@ -113,18 +115,18 @@ func GetCommunity() gin.HandlerFunc {
 			)
 			return
 		}
-
 		// use the validator library to validate required fields
-		if validationErr := validate.Struct(&communityReq); validationErr != nil {
-			c.JSON(
-				http.StatusBadRequest,
-				common.APIResponse{
-					Status:  http.StatusBadRequest,
-					Message: common.API_FAILURE,
-					Data:    map[string]interface{}{"error": validationErr.Error()}},
-			)
-			return
-		}
+		// if validationErr := validate.Struct(&communityReq); validationErr != nil {
+		// 	c.JSON(
+		// 		http.StatusBadRequest,
+		// 		common.APIResponse{
+		// 			Status:  http.StatusBadRequest,
+		// 			Message: common.API_FAILURE,
+		// 			Data:    map[string]interface{}{"error": validationErr.Error()}},
+		// 	)
+		// 	return
+		// }
+		//communityReq.Name = c.Request.URL.Query().Get("name")
 		if communityReq.IsUser {
 			allCommunities, err := retrieveAllCommuntities(communityReq)
 			if err == mongo.ErrNoDocuments {
@@ -137,7 +139,6 @@ func GetCommunity() gin.HandlerFunc {
 				)
 				return
 			}
-
 			if len(allCommunities) > 0 {
 				c.JSON(
 					http.StatusOK,
@@ -159,6 +160,8 @@ func GetCommunity() gin.HandlerFunc {
 			}
 
 		}
+		fmt.Println("communityReq")
+		fmt.Println(communityReq)
 		communityDB, err := retrieveCommunityDetails(communityReq)
 		if err == mongo.ErrNoDocuments {
 			c.JSON(
@@ -170,6 +173,8 @@ func GetCommunity() gin.HandlerFunc {
 			)
 			return
 		}
+		fmt.Println("communityReq")
+		fmt.Println(communityReq)
 		communityDetails := ConvertCommunityDBModelToCommunityResponse(communityDB)
 		if err != nil {
 			c.JSON(
@@ -386,6 +391,7 @@ func GetCommunityPosts() gin.HandlerFunc {
 				Message: common.API_SUCCESS,
 				Data:    map[string]interface{}{"posts": communityPosts}},
 		)
+		return
 	}
 }
 
@@ -418,9 +424,6 @@ func retrieveAllCommuntities(commReq GetCommunityRequest) ([]CommunityResponse, 
 	var communitiesResponses []CommunityResponse
 	filter := bson.M{"username": commReq.Name}
 	cursor, err := CommunityCollection.Find(ctx, filter)
-	if err != nil {
-		return communitiesResponses, err
-	}
 	if err = cursor.All(ctx, &communities); err != nil {
 		return communitiesResponses, err
 	}
@@ -442,9 +445,6 @@ func retrieveAllPosts(postReq GetPostsRequest) ([]PostResponse, error) {
 	var community CommunityDBModel
 	communityFilter := bson.D{primitive.E{Key: "name", Value: postReq.Name}}
 	err := CommunityCollection.FindOne(ctx, communityFilter).Decode(&community)
-	if err != nil {
-		return postResp, err
-	}
 	postFilter := bson.M{"community_id": community.ID}
 	cursor, err := PostsCollection.Find(ctx, postFilter)
 	if err != nil {
@@ -577,7 +577,7 @@ func CheckCommunityExists() gin.HandlerFunc {
 func Routes(router *gin.Engine) {
 	router.POST(COMMUNITY_ROUTE_PREFIX, CreateCommunity())
 	router.POST(COMMUNITY_ROUTE_PREFIX+"/check-name", CheckCommunityExists())
-	router.GET(COMMUNITY_ROUTE_PREFIX+"/:name", GetCommunity())
+	router.GET(COMMUNITY_ROUTE_PREFIX, GetCommunity())
 	router.GET(COMMUNITY_ROUTE_PREFIX+"/home", GetCommunityPosts())
 	router.PATCH(COMMUNITY_ROUTE_PREFIX, EditCommunity())
 	router.DELETE(COMMUNITY_ROUTE_PREFIX, DeleteCommunity())

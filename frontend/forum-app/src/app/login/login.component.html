@@ -1,6 +1,7 @@
-<div class='center' *ngIf='!usrLoggedIn; else elseTemplate'>
+<div class='center' *ngIf='!getLogInStatus(); else elseTemplate'>
     <form action=" /" id="myLogin" [formGroup]="form">
         <br>
+        <!-- Username -->
         <mat-form-field class="full-width" appearance="fill">
             <mat-label>Username</mat-label>
             <input name='username' formControlName="username" matInput #usrInput required placeholder="username" value="">
@@ -8,9 +9,13 @@
                 Username cannot be empty
             </mat-error>
         </mat-form-field>
+        <!-- password -->
         <mat-form-field class="full-width" appearance="fill">
             <mat-label>Password</mat-label>
-            <input name='password' formControlName="password" matInput type="password" #usrPwd required placeholder="password" value="">
+            <input matInput [type]="showPassword ? 'text' : 'password'" name="password" formControlName=password #usrPwd required placeholder="password" value="">
+            <mat-icon matSuffix (click)="togglePasswordVisibility()">
+                {{showPassword?'visibility_off':'visibility'}}
+            </mat-icon>
             <mat-error *ngIf="f['password'].touched && f['password'].invalid">
                 Password cannot be empty
             </mat-error>
@@ -18,6 +23,7 @@
 
         <table class="full-width" cellspacing="0">
             <tr>
+                <!-- Routing Links -->
                 <td>
                     <button name='loginbutton' class='full-width' mat-raised-button color="primary" (click)="getLogIn(usrInput.value, usrPwd.value)">Log In</button>
                 </td>
@@ -28,6 +34,7 @@
         </table>
     </form>
 </div>
+<!--redirect to Home Page-->
 <div class='center'>
     <ng-template #elseTemplate>
         <a mat-button routerLink="/home">Home</a>

@@ -82,6 +82,7 @@ export function usernameValidator(signupService: any): ValidatorFn {
 })
 
 export class SignupformComponent implements OnInit {
+  public showPassword: boolean = false;
   form: FormGroup = new FormGroup({});
 
   constructor(private snackBar: MatSnackBar, private signupService: SignupService, private fb: FormBuilder) {
@@ -99,6 +100,10 @@ export class SignupformComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+  
+  public togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 
   get f() {

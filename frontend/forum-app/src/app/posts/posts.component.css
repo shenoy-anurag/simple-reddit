@@ -1,3 +1,7 @@
 .center {
     justify-content: center;
 }
+
+.hover-class:hover {
+    background-color: red;
+  }

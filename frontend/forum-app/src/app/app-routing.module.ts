@@ -10,7 +10,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { DeleteuserformComponent } from './deleteuserform/deleteuserform.component';
 import { NewpostformComponent } from './newpostform/newpostform.component';
 import { NewsubredditsformComponent} from './newsubredditsform/newsubredditsform.component';
-
+import { DeletesubredditsformComponent } from './deletesubredditsform/deletesubredditsform.component';
 
 const routes: Routes = [
   {path: 'login', component: LoginComponent},
@@ -22,6 +22,7 @@ const routes: Routes = [
   {path: 'delete-user', component: DeleteuserformComponent},
   {path: 'newpostform', component: NewpostformComponent},
   {path: 'newsubredditsform', component: NewsubredditsformComponent},
+  {path: 'deletesubredditsform', component: DeletesubredditsformComponent},
   {path: '', redirectTo: '/home', pathMatch:'full'},
 ];
 
