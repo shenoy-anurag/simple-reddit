@@ -418,6 +418,40 @@ func editPostDetails(postReq EditPostRequest) (result *mongo.UpdateResult, err e
 	return result, err
 }
 
+// func RankPosts(feedReq GetFeedRequest) ([]PostResponse, error) {
+// 	// formula
+// 	// ranking = ( votes + comments / 3 ) / ( age_minutes + 120 )
+// 	Completed, err := RankMostPosts()
+
+// }
+
+func RankMostPosts() (result *mongo.UpdateResult, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var posts []PostDBModel
+	//var postResp []PostResponse
+	feedFilter := bson.D{primitive.E{}}
+	feedOptions := options.Find()
+	feedOptions.SetLimit(100)
+	feedOptions.SetSort(bson.M{"upvotes": -1})
+	cursor, err := PostsCollection.Find(ctx, feedFilter, feedOptions)
+	if err = cursor.All(ctx, &posts); err != nil {
+		return result, err
+	}
+	for _, post := range posts {
+		filter := bson.M{"$and": []bson.M{{"username": post.UserName}, {"_id": post.ID}}}
+		updateQuery := bson.D{
+			{"$set", bson.D{{"ranking", UpdatePostRanking(post)}}},
+		}
+		//post := UpdatePostRanking(post, rank)
+		//item, err := ConvertPostDBModelToPostResponse(post)
+		result, err = PostsCollection.UpdateOne(ctx, filter, updateQuery)
+		if err != nil {
+			return result, err
+		}
+	}
+	return result, err
+}
 func Routes(router *gin.Engine) {
 	router.POST(POST_ROUTE_PREFIX, CreatePost())
 	router.GET(POST_ROUTE_PREFIX, GetPosts())

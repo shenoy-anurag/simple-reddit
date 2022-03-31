@@ -1,16 +1,16 @@
 package profiles
 
 import (
+	"context"
 	"net/http"
 	"simple-reddit/common"
 	"simple-reddit/configs"
-	"context"
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/bson"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -65,14 +65,14 @@ func GetProfile() gin.HandlerFunc {
 			)
 			return
 		}
-			c.JSON(
-				http.StatusOK,
-				common.APIResponse{
-					Status:  http.StatusOK,
-					Message: common.API_SUCCESS,
-					Data:    map[string]interface{}{"posts": profileDetails}},
-			)
-			return
+		c.JSON(
+			http.StatusOK,
+			common.APIResponse{
+				Status:  http.StatusOK,
+				Message: common.API_SUCCESS,
+				Data:    map[string]interface{}{"Profile": profileDetails}},
+		)
+		return
 	}
 }
 
