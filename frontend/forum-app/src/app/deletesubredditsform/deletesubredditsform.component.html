@@ -18,5 +18,8 @@
             Name cannot be empty
         </mat-error>
     </mat-form-field>
-    <button class='full-width' mat-raised-button color="warn" (click)="createdeletesubreddit(username.value, name.value)">Delete Subreddit</button>
+    <!-- Delete User if the authentication is Succesfull-->
+    <button class='full-width hover-class' mat-raised-button color="primary" (click)="createdeletesubreddit(username.value, name.value)">
+        Delete Subreddit
+    </button>
 </form>
