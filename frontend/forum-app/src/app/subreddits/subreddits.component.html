@@ -22,6 +22,8 @@
 <button mat-raised-button color="" class="hover-class4" a routerLink="/deletesubredditsform">
     Delete Subreddit
 </button>
+
+<!-- Public Subreddits -->
 <ul *ngFor="let subreddit of subreddits">
     <mat-card>
         <mat-card-header>
@@ -33,6 +35,7 @@
               {{ subreddit.description}}
           </p>
         </mat-card-content>
+        <!-- Upvote and Downvote the Subreddits -->
         <mat-card-actions>
             <!-- <button mat-button>Upvote</button> -->
             <button mat-flat-button color="primary" class="hover-class1">

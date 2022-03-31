@@ -1,7 +1,16 @@
 .full-width{
-    width: 110%;
+    width: 100%;
 }
 
 td {
     padding-left: 6px;
+}
+
+.button1{
+    width: 100%;
+}
+
+.hover-class:hover {
+    background-color: rgb(3, 124, 84);
+    width: 100%;
 }
