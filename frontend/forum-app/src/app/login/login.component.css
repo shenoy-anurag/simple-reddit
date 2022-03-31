@@ -2,6 +2,20 @@
     width: 100%;
 }
 
+.mat-focused .mat-form-field-label {
+    color: white;
+   }
+
 td {
     padding-right: 8px;
+}
+
+.hover-class1:hover {
+    width: 100%;
+    background-color: rgb(28, 160, 28);
+}
+
+.hover-class2:hover {
+    width: 100%;
+    background-color: rgba(255, 0, 0, 0.952);
 }
