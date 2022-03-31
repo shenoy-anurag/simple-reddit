@@ -359,6 +359,7 @@ func retrieveFeedDetails(feedReq GetFeedRequest) ([]PostResponse, error) {
 	}
 	if feedReq.Mode == "hot" {
 		RankMostPosts()
+		feedOptions.SetSort(bson.M{"ranking": -1})
 	}
 	if feedReq.PageNumber > 0 {
 		//fmt.Println("in feedReq.PageNumber > 0")
