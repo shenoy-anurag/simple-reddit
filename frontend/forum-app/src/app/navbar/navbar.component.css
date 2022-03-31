@@ -10,9 +10,16 @@
     width: 24px;
     }
 
+.material-icons {
+    font-size: 35px;
+    height: 40px;
+    width: 10px;
+}
+
 .example-label {
     /* display: table-cell; */
     font-size:28px;
+    height: 37px;
     margin-left: 1px;
     min-width: 90px;
   }
@@ -24,7 +31,7 @@
 
 .hover-class:hover {
     background-color: rgb(148, 231, 40);
-  }
+}
 
 .hover-class1:hover {
     background-color: rgb(235, 147, 15);
