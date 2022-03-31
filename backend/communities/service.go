@@ -447,6 +447,9 @@ func retrieveAllPosts(postReq GetPostsRequest) ([]PostResponse, error) {
 	err := CommunityCollection.FindOne(ctx, communityFilter).Decode(&community)
 	postFilter := bson.M{"community_id": community.ID}
 	cursor, err := PostsCollection.Find(ctx, postFilter)
+	if err != nil {
+		return postResp, err
+	}
 	if err = cursor.All(ctx, &posts); err != nil {
 		return postResp, err
 	}
