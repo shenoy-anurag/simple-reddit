@@ -357,6 +357,9 @@ func retrieveFeedDetails(feedReq GetFeedRequest) ([]PostResponse, error) {
 		//fmt.Println("in feedReq.Mode == 'latest'")
 		feedOptions.SetSort(bson.M{"created_at": -1})
 	}
+	if feedReq.Mode == "hot" {
+		RankMostPosts()
+	}
 	if feedReq.PageNumber > 0 {
 		//fmt.Println("in feedReq.PageNumber > 0")
 		feedOptions.SetSkip(int64((feedReq.PageNumber - 1) * feedReq.NumberOfPosts))
