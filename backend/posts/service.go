@@ -13,6 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const POST_ROUTE_PREFIX = "/post"
@@ -191,10 +192,35 @@ func GetPosts() gin.HandlerFunc {
 	}
 }
 
-func GetAllPosts() gin.HandlerFunc {
+func GetFeed() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		var feedReq GetFeedRequest
 
-		postDetails, err := retrieveAllPostDetails()
+		// validate the request body
+		if err := c.BindJSON(&feedReq); err != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		// use the validator library to validate required fields
+		if validationErr := validate.Struct(&feedReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
+
+		postDetails, err := retrieveFeedDetails(feedReq) // retrieveAllPostDetails()
 		if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
@@ -320,13 +346,33 @@ func retrievePostDetails(postReq GetPostRequest) ([]PostResponse, error) {
 	return postResp, err
 }
 
-func retrieveAllPostDetails() ([]PostResponse, error) {
+func retrieveFeedDetails(feedReq GetFeedRequest) ([]PostResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var posts []PostDBModel
 	var postResp []PostResponse
-	filter := bson.M{}
-	cursor, err := PostsCollection.Find(ctx, filter)
+	feedFilter := bson.D{primitive.E{}}
+	feedOptions := options.Find()
+	if feedReq.Mode == "latest" {
+		//fmt.Println("in feedReq.Mode == 'latest'")
+		feedOptions.SetSort(bson.M{"created_at": -1})
+	}
+	if feedReq.PageNumber > 0 {
+		//fmt.Println("in feedReq.PageNumber > 0")
+		feedOptions.SetSkip(int64((feedReq.PageNumber - 1) * feedReq.NumberOfPosts))
+	}
+	if feedReq.PageNumber < 1 {
+		//fmt.Println("in feedReq.PageNumber < 1")
+		feedOptions.SetSkip(0)
+	}
+	if feedReq.NumberOfPosts > 0 {
+		feedOptions.SetLimit(int64(feedReq.NumberOfPosts))
+	}
+	if feedReq.NumberOfPosts < 1 {
+		//fmt.Println("in feedReq.NumberOfPosts < 1")
+		feedOptions.SetLimit(10)
+	}
+	cursor, err := PostsCollection.Find(ctx, feedFilter, feedOptions)
 	if err = cursor.All(ctx, &posts); err != nil {
 		return postResp, err
 	}
@@ -375,7 +421,7 @@ func editPostDetails(postReq EditPostRequest) (result *mongo.UpdateResult, err e
 func Routes(router *gin.Engine) {
 	router.POST(POST_ROUTE_PREFIX, CreatePost())
 	router.GET(POST_ROUTE_PREFIX, GetPosts())
-	router.GET(HOME_ROUTE_PREFIX, GetAllPosts())
+	router.GET(HOME_ROUTE_PREFIX, GetFeed())
 	router.DELETE(POST_ROUTE_PREFIX, DeletePost())
 	router.PATCH(POST_ROUTE_PREFIX, EditPost())
 }

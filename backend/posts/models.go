@@ -42,6 +42,12 @@ type EditPostRequest struct {
 	Body     string             `json:"body" validate:"required"`
 }
 
+type GetFeedRequest struct {
+	PageNumber    int    `json:"pagenumber"`
+	NumberOfPosts int    `json:"numberofposts"`
+	Mode          string `json:"mode"`
+}
+
 type PostResponse struct {
 	ID        primitive.ObjectID `json:"_id"`
 	Title     string             `json:"title"`
