@@ -1,3 +1,41 @@
+
 .center {
     justify-content: center;
+}
+
+mat-card-header {
+    background: rgb(182, 207, 124);
+    padding: 8px !important;
+    margin-top: 5px !important;
+    /* width: ; */
+}
+
+mat-card-content {
+    background: rgb(235, 235, 240); 
+    padding:40px !important;
+    /* max-width: ; */
+}
+
+mat-card-actions {
+    padding:3px;
+    /* float: right; */
+    /* width: ; */
+} 
+  
+mat-card-footer {
+    background: rgb(153, 149, 149); 
+    margin:0;
+    padding: 20px;
+}
+
+.hover-class1:hover {
+    background-color: rgb(194, 93, 11);
+}
+
+.hover-class2:hover {
+    background-color: rgb(24, 138, 24);
+}
+
+.hover-class3:hover {
+    background-color: rgba(255, 0, 0, 0.952);
 }

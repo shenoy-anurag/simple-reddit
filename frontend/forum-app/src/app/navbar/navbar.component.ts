@@ -16,4 +16,8 @@ export class NavbarComponent implements OnInit {
   getLoginStatus() {
     return Storage.isLoggedIn;
   }
+  getLogOut() {
+    Storage.isLoggedIn = false;
+    Storage.username = "";
+  }
 }

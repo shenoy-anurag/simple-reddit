@@ -1,8 +1,25 @@
 <mat-toolbar color="primary">
-    <span><mat-icon>assignment</mat-icon> Reddit</span>
+    <span class="material-icons">reddit</span> &nbsp; &nbsp; <span><a mat-button class="example-label" routerLink="home">Reddit</a></span>
     <div class="spacer"></div>
-        <a mat-button routerLink="home">Home</a>
-        <a mat-button routerLink="subreddits">Subreddits</a>
-        <a *ngIf='getLoginStatus()'mat-button routerLink="profile">Profile</a>
-        <a mat-raised-button color='accent' routerLink="login">Log In</a>
+        
+        <!-- <a mat-button routerLink="home">Home</a> -->
+        <!-- <a mat-button routerLink="subreddits">Subreddits</a>
+        <a mat-button routerLink="profile">Profile</a>
+        <a mat-raised-button color='accent' routerLink="login">Log In</a> -->
+        <button mat-flat-button color="primary" class="hover-class" routerLink="home">
+            Home
+        </button>
+        <button mat-flat-button color="primary" class="hover-class1" routerLink="subreddits">
+            Subreddits
+        </button>
+        <button mat-flat-button color="primary" class="hover-class2" routerLink="profile">
+            Profile
+        </button>
+        <button *ngIf="!getLoginStatus()" mat-flat-button color="primary" class="hover-class3" routerLink="login">
+            Log In
+        </button>
+        <button *ngIf="getLoginStatus()" mat-flat-button color="warn" class="hover-class3" (click)="getLogOut()" routerLink="login">
+            Log Out
+        </button>
+        
 </mat-toolbar>    
