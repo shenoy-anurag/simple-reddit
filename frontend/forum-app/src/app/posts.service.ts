@@ -19,7 +19,7 @@ export class PostsService {
   }
 
   deletePost(post_id: string) {
-    return this.WebReqService.post('post', {
+    return this.WebReqService.delete('post', {
       "id": post_id,
       "username": Storage.username
     })
