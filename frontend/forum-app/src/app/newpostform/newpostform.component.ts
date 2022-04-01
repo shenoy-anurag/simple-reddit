@@ -11,6 +11,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class NewpostformComponent implements OnInit {
 
+  foods: any[] = [
+    {value: 'steak-0', viewValue: 'Steak'},
+    {value: 'pizza-1', viewValue: 'Pizza'},
+    {value: 'tacos-2', viewValue: 'Tacos'},
+  ];
+
   form: FormGroup = new FormGroup({});
   constructor(private signupService: SignupService, private fb: FormBuilder, private snackBar: MatSnackBar) {
     this.form = this.fb.group({

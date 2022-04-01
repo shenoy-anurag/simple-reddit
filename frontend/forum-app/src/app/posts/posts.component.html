@@ -1,6 +1,6 @@
 <!-- Public Posts -->
 <ul *ngFor='let post of this.posts;'>
-    <mat-card>
+    <mat-card class="full-width">
         <mat-card-header>
           <mat-card-title>{{ post.title }}</mat-card-title>
           <mat-card-subtitle>created at {{ post.created_at }}</mat-card-subtitle>
@@ -24,7 +24,7 @@
             &nbsp;
             &nbsp;
             &nbsp;
-            <button mat-button color="warn"(click)="deletePost(post.owner, post.title)"><mat-icon>
+            <button mat-button color="warn"(click)="deletePost(post._id, post.title)"><mat-icon>
               delete
             </mat-icon></button>
         </mat-card-actions>
