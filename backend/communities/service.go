@@ -390,6 +390,60 @@ func GetCommunityPosts() gin.HandlerFunc {
 	}
 }
 
+func CheckCommunityExists() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var communityReq GetCommunityRequest
+
+		// validate the request body
+		if err := c.BindJSON(&communityReq); err != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		// use the validator library to validate required fields
+		if validationErr := validate.Struct(&communityReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
+
+		communityAlreadyExists, err := checkCommunityNameExists(communityReq.Name)
+		if err != nil {
+			c.JSON(
+				http.StatusOK,
+				common.APIResponse{
+					Status:  http.StatusOK,
+					Message: common.API_ERROR,
+					Data: map[string]interface{}{
+						"error": err.Error(),
+					},
+				},
+			)
+			return
+		}
+
+		c.JSON(
+			http.StatusOK,
+			common.APIResponse{
+				Status:  http.StatusOK,
+				Message: common.API_SUCCESS,
+				Data:    map[string]interface{}{"communityAlreadyExists": communityAlreadyExists},
+			},
+		)
+	}
+}
+
 func createCommunityInDB(community CreateCommunityRequest) (result *mongo.InsertOneResult, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -513,60 +567,6 @@ func checkCommunityNameExists(communityName string) (bool, error) {
 		}
 	}
 	return alreadyExists, err
-}
-
-func CheckCommunityExists() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var communityReq GetCommunityRequest
-
-		// validate the request body
-		if err := c.BindJSON(&communityReq); err != nil {
-			c.JSON(
-				http.StatusBadRequest,
-				common.APIResponse{
-					Status:  http.StatusBadRequest,
-					Message: common.API_FAILURE,
-					Data:    map[string]interface{}{"error": err.Error()}},
-			)
-			return
-		}
-
-		// use the validator library to validate required fields
-		if validationErr := validate.Struct(&communityReq); validationErr != nil {
-			c.JSON(
-				http.StatusBadRequest,
-				common.APIResponse{
-					Status:  http.StatusBadRequest,
-					Message: common.API_FAILURE,
-					Data:    map[string]interface{}{"error": validationErr.Error()}},
-			)
-			return
-		}
-
-		communityAlreadyExists, err := checkCommunityNameExists(communityReq.Name)
-		if err != nil {
-			c.JSON(
-				http.StatusOK,
-				common.APIResponse{
-					Status:  http.StatusOK,
-					Message: common.API_ERROR,
-					Data: map[string]interface{}{
-						"error": err.Error(),
-					},
-				},
-			)
-			return
-		}
-
-		c.JSON(
-			http.StatusOK,
-			common.APIResponse{
-				Status:  http.StatusOK,
-				Message: common.API_SUCCESS,
-				Data:    map[string]interface{}{"communityAlreadyExists": communityAlreadyExists},
-			},
-		)
-	}
 }
 
 func Routes(router *gin.Engine) {

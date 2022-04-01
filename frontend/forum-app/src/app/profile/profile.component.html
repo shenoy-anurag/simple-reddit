@@ -1,14 +1,30 @@
+&nbsp;
+<br>
 <mat-card>
     <mat-card-title>
         {{ profile.firstname + " " + profile.lastname }}
     </mat-card-title>
+    <br>
     <mat-card-subtitle>
+<<<<<<< HEAD
         {{ profile.username }}<br>
         {{ "karma: " + profile.karma }}
     </mat-card-subtitle><br>
     <mat-card-content>
         {{"email: " + profile.email }}
     </mat-card-content>
+=======
+        {{ profile.username }}
+    </mat-card-subtitle>
+    <br>
+    <mat-card-content>
+        {{"email: " + profile.email }}
+    </mat-card-content>
+
+    <!-- <button mat-raised-button color="warn" a routerLink="/delete-user">
+        Delete User
+    </button> -->
+>>>>>>> main
     <button mat-flat-button color="primary" class="hover-class" routerLink="/delete-user">
         Delete User
     </button>

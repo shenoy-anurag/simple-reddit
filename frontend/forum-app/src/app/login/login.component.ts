@@ -44,15 +44,32 @@ export class LoginComponent implements OnInit {
         Storage.isLoggedIn = true;
         Storage.username = username;
         this.usr = username;
+<<<<<<< HEAD
         this.snackBar.open("Logged in as " + username, "Dismiss", { duration: 1500 });
+=======
+        // this.snackBar.open("Logged in as " + username, "Dismiss", { duration: 2000 });
+        this.snackBar.open("Logged in as " + username, "Dismiss", { duration: 3000 });
+
+        // update profile page
+>>>>>>> main
       }
       else if (response.status == 200 && response.message == "failure") {
         // Prompt user, incorrect login
+<<<<<<< HEAD
         this.snackBar.open("Failed login", "Dismiss", { duration: 1500 });
       }
       else {
         // Something else is wrong
         this.snackBar.open("Something is wrong", "Alert Adminstration"), { duration: 1500 };
+=======
+        // this.snackBar.open("Failed login", "Dismiss", { duration: 2000 });
+        this.snackBar.open("Failed login", "Dismiss", { duration: 3000 });
+      }
+      else {
+        // Something else is wrong
+        // this.snackBar.open("Something is wrong", "Alert Adminstration"), { duration: 2000 });
+        this.snackBar.open("Something is wrong", "Alert Adminstration"), { duration: 3000 };
+>>>>>>> main
       }
     })
   }
@@ -61,5 +78,6 @@ export class LoginComponent implements OnInit {
     Storage.isLoggedIn = false;
     Storage.username = "";
     this.usr = "";
+    this.snackBar.open("Logged out ", "Dismiss",{ duration: 3000 });
   }
 }
