@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { PostsComponent } from './posts/posts.component';
-import { PostComponent } from './post/post.component';
 import { PostsService } from './posts.service';
 import { SubredditsService } from './subreddits.service';
 import { ButtonComponent } from './button/button.component';
@@ -29,7 +28,6 @@ import { DeletesubredditsformComponent } from './deletesubredditsform/deletesubr
   declarations: [
     AppComponent,
     PostsComponent,
-    PostComponent,
     ButtonComponent,
     SignupformComponent,
     PopupMessageComponent,
