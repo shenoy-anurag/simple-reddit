@@ -15,6 +15,7 @@ type PostDBModel struct {
 	Body        string             `json:"body"`
 	Upvotes     int                `bson:"upvotes"`
 	Downvotes   int                `bson:"downvotes"`
+	Ranking     int                `bson:"ranking"`
 	CreatedAt   time.Time          `bson:"created_at"`
 }
 
@@ -67,6 +68,7 @@ func ConvertPostRequestToPostDBModel(postReq CreatePostRequest) PostDBModel {
 		Body:        postReq.Body,
 		Upvotes:     1,
 		Downvotes:   0,
+		Ranking:     0,
 		CreatedAt:   time.Now().UTC(),
 	}
 }
@@ -89,4 +91,10 @@ func ConvertEditPostReqToDeletePostReq(postReq EditPostRequest) (DeletePostReque
 		ID:       postReq.ID,
 		UserName: postReq.UserName,
 	}, err
+}
+
+func UpdatePostRanking(postDB PostDBModel) int {
+	// ranking = ( votes + comments / 3 ) / ( age_minutes + 120 )
+	rank := ((postDB.Upvotes - postDB.Downvotes) * 4) / (int(postDB.CreatedAt.Sub(time.Now().UTC())) * 100)
+	return rank
 }

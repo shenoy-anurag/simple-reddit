@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"fmt"
 	"simple-reddit/common"
 	"simple-reddit/configs"
 	"simple-reddit/users"
@@ -160,8 +159,6 @@ func GetCommunity() gin.HandlerFunc {
 			}
 
 		}
-		fmt.Println("communityReq")
-		fmt.Println(communityReq)
 		communityDB, err := retrieveCommunityDetails(communityReq)
 		if err == mongo.ErrNoDocuments {
 			c.JSON(
@@ -173,8 +170,6 @@ func GetCommunity() gin.HandlerFunc {
 			)
 			return
 		}
-		fmt.Println("communityReq")
-		fmt.Println(communityReq)
 		communityDetails := ConvertCommunityDBModelToCommunityResponse(communityDB)
 		if err != nil {
 			c.JSON(
@@ -351,7 +346,7 @@ func GetCommunityPosts() gin.HandlerFunc {
 		var commPostReq GetPostsRequest
 
 		// validate the request body
-		if err := c.BindUri(&commPostReq); err != nil {
+		if err := c.BindJSON(&commPostReq); err != nil {
 			c.JSON(
 				http.StatusBadRequest,
 				common.APIResponse{
