@@ -1,18 +1,19 @@
-&nbsp;
-<br>
-<mat-card>
-    <mat-card-title>
-        {{ profile.firstname + " " + profile.lastname }}
-    </mat-card-title>
-    <br>
-    <mat-card-subtitle>
-        {{ profile.username }}<br>
-        {{ "karma: " + profile.karma }}
-    </mat-card-subtitle><br>
-    <mat-card-content>
-        {{"email: " + profile.email }}
-    </mat-card-content>
-    <button mat-flat-button color="primary" class="hover-class" routerLink="/delete-user">
-        Delete User
-    </button>
-</mat-card>
+<div>
+    <mat-card>
+        <mat-card-title>
+            {{ profile.firstname + " " + profile.lastname }}
+        </mat-card-title>
+        <br>
+        <mat-card-subtitle>
+            {{ profile.username }}<br>
+            {{ "karma: " + profile.karma }}
+        </mat-card-subtitle>
+        <br>
+        <mat-card-content>
+            {{ "email: " + profile.email }}
+        </mat-card-content>
+        <button mat-flat-button color="primary" class="hover-class" routerLink="/delete-user">
+            Delete User
+        </button>
+    </mat-card>
+</div>
