@@ -49,6 +49,7 @@ export class SignupService {
   }
 
   createcommunity(user_id: string, name: string, description: string) {
+    console.log("into post block");
     return this.WebReqService.post('community',
     {
       "user_id": user_id,
@@ -58,10 +59,11 @@ export class SignupService {
   }
 
   deletecommunity(username: string, name: string) {
+    console.log("delete post block")
     return this.WebReqService.post('community', 
     {
-      "username": username,
-      "name": name
+      "username": 'albert',
+      "name": 'science'
     });
   }
 
