@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SignupService } from './signup.service';
+import { WebRequestService } from './web-request.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,5 +17,5 @@ export class SubredditsService {
     ]
   }
 
-  constructor() { }
+  constructor(private WebReqService: WebRequestService) { }
 }

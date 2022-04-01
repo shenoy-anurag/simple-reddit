@@ -9,6 +9,16 @@
         </mat-error>
     </mat-form-field>
 
+    <!-- Post Community -->
+    <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Community</mat-label>
+        <mat-select>
+            <mat-option *ngFor="let food of foods" [value]="food">
+              {{ food.viewValue }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
     <!-- Post Title -->
     <mat-form-field class="full-width" appearance="fill">
         <mat-label>Title</mat-label>

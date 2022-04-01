@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ProfileService } from '../profile.service';
+import { Storage } from '../storage';
 
 @Component({
   selector: 'app-profile',
@@ -12,16 +13,23 @@ export class ProfileComponent implements OnInit {
   constructor(private service: ProfileService) {}
 
   ngOnInit(): void {
-    console.log("onInit")
-    this.service.getProfile().subscribe((response: any) => {
+    this.getUserProfile();
+  }
+
+  getUserProfile() {
+    this.service.getProfile(Storage.username).subscribe((response: any) => {
       console.log(response);
-      console.log(response.data.user.username);
+      console.log(response.status);
+      
       if (response.status == 200) {
+        console.log(response.data.Profile.username);
+        console.log(response.data.Profile.email);
         this.profile = {
           "firstname" : "test",//response.data.post.firstname,
           "lastname": "test2", //response.data.post.lastname,
-          "username": response.data.user.username,
-          "email": response.data.post.email
+          "username": response.data.Profile.username,
+          "email": response.data.Profile.email,
+          "karma": response.data.Profile.karma,
         }
       }
     });

@@ -3,6 +3,10 @@
     justify-content: center;
 }
 
+.full-width {
+    width: 100%;
+}
+
 mat-card-header {
     background: rgb(182, 207, 124);
     padding: 8px !important;
