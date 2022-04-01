@@ -33,8 +33,11 @@ export class NewsubredditsformComponent implements OnInit {
     console.log("new subreddit: " + username + " " + name + " " + description);
     this.signupService.createcommunity(username, name, description).subscribe((response: any) => {
     console.log(response);
-     if(response.status == 200 && response.message == "success"){
+     if(response.status == 201 && response.message == "success"){
       this.snackBar.open("New subreddit created.", "Dismiss"), { duration: 2000 };
+     }
+     else if (response.status == 200 && response.message == "failure") {
+      this.snackBar.open("Subreddit already exists.", "Dismiss"), { duration: 1500};
      }
     else {
       // Something else is wrong

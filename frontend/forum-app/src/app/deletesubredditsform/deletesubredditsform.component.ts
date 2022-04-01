@@ -41,6 +41,9 @@ export class DeletesubredditsformComponent implements OnInit {
       if(response.status == 200 && response.message == "success"){
         this.snackBar.open("Subreddit deleted."), { duration: 2000 };
        }
+      else if (response.status == 401 && response.message == "error") {
+        this.snackBar.open("Subbreddit does not exist", "Dismiss", { duration: 1500 });
+      }
       else {
         // Something else is wrong
         this.snackBar.open("Something is wrong", "Alert Adminstration"), { duration: 2000 };

@@ -61,10 +61,10 @@ export class SignupService {
 
   deletecommunity(username: string, name: string) {
     console.log("delete post block")
-    return this.WebReqService.delete('community', 
+    return this.WebReqService.post('community', 
     {
-      "username": 'albert',
-      "name": 'science'
+      "username": username,
+      "name": name
     });
   }
 
