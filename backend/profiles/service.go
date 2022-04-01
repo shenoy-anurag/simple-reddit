@@ -185,6 +185,6 @@ func checkProfileExists(UserNameReq string) (bool, error) {
 }
 
 func Routes(router *gin.Engine) {
-	router.GET(PROFILE_ROUTE_PREFIX, GetProfile())
+	router.POST(PROFILE_ROUTE_PREFIX, GetProfile())
 	router.PATCH(PROFILE_ROUTE_PREFIX, EditProfile())
 }
