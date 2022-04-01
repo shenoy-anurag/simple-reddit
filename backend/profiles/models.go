@@ -50,6 +50,12 @@ type UserDBModel struct {
 	Joined    time.Time          `bson:"joined"`
 }
 
+type Saved struct {
+	ID         primitive.ObjectID `bson:"_id"`
+	SavedPosts []primitive.ObjectID `bson:"saved_posts"`
+	SavedComments []primitive.ObjectID `bson:"saved_posts"`
+}
+
 // Convertion functions to convertbetween different models.
 
 func ConvertEditProfileRequestToPrfileDBModel(editProfile EditProfileRequest) ProfileDBModel {
