@@ -157,7 +157,6 @@ func GetCommunity() gin.HandlerFunc {
 				)
 				return
 			}
-
 		}
 		communityDB, err := retrieveCommunityDetails(communityReq)
 		if err == mongo.ErrNoDocuments {
@@ -570,10 +569,13 @@ func checkCommunityNameExists(communityName string) (bool, error) {
 }
 
 func Routes(router *gin.Engine) {
-	router.POST(COMMUNITY_ROUTE_PREFIX, CreateCommunity())
+	router.POST(COMMUNITY_ROUTE_PREFIX+ "/create", CreateCommunity())
 	router.POST(COMMUNITY_ROUTE_PREFIX+"/check-name", CheckCommunityExists())
-	router.GET(COMMUNITY_ROUTE_PREFIX, GetCommunity())
-	router.GET(COMMUNITY_ROUTE_PREFIX+"/home", GetCommunityPosts())
+	// router.GET(COMMUNITY_ROUTE_PREFIX, GetCommunity())
+	router.POST(COMMUNITY_ROUTE_PREFIX, GetCommunity())
+	// router.GET(COMMUNITY_ROUTE_PREFIX+"/home", GetCommunityPosts())
+	router.POST(COMMUNITY_ROUTE_PREFIX+"/home", GetCommunityPosts())
 	router.PATCH(COMMUNITY_ROUTE_PREFIX, EditCommunity())
-	router.DELETE(COMMUNITY_ROUTE_PREFIX, DeleteCommunity())
+	// router.DELETE(COMMUNITY_ROUTE_PREFIX, DeleteCommunity())
+	router.POST(COMMUNITY_ROUTE_PREFIX+"/delete", DeleteCommunity())
 }
