@@ -1,5 +1,9 @@
-.full-width1{
+/* .full-width{
     width: 100%;
+} */
+
+.full-width1{
+    width: 110%;
 }
 
 .center {
@@ -11,10 +15,10 @@ td {
 }
 
 .button1{
-    width: 100%;
+    width: 110%;
 }
 
 .hover-class:hover {
     background-color: rgb(3, 124, 84);
-    width: 100%;
+    width: 110%;
 }

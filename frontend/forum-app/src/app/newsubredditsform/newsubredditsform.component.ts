@@ -36,11 +36,16 @@ export class NewsubredditsformComponent implements OnInit {
      if(response.status == 200 && response.message == "success"){
       this.snackBar.open("New subreddit created.", "Dismiss"), { duration: 2000 };
      }
-    else {
+    
+     if(response.status == 200 && response.message == "failure"){
+       this.snackBar.open("Community with that name already exists","Dismiss"), { duration:4000};
+     }
+
+     else {
       // Something else is wrong
       this.snackBar.open("Something is wrong", "Alert Adminstration"), { duration: 2000 };
-    }
-     })
+     }
+    })
   }
 }
 
