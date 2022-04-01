@@ -2,6 +2,7 @@ package comments
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -9,20 +10,24 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+const UPVOTE string = "upvote"
+const DOWNVOTE string = "downvote"
+
 // Models for Comments
 type CommentDBModel struct {
-	ID        primitive.ObjectID `bson:"_id"`
-	PostId    primitive.ObjectID `bson:"post_id" validate:"required"`
-	UserId    primitive.ObjectID `bson:"user_id" validate:"required"`
-	ParentId  primitive.ObjectID `bson:"parent_id"`
-	Body      string             `bson:"body" validate:"required"`
-	Upvotes   int                `bson:"upvotes"`
-	Downvotes int                `bson:"downvotes"`
-	IsRoot    bool               `bson:"is_root"`
-	IsVotable bool               `bson:"is_votable"`
-	IsDeleted bool               `bson:"is_deleted"`
-	CreatedAt time.Time          `bson:"created_at"`
-	DeletedAt time.Time          `bson:"deleted_at"`
+	ID         primitive.ObjectID `bson:"_id"`
+	PostId     primitive.ObjectID `bson:"post_id" validate:"required"`
+	UserId     primitive.ObjectID `bson:"user_id" validate:"required"`
+	ParentId   primitive.ObjectID `bson:"parent_id"`
+	Body       string             `bson:"body" validate:"required"`
+	Upvotes    int                `bson:"upvotes"`
+	Downvotes  int                `bson:"downvotes"`
+	TotalVotes int                `bson:"total_votes"`
+	IsRoot     bool               `bson:"is_root"`
+	IsVotable  bool               `bson:"is_votable"`
+	IsDeleted  bool               `bson:"is_deleted"`
+	CreatedAt  time.Time          `bson:"created_at"`
+	DeletedAt  time.Time          `bson:"deleted_at"`
 }
 
 type CreateCommentRequest struct {
@@ -34,6 +39,23 @@ type CreateCommentRequest struct {
 
 type DeleteCommentRequest struct {
 	CommentId string `json:"comment_id" uri:"comment_id" validate:"required"`
+}
+
+// Model for Comment Voting History (to prevent a single user from giving multiple upvotes/downvotes on the same comment)
+type CommentVoteHistoryDBModel struct {
+	ID            primitive.ObjectID `bson:"_id"`
+	UserId        primitive.ObjectID `bson:"user_id" validate:"required"`
+	CommentId     primitive.ObjectID `bson:"comment_id"`
+	IsUpvoted     bool               `bson:"is_upvoted"`
+	IsDownvoted   bool               `bson:"is_downvoted"`
+	CreatedAt     time.Time          `bson:"created_at"`
+	LastUpdatedAt time.Time          `bson:"last_updated_at"`
+}
+
+type CommentVoteRequest struct {
+	UserId    string `json:"user_id" validate:"required"`
+	CommentId string `json:"comment_id" validate:"required"`
+	Vote      string `json:"vote" validate:"required"`
 }
 
 // Convertion functions to convert between different models.
@@ -53,18 +75,52 @@ func ConvertCommentRequestToCommentDBModel(commentReq CreateCommentRequest) (Com
 		is_root = true
 	}
 	return CommentDBModel{
-		ID:        primitive.NewObjectID(),
-		PostId:    post_id,
-		UserId:    user_id,
-		ParentId:  parent_id,
-		Body:      commentReq.Body,
-		Upvotes:   0,
-		Downvotes: 0,
-		IsRoot:    is_root,
-		IsVotable: true,
-		IsDeleted: false,
-		CreatedAt: time.Now().UTC(),
-		DeletedAt: time.Time{},
+		ID:         primitive.NewObjectID(),
+		PostId:     post_id,
+		UserId:     user_id,
+		ParentId:   parent_id,
+		Body:       commentReq.Body,
+		Upvotes:    0,
+		Downvotes:  0,
+		TotalVotes: 0,
+		IsRoot:     is_root,
+		IsVotable:  true,
+		IsDeleted:  false,
+		CreatedAt:  time.Now().UTC(),
+		DeletedAt:  time.Time{},
+	}, nil
+}
+
+func ConvertCVRToCVHDBModel(cVoteReq CommentVoteRequest) (CommentVoteHistoryDBModel, error) {
+	cVHDbModel := CommentVoteHistoryDBModel{}
+	newId := primitive.NewObjectID()
+
+	user_id, err := primitive.ObjectIDFromHex(cVoteReq.UserId)
+	if err != nil {
+		return cVHDbModel, err
+	}
+	comment_id, err := primitive.ObjectIDFromHex(cVoteReq.CommentId)
+	if err != nil {
+		return cVHDbModel, err
+	}
+	var is_upvote bool = false
+	var is_downvote bool = false
+	if cVoteReq.Vote == UPVOTE {
+		is_upvote = true
+	} else if cVoteReq.Vote == DOWNVOTE {
+		is_downvote = true
+	} else {
+		return cVHDbModel, err
+	}
+	currTime := time.Now().UTC()
+	return CommentVoteHistoryDBModel{
+		ID:            newId,
+		UserId:        user_id,
+		CommentId:     comment_id,
+		IsUpvoted:     is_upvote,
+		IsDownvoted:   is_downvote,
+		CreatedAt:     currTime,
+		LastUpdatedAt: currTime,
 	}, nil
 }
 
@@ -121,5 +177,132 @@ func deleteComment(commReq DeleteCommentRequest) (result *mongo.UpdateResult, er
 		filter,
 		updateQuery,
 	)
+	return result, err
+}
+
+func updateVoteComment(comment_id_hex string, isUpVote bool) (result *mongo.UpdateResult, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// updating the comment in db
+	comment_id, err := primitive.ObjectIDFromHex(comment_id_hex)
+	if err != nil {
+		return result, err
+	}
+	filter := bson.M{"_id": comment_id}
+	updateQuery := bson.D{}
+	if isUpVote {
+		updateQuery = bson.D{
+			primitive.E{Key: "$inc", Value: bson.D{primitive.E{Key: "upvotes", Value: 1}, primitive.E{Key: "total_votes", Value: 1}}},
+		}
+	} else {
+		updateQuery = bson.D{
+			primitive.E{Key: "$inc", Value: bson.D{primitive.E{Key: "downvotes", Value: 1}, primitive.E{Key: "total_votes", Value: -1}}},
+		}
+	}
+	result, err = CommentsCollection.UpdateOne(
+		ctx,
+		filter,
+		updateQuery,
+	)
+	return result, err
+}
+
+func updateVote(cVoteReq CommentVoteRequest) (result string, err error) {
+	// comment, _ := retrieveCommentById(cVoteReq.CommentId)
+	commentHist, _ := retrieveCommentVoteHistForUser(cVoteReq.CommentId, cVoteReq.UserId)
+	fmt.Println(commentHist)
+	// fmt.Println(comment)
+	var is_upvote bool = false
+	var is_downvote bool = false
+	var is_remove_vote bool = false
+	if cVoteReq.Vote == UPVOTE {
+		if commentHist.CommentId.Hex() == "" {
+			is_upvote = true
+		} else if commentHist.IsUpvoted {
+			return "voted", nil
+		} else if commentHist.IsDownvoted {
+			is_remove_vote = true
+		}
+	} else if cVoteReq.Vote == DOWNVOTE {
+		if commentHist.CommentId.Hex() == "" {
+			is_downvote = true
+		} else if commentHist.IsDownvoted {
+			return "voted", nil
+		} else if commentHist.IsUpvoted {
+			is_remove_vote = true
+		}
+	}
+	_, err = updateVoteComment(cVoteReq.CommentId, is_upvote)
+	if err != nil {
+		return "error", err
+	}
+
+	if is_remove_vote {
+		_, err := deleteCommentVoteHistForUser(cVoteReq.CommentId, cVoteReq.UserId)
+		return "deleted", err
+	}
+	cVoteHist, err := ConvertCVRToCVHDBModel(cVoteReq)
+	if err != nil {
+		return "error", err
+	}
+	if is_upvote || is_downvote {
+		_, err := createCommentVoteHistInDB(cVoteHist)
+		if err != nil {
+			return "error", err
+		} else {
+			return "voted", err
+		}
+	}
+	return "voted", err
+}
+
+func createCommentVoteHistInDB(cVoteHist CommentVoteHistoryDBModel) (result *mongo.InsertOneResult, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	result, err = CommentsCollection.InsertOne(ctx, cVoteHist)
+	return result, err
+}
+
+func retrieveCommentVoteHistForUser(comment_id_hex string, user_id_hex string) (CommentVoteHistoryDBModel, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var commentHist CommentVoteHistoryDBModel
+	comment_id, err := primitive.ObjectIDFromHex(comment_id_hex)
+	if err != nil {
+		return commentHist, err
+	}
+	user_id, err := primitive.ObjectIDFromHex(user_id_hex)
+	if err != nil {
+		return commentHist, err
+	}
+	filter := bson.D{
+		primitive.E{Key: "user_id", Value: user_id},
+		primitive.E{Key: "comment_id", Value: comment_id},
+	}
+	err = CommentsVotingHistoryCollection.FindOne(ctx, filter).Decode(&commentHist)
+	return commentHist, err
+}
+
+func deleteCommentVoteHistForUser(comment_id_hex string, user_id_hex string) (*mongo.DeleteResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	comment_id, err := primitive.ObjectIDFromHex(comment_id_hex)
+	if err != nil {
+		return nil, err
+	}
+	user_id, err := primitive.ObjectIDFromHex(user_id_hex)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.D{
+		primitive.E{Key: "user_id", Value: user_id},
+		primitive.E{Key: "comment_id", Value: comment_id},
+	}
+	result, err := CommentsVotingHistoryCollection.DeleteOne(ctx, filter)
 	return result, err
 }

@@ -14,8 +14,10 @@ import (
 const COMMENTS_ROUTE_PREFIX = "/comment"
 
 const CommentsCollectionName string = "comments"
+const CommentsVotingHistoryCollectionName string = "comments_voting_history"
 
 var CommentsCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, CommentsCollectionName)
+var CommentsVotingHistoryCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, CommentsVotingHistoryCollectionName)
 var validate = validator.New()
 
 func CreateComment() gin.HandlerFunc {
@@ -143,7 +145,59 @@ func DeleteComment() gin.HandlerFunc {
 	}
 }
 
+func VoteComment() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var cVoteReq CommentVoteRequest
+
+		// validate the request body
+		if err := c.BindJSON(&cVoteReq); err != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		// use the validator library to validate required fields
+		if validationErr := validate.Struct(&cVoteReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
+
+		// Update Vote in DB
+		result, err := updateVote(cVoteReq)
+		if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		c.JSON(
+			http.StatusCreated,
+			common.APIResponse{
+				Status:  http.StatusCreated,
+				Message: common.API_SUCCESS,
+				Data:    map[string]interface{}{"created": result}},
+		)
+	}
+}
+
 func Routes(router *gin.Engine) {
 	router.POST(COMMENTS_ROUTE_PREFIX, CreateComment())
+	router.POST(COMMENTS_ROUTE_PREFIX+"/vote", CreateComment())
 	router.DELETE(COMMENTS_ROUTE_PREFIX, DeleteComment())
 }
