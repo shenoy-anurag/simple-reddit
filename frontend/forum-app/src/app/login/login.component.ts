@@ -38,26 +38,21 @@ export class LoginComponent implements OnInit {
   }
 
   getLogIn(username: string, password: string) {
-    console.log('Attempted login: USR:' + username + ' PWD:' + password);
     this.signupService.checkLogIn(username, password).subscribe((response: any) => {
-      console.log(response);
-
       if (response.status == 200 && response.message == "success") {
         // LogIn Attempt Sucessful
         Storage.isLoggedIn = true;
         Storage.username = username;
         this.usr = username;
-        this.snackBar.open("Logged in as " + username, "Dismiss", { duration: 2000 });
-
-        // update profile page
+        this.snackBar.open("Logged in as " + username, "Dismiss", { duration: 1500 });
       }
-      else if (response.status == 200 && response.message == "failure" && response.data.data == 'Incorrect Credentials') {
+      else if (response.status == 200 && response.message == "failure") {
         // Prompt user, incorrect login
-        this.snackBar.open("Failed login", "Dismiss", { duration: 2000 });
+        this.snackBar.open("Failed login", "Dismiss", { duration: 1500 });
       }
       else {
         // Something else is wrong
-        this.snackBar.open("Something is wrong", "Alert Adminstration"), { duration: 2000 };
+        this.snackBar.open("Something is wrong", "Alert Adminstration"), { duration: 1500 };
       }
     })
   }
