@@ -37,18 +37,21 @@ mat-card-footer {
 }
 
 .hover-class1:hover {
+    /* margin-right: 15px; */
     background-color: rgb(24, 138, 24);
 }
 
 .hover-class2:hover {
+    /* margin-right: 15px; */
     background-color: rgba(255, 0, 0, 0.952);
 }
 
 .hover-class3:hover {
-    margin-right: 30px;
+    /* margin-right: 10px; */
     background-color: rgb(236, 74, 10);
 }
 
 .hover-class4:hover {
+    /* margin-left: -10px; */
     background-color: rgb(243, 11, 11);
 }
