@@ -12,13 +12,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const PROFILE_ROUTE_PREFIX = "/profile"
 
 const ProfilesCollectionName string = "profiles"
+const UsersCollectionName string = "users"
 
 var ProfileCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, ProfilesCollectionName)
+var UsersCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, UsersCollectionName)
 var validate = validator.New()
 
 func CreateProfile(profileReq ProfileDBModel) bool {
@@ -123,6 +126,86 @@ func EditProfile() gin.HandlerFunc {
 	}
 }
 
+func DeleteProfile() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var delProfileReq DeleteProfileRequest
+
+		// validate the request body
+		if err := c.BindJSON(&delProfileReq); err != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		// use the validator library to validate required fields
+		if validationErr := validate.Struct(&delProfileReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
+		profileResult, verifiedProfile, err:= deleteProfile(delProfileReq)
+		if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+		if !verifiedProfile {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+		userResult,verifiedUser, err := deleteUser(delProfileReq)
+		if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+		if !verifiedUser {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		c.JSON(
+			http.StatusOK,
+			common.APIResponse{
+				Status:  http.StatusOK,
+				Message: common.API_SUCCESS,
+				Data:    map[string]interface{}{"deletedProfile": profileResult,"deletedUser":userResult, "username":delProfileReq.Username }},
+		)
+	}
+}
+
 func CreateProfileInDB(profileReq ProfileDBModel) (result *mongo.InsertOneResult, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -184,7 +267,52 @@ func checkProfileExists(UserNameReq string) (bool, error) {
 	return alreadyExists, err
 }
 
+func deleteProfile(delProfileReq DeleteProfileRequest) (*mongo.DeleteResult,bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	filter := bson.D{primitive.E{Key: "username", Value: delProfileReq.Username}}
+	result, err := ProfileCollection.DeleteOne(ctx, filter)
+	if err!=nil {
+		return result,false,err
+	}
+	return result,true,err
+}
+
+func deleteUser(delProfileReq DeleteProfileRequest) (userResult *mongo.DeleteResult,status bool,err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	filter := bson.D{primitive.E{Key: "username", Value: delProfileReq.Username}}
+	userDB, err := getUserDetails(delProfileReq.Username)
+	if err!=nil {
+		return userResult,false, err
+	}
+	userResult,verifiedUser,err := login(delProfileReq,userDB)
+	if !verifiedUser {
+		return userResult,false,err
+	}
+	userResult, err = UsersCollection.DeleteOne(ctx, filter)
+	return userResult,true, err
+}
+
+func getUserDetails(userName string) (UserDBModel, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var user UserDBModel
+	filter := bson.D{primitive.E{Key: "username", Value: userName}}
+	err := UsersCollection.FindOne(ctx, filter).Decode(&user)
+	return user, err
+}
+
+func login(profileReq DeleteProfileRequest,userDB UserDBModel) (resultUser *mongo.DeleteResult,status bool, err error){
+	err = bcrypt.CompareHashAndPassword([]byte(userDB.Password), []byte(profileReq.Password))
+	if err != nil {
+		return resultUser, false,err
+	}
+	return resultUser,true,err
+}
+
 func Routes(router *gin.Engine) {
 	router.POST(PROFILE_ROUTE_PREFIX, GetProfile())
 	router.PATCH(PROFILE_ROUTE_PREFIX, EditProfile())
+	router.DELETE(PROFILE_ROUTE_PREFIX, DeleteProfile())
 }
