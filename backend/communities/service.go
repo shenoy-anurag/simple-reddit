@@ -127,7 +127,7 @@ func GetCommunity() gin.HandlerFunc {
 		// }
 		//communityReq.Name = c.Request.URL.Query().Get("name")
 		if communityReq.IsUser {
-			allCommunities, err := retrieveAllCommuntities(communityReq)
+			allCommunities, err := retrieveAllCommunitiesOfUser(communityReq)
 			if err == mongo.ErrNoDocuments {
 				c.JSON(
 					http.StatusOK,
@@ -200,6 +200,39 @@ func GetCommunity() gin.HandlerFunc {
 			)
 			return
 		}
+	}
+}
+
+func GetAllCommunities() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		communities, err := retrieveAllCommunitiesDetails()
+		if err == mongo.ErrNoDocuments {
+			c.JSON(
+				http.StatusOK,
+				common.APIResponse{
+					Status:  http.StatusOK,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": common.ERR_COMMUNITY_NOT_FOUND.Message}},
+			)
+			return
+		} else if err != nil {
+			c.JSON(
+				http.StatusOK,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		c.JSON(
+			http.StatusOK,
+			common.APIResponse{
+				Status:  http.StatusOK,
+				Message: common.API_SUCCESS,
+				Data:    map[string]interface{}{"communities": communities}},
+		)
 	}
 }
 
@@ -385,7 +418,6 @@ func GetCommunityPosts() gin.HandlerFunc {
 				Message: common.API_SUCCESS,
 				Data:    map[string]interface{}{"posts": communityPosts}},
 		)
-		return
 	}
 }
 
@@ -465,13 +497,37 @@ func retrieveCommunityDetails(commReq GetCommunityRequest) (CommunityDBModel, er
 	return community, err
 }
 
-func retrieveAllCommuntities(commReq GetCommunityRequest) ([]CommunityResponse, error) {
+func retrieveAllCommunitiesDetails() ([]CommunityResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var communities []CommunityDBModel
+	var communitiesResponses []CommunityResponse
+	filter := bson.D{}
+	cursor, err := CommunityCollection.Find(ctx, filter)
+	if err != nil {
+		return communitiesResponses, err
+	}
+	if err = cursor.All(ctx, &communities); err != nil {
+		return communitiesResponses, err
+	}
+	for _, community := range communities {
+		item := ConvertCommunityDBModelToCommunityResponse(community)
+		communitiesResponses = append(communitiesResponses, item)
+	}
+	return communitiesResponses, err
+}
+
+func retrieveAllCommunitiesOfUser(commReq GetCommunityRequest) ([]CommunityResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var communities []CommunityDBModel
 	var communitiesResponses []CommunityResponse
 	filter := bson.M{"username": commReq.Name}
 	cursor, err := CommunityCollection.Find(ctx, filter)
+	if err != nil {
+		return communitiesResponses, err
+	}
 	if err = cursor.All(ctx, &communities); err != nil {
 		return communitiesResponses, err
 	}
@@ -493,6 +549,9 @@ func retrieveAllPosts(postReq GetPostsRequest) ([]PostResponse, error) {
 	var community CommunityDBModel
 	communityFilter := bson.D{primitive.E{Key: "name", Value: postReq.Name}}
 	err := CommunityCollection.FindOne(ctx, communityFilter).Decode(&community)
+	if err != nil {
+		return postResp, err
+	}
 	postFilter := bson.M{"community_id": community.ID}
 	cursor, err := PostsCollection.Find(ctx, postFilter)
 	if err != nil {
@@ -569,10 +628,11 @@ func checkCommunityNameExists(communityName string) (bool, error) {
 }
 
 func Routes(router *gin.Engine) {
-	router.POST(COMMUNITY_ROUTE_PREFIX+ "/create", CreateCommunity())
+	router.POST(COMMUNITY_ROUTE_PREFIX+"/create", CreateCommunity())
 	router.POST(COMMUNITY_ROUTE_PREFIX+"/check-name", CheckCommunityExists())
 	// router.GET(COMMUNITY_ROUTE_PREFIX, GetCommunity())
 	router.POST(COMMUNITY_ROUTE_PREFIX, GetCommunity())
+	router.POST(COMMUNITY_ROUTE_PREFIX+"/all", GetAllCommunities())
 	// router.GET(COMMUNITY_ROUTE_PREFIX+"/home", GetCommunityPosts())
 	router.POST(COMMUNITY_ROUTE_PREFIX+"/home", GetCommunityPosts())
 	router.PATCH(COMMUNITY_ROUTE_PREFIX, EditCommunity())
