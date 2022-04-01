@@ -1,12 +1,19 @@
-<!-- Create a New Post -->
 <br>
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+
+<!-- Create a New Post -->
 <button mat-flat-button color="primary" class="hover-class1"  routerLink="/newpostform">
   Create New Post
 </button>
 
 <!-- Public Posts -->
-<ul *ngFor='let post of this.posts;'>
-    <mat-card class="full-width">
+<ul *ngFor='let post of this.posts'>
+    <mat-card>
         <mat-card-header>
           <mat-card-title>{{ post.title }}</mat-card-title>
           <mat-card-subtitle>created at {{ post.created_at }}</mat-card-subtitle>
