@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { PostsService } from '../posts.service';
 
 @Component({
@@ -10,7 +11,7 @@ export class PostsComponent implements OnInit {
   title = "List of Posts";
   posts: any[] = [];
 
-  constructor(private service: PostsService) {
+  constructor(private service: PostsService, private snackbar: MatSnackBar) {
   }
 
   getPosts() {
@@ -28,7 +29,12 @@ export class PostsComponent implements OnInit {
     this.getPosts();
   }
 
-  deletePost(owner: string, title: string) { 
-    console.log("Deleting post: " + title);
+  deletePost(id: string, title: string) { 
+    console.log("Deleting post: " + title + "id: " + id);
+    this.service.deletePost(id).subscribe((response: any) => {
+      if (response.status == 200) {
+        this.snackbar.open("Post Deleted", "Dismiss", {duration: 1500 });
+      }
+    });
   }
 }

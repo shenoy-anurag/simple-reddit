@@ -20,16 +20,17 @@ export class ProfileComponent implements OnInit {
     this.service.getProfile(Storage.username).subscribe((response: any) => {
       console.log(response);
       console.log(response.status);
+      
       if (response.status == 200) {
-        console.log("TEST");
-        console.log(response.data.user.username);
-        this.profile = response.data;
-        // this.profile = {
-        //   "firstname" : "test",//response.data.post.firstname,
-        //   "lastname": "test2", //response.data.post.lastname,
-        //   "username": response.data.user.username,
-        //   "email": response.data.post.email
-        // }
+        console.log(response.data.Profile.username);
+        console.log(response.data.Profile.email);
+        this.profile = {
+          "firstname" : "test",//response.data.post.firstname,
+          "lastname": "test2", //response.data.post.lastname,
+          "username": response.data.Profile.username,
+          "email": response.data.Profile.email,
+          "karma": response.data.Profile.karma,
+        }
       }
     });
   }

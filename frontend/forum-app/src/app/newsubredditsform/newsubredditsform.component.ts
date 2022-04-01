@@ -29,9 +29,9 @@ export class NewsubredditsformComponent implements OnInit {
 
   createSubreddit(user_id: string, name: string, description: string)
   {
-    // console.log("new subreddit: " + name + " " + description);
+    console.log("new subreddit: " + name + " " + description + "by " + user_id);
     this.signupService.createcommunity(user_id, name, description).subscribe((response: any) => {
-    console.log(response);
+      console.log(response);
     })
   }
 }

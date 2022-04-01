@@ -10,6 +10,12 @@ import { SignupService } from '../signup.service';
 })
 export class NewpostformComponent implements OnInit {
 
+  foods: any[] = [
+    {value: 'steak-0', viewValue: 'Steak'},
+    {value: 'pizza-1', viewValue: 'Pizza'},
+    {value: 'tacos-2', viewValue: 'Tacos'},
+  ];
+
   form: FormGroup = new FormGroup({});
   constructor(private signupService: SignupService, private fb: FormBuilder) {
     this.form = this.fb.group({
