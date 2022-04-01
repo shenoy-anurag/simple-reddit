@@ -39,16 +39,21 @@ export class DeletesubredditsformComponent implements OnInit {
     this.signupService.deletecommunity(username, name).subscribe((response: any) => {
       console.log(response);
       if(response.status == 200 && response.message == "success"){
-        this.snackBar.open("Subreddit deleted."), { duration: 2000 };
+        this.snackBar.open("Subreddit deleted.", "Dismiss"), { duration: 2000 };
        }
-      else if (response.status == 401 && response.message == "error") {
-        this.snackBar.open("Subbreddit does not exist", "Dismiss", { duration: 1500 });
+      
+      if(response.status == 400 && response.message == "failure"){
+        this.snackBar.open("No such Community Exists", "Dismiss"), 
+        {
+          duration: 2000
+        }
       }
+
       else {
         // Something else is wrong
         this.snackBar.open("Something is wrong", "Alert Adminstration"), { duration: 2000 };
       }
-       })
+    })
 
   }
 }
