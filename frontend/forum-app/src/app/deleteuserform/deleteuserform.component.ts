@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SignupService } from '../signup.service';
+import { Storage } from '../storage';
 
 @Component({
   selector: 'app-deleteuserform',
@@ -10,6 +11,7 @@ import { SignupService } from '../signup.service';
 })
 export class DeleteuserformComponent implements OnInit {
 
+  username:string = "";
   form: FormGroup = new FormGroup({});
   constructor(private signupService: SignupService, private snackBar: MatSnackBar, private fb: FormBuilder) {
     this.form = this.fb.group({
@@ -19,6 +21,16 @@ export class DeleteuserformComponent implements OnInit {
    }
 
   ngOnInit(): void {
+    this.username = this.getUsername();
+  }
+
+  getUsername() {
+    if (Storage.isLoggedIn) {
+      return Storage.username;
+    }
+    else {
+      return "";
+    }
   }
 
   get f() {
@@ -36,7 +48,7 @@ export class DeleteuserformComponent implements OnInit {
         // this.signupService.deleteUser(username).subscribe((response: any) => {
         // });
       }
-      else if (response.status == 200 && response.message == "failure" && response.data.data == 'Incorrect Credentials') {
+      else if (response.status == 200 && response.message == "failure") {
         // Prompt user, incorrect login
         this.snackBar.open("Incorrect Credentials", "Dismiss", { duration: 2000 });
       }

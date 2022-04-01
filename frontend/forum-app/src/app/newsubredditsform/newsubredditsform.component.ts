@@ -32,10 +32,10 @@ export class NewsubredditsformComponent implements OnInit {
   {
     console.log("new subreddit: " + user_id + " " + name + " " + description);
     this.signupService.createcommunity(user_id, name, description).subscribe((response: any) => {
-    console.log(response);
-     if(response.status == 200 && response.message == "success"){
-      this.snackBar.open("New subreddit created."), { duration: 2000 };
-     }
+      console.log(response);
+      if(response.status == 200 && response.message == "success"){
+        this.snackBar.open("New subreddit created.", "Dismiss"), { duration: 2000 };
+    }
     else {
       // Something else is wrong
       this.snackBar.open("Something is wrong", "Alert Adminstration"), { duration: 2000 };
