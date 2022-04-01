@@ -24,7 +24,7 @@
 </button>
 
 <!-- Public Subreddits -->
-<ul *ngFor="let subreddit of subreddits">
+<ul *ngFor="let subreddit of this.subreddits">
     <mat-card>
         <mat-card-header>
             <mat-card-title>{{subreddit.name}}</mat-card-title>
