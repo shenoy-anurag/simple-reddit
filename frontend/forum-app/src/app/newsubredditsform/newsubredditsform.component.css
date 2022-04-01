@@ -1,5 +1,9 @@
-.full-width{
+.full-width1{
     width: 100%;
+}
+
+.center {
+    justify-content: center;
 }
 
 td {
