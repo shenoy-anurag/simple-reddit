@@ -25,8 +25,8 @@ export class ProfileComponent implements OnInit {
         console.log(response.data.Profile.username);
         console.log(response.data.Profile.email);
         this.profile = {
-          "firstname" : "test",//response.data.post.firstname,
-          "lastname": "test2", //response.data.post.lastname,
+          "firstname" : response.data.Profile.firstname,
+          "lastname": response.data.Profile.lastname,
           "username": response.data.Profile.username,
           "email": response.data.Profile.email,
           "karma": response.data.Profile.karma,

@@ -9,13 +9,14 @@ export class SignupService {
 
   constructor(private WebReqService: WebRequestService) { }
   
-  addNewAccount(email: string, username: string, password: string, name: string) {
+  addNewAccount(email: string, username: string, password: string, firstname: string, lastname: string) {
     return this.WebReqService.post('users/signup', 
     {
       "email": email,
       "username": username,
       "password": password,
-      "name": name
+      "firstname": firstname,
+      "lastname": lastname
     });
   }
 

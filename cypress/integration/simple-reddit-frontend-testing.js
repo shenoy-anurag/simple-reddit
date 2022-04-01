@@ -1,9 +1,3 @@
-// sample_spec.js created with Cypress
-//
-// Start writing your Cypress tests below!
-// If you're unfamiliar with how Cypress works,
-// check out the link below and learn how to write your first test:
-
 describe('Navigation Menu Tests', () => {
     it('Open Home Page', () => {
         cy.visit('http://localhost:4200/');
@@ -12,16 +6,16 @@ describe('Navigation Menu Tests', () => {
         cy.url().should('include', '/home');
     })
 
-    it('Open Subreddits', () =>{
+    it('Open Subreddits', () => {
         cy.contains('Subreddits').click();
         cy.url().should('include', '/subreddits');
     })
 
-    it('Open Profile', () =>{
-        cy.contains('Profile').click();
-        cy.url().should('include', '/profile');
+    it('Reddit Logo Home Button', () => {
+        cy.contains('Reddit').click();
+        cy.url().should('include', '/home');
     })
-  })
+})
 
 describe('Sign Up User', () => {
     it('Navigate to Log In', () => {
@@ -64,8 +58,30 @@ describe('Sign In User', () => {
         cy.get('button[name="loginbutton"]').click();
     })
 
+    it('Check Profile', () => {
+        cy.contains('Profile').click();
+        cy.url().should('include', '/profile')
+    })
+
     it('Log Out', () => {
         cy.contains("Log Out").click();
         cy.url().should('include', '/login')
+    })
+})
+
+describe('Create Post', () => {
+    it('Navigate to Home', () => {
+        cy.contains('Home').click();
+        cy.url().should('include', '/home');
+    })
+
+    it('Create New Post', () => {
+        cy.contains('Create New Post').click();
+        cy.url().should('include', '/newpostform');
+    })
+
+    it('Populate Form', () => {
+        cy.get('input[name="username"]').type("JohnDoe123").should('have.value', 'JohnDoe123');
+        cy.get('input[name="title"]').type('Cypress Community Title').should('have.value', "Cypress Community Title");
     })
 })

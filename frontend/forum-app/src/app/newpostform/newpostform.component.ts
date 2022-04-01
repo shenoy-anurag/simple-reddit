@@ -11,12 +11,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class NewpostformComponent implements OnInit {
 
-  foods: any[] = [
-    {value: 'steak-0', viewValue: 'Steak'},
-    {value: 'pizza-1', viewValue: 'Pizza'},
-    {value: 'tacos-2', viewValue: 'Tacos'},
+  communities: any[] = [
+    {value: '6247263303a4c16c6d6470de', viewValue: 'Sociology'},
+    {value: '6247263303a4c16c6d6470de', viewValue: 'Pizza'},
+    {value: '6247263303a4c16c6d6470de', viewValue: 'Tacos'},
   ];
-
+  selectedCommunity: string = "";
   form: FormGroup = new FormGroup({});
   constructor(private signupService: SignupService, private fb: FormBuilder, private snackBar: MatSnackBar) {
     this.form = this.fb.group({
@@ -33,9 +33,9 @@ export class NewpostformComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  createPost(username: string, title: string, body: string) {
-    console.log("new post: " + title + " " + body);
-    this.signupService.createPost(username, "621d4aef4d5510eeee3ad715", title, body).subscribe((response: any) => {
+  createPost(username: string, community: string, title: string, body: string) {
+    console.log("new post: " + title + " " + "community: " + community + " " + body);
+    this.signupService.createPost(username, community, title, body).subscribe((response: any) => {
       console.log(response);
       if(response.status == 200 && response.message == "success"){
         this.snackBar.open("New post created."), { duration: 3000 };

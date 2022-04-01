@@ -21,7 +21,6 @@ td {
 mat-card-content {
     background: rgb(235, 235, 240); 
     padding:25px !important;
-    max-width: 50px ;
 }
 
 mat-card-subtitile {

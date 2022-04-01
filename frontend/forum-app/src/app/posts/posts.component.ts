@@ -30,6 +30,14 @@ export class PostsComponent implements OnInit {
     this.getPosts();
   }
 
+  downvotePost(id: string) {
+    
+  }
+
+  upvotePost(id: string) {
+
+  }
+
   deletePost(id: string, title: string) { 
     console.log("Deleting post: " + title + "id: " + id);
     if (Storage.isLoggedIn) {
