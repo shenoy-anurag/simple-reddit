@@ -15,8 +15,11 @@
         <button mat-flat-button color="primary" class="hover-class2" routerLink="profile">
             Profile
         </button>
-        <button mat-flat-button color="primary" class="hover-class3" routerLink="login">
+        <button *ngIf="!getLoginStatus()" mat-flat-button color="primary" class="hover-class3" routerLink="login">
             Log In
+        </button>
+        <button *ngIf="getLoginStatus()" mat-flat-button color="warn" class="hover-class3" (click)="getLogOut()" routerLink="login">
+            Log Out
         </button>
         
 </mat-toolbar>    

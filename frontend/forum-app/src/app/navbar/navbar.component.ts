@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Storage } from '../storage';
 
 @Component({
   selector: 'app-navbar',
@@ -12,4 +13,11 @@ export class NavbarComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  getLoginStatus() {
+    return Storage.isLoggedIn;
+  }
+  getLogOut() {
+    Storage.isLoggedIn = false;
+    Storage.username = "";
+  }
 }

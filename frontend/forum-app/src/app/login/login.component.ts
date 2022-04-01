@@ -45,6 +45,7 @@ export class LoginComponent implements OnInit {
       if (response.status == 200 && response.message == "success") {
         // LogIn Attempt Sucessful
         Storage.isLoggedIn = true;
+        Storage.username = username;
         this.usr = username;
         this.snackBar.open("Logged in as " + username, "Dismiss", { duration: 2000 });
 
@@ -63,6 +64,7 @@ export class LoginComponent implements OnInit {
 
   getLogOut() {
     Storage.isLoggedIn = false;
+    Storage.username = "";
     this.usr = "";
   }
 }
