@@ -32,7 +32,11 @@
                         Log In
                     </button> -->
                     <div *ngIf="usrLoggedIn">
-                        <button> Log Out </button>
+                        <!-- <button> Log Out </button> -->
+                        <button name='logoutbutton' class='full-width hover-class1' mat-raised-button color="primary"
+                            (click)="getLogOut()">
+                            Log Out
+                        </button>
                     </div>
                     <div *ngIf=!usrLoggedIn>
                         <button name='loginbutton' class='full-width hover-class1' mat-raised-button color="primary"
