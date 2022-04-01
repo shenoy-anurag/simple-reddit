@@ -459,7 +459,7 @@ func RankMostPosts() (result *mongo.UpdateResult, err error) {
 func Routes(router *gin.Engine) {
 	router.POST(POST_ROUTE_PREFIX, CreatePost())
 	router.GET(POST_ROUTE_PREFIX, GetPosts())
-	router.GET(HOME_ROUTE_PREFIX, GetFeed())
+	router.POST(HOME_ROUTE_PREFIX, GetFeed())
 	router.DELETE(POST_ROUTE_PREFIX, DeletePost())
 	router.PATCH(POST_ROUTE_PREFIX, EditPost())
 }
