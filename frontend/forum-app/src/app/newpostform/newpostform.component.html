@@ -13,8 +13,8 @@
     <mat-form-field class="full-width" appearance="fill">
         <mat-label>Community</mat-label>
         <mat-select name="community" [(value)]="selectedCommunity">
-            <mat-option #community *ngFor="let community of communities" [value]="community.value">
-              {{ community.viewValue }}
+            <mat-option #community *ngFor="let community of communities" [value]="community._id">
+              {{ community.name }}
             </mat-option>
         </mat-select>
     </mat-form-field>
