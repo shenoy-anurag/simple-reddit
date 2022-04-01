@@ -177,45 +177,6 @@ func LoginUser() gin.HandlerFunc {
 	}
 }
 
-func CreateUserInDB(user CreateUserRequest) (result *mongo.InsertOneResult, err error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	newUserStruct := ConvertUserRequestToUserDBModel(user)
-	result, err = UsersCollection.InsertOne(ctx, newUserStruct)
-	return result, err
-}
-
-// Provide username and context as parameter to
-func GetUserDetails(userName string) (UserDBModel, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	var user UserDBModel
-	filter := bson.D{primitive.E{Key: "username", Value: userName}}
-	err := UsersCollection.FindOne(ctx, filter).Decode(&user)
-	return user, err
-}
-
-func CheckUsername(username string) (bool, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	var alreadyExists bool
-	var user UserDBModel
-	filter := bson.D{primitive.E{Key: "username", Value: username}}
-	err := UsersCollection.FindOne(ctx, filter).Decode(&user)
-	if err == nil {
-		if user.Username == username {
-			alreadyExists = true
-		} else {
-			alreadyExists = false
-		}
-	} else {
-		if err == mongo.ErrNoDocuments {
-			err = nil
-		}
-	}
-	return alreadyExists, err
-}
-
 func CheckUsernameExists() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var user CheckUsernameRequest
@@ -262,6 +223,45 @@ func CheckUsernameExists() gin.HandlerFunc {
 				Data:    map[string]interface{}{"usernameAlreadyExists": usernameAlreadyExists}},
 		)
 	}
+}
+
+func CreateUserInDB(user CreateUserRequest) (result *mongo.InsertOneResult, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	newUserStruct := ConvertUserRequestToUserDBModel(user)
+	result, err = UsersCollection.InsertOne(ctx, newUserStruct)
+	return result, err
+}
+
+// Provide username and context as parameter to
+func GetUserDetails(userName string) (UserDBModel, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var user UserDBModel
+	filter := bson.D{primitive.E{Key: "username", Value: userName}}
+	err := UsersCollection.FindOne(ctx, filter).Decode(&user)
+	return user, err
+}
+
+func CheckUsername(username string) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var alreadyExists bool
+	var user UserDBModel
+	filter := bson.D{primitive.E{Key: "username", Value: username}}
+	err := UsersCollection.FindOne(ctx, filter).Decode(&user)
+	if err == nil {
+		if user.Username == username {
+			alreadyExists = true
+		} else {
+			alreadyExists = false
+		}
+	} else {
+		if err == mongo.ErrNoDocuments {
+			err = nil
+		}
+	}
+	return alreadyExists, err
 }
 
 func Routes(router *gin.Engine) {
