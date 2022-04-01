@@ -13,7 +13,7 @@ export class NewsubredditsformComponent implements OnInit {
   form: FormGroup = new FormGroup({});
   constructor(private signupService: SignupService, private fb: FormBuilder, private snackBar: MatSnackBar) {
     this.form = this.fb.group({
-      user_id: ['', [Validators.required]],
+      username: ['', [Validators.required]],
       name: ['', [Validators.required]],
       description: ['', [Validators.required]]
     })

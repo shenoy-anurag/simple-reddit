@@ -49,11 +49,11 @@ export class SignupService {
     });
   }
 
-  createcommunity(user_id: string, name: string, description: string) {
+  createcommunity(username: string, name: string, description: string) {
     console.log("into post block");
     return this.WebReqService.post('community',
     {
-      "user_id": user_id,
+      "username": username,
       "name": name,
       "description": description
     });

@@ -2,10 +2,10 @@
     <br>
     <!-- Userid, until cookies are made -->
     <mat-form-field class="full-width" appearance="fill">
-        <mat-label>User_id</mat-label>
-        <input name='user_id' formControlName="user_id" matInput #user_id required placeholder="JohnDoe123" value="">
-        <mat-error *ngIf="f['user_id'].touched && f['user_id'].invalid">
-            User_id cannot be empty
+        <mat-label>Username</mat-label>
+        <input name='username' formControlName="username" matInput #user_id required placeholder="JohnDoe123" value="">
+        <mat-error *ngIf="f['username'].touched && f['username'].invalid">
+            Username cannot be empty
         </mat-error>
     </mat-form-field>
 
