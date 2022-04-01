@@ -30,12 +30,6 @@ export class NewsubredditsformComponent implements OnInit {
 
   createSubreddit(user_id: string, name: string, description: string)
   {
-<<<<<<< HEAD
-    console.log("new subreddit: " + name + " " + description + "by " + user_id);
-    this.signupService.createcommunity(user_id, name, description).subscribe((response: any) => {
-      console.log(response);
-    })
-=======
     console.log("new subreddit: " + user_id + " " + name + " " + description);
     this.signupService.createcommunity(user_id, name, description).subscribe((response: any) => {
     console.log(response);
@@ -47,7 +41,6 @@ export class NewsubredditsformComponent implements OnInit {
       this.snackBar.open("Something is wrong", "Alert Adminstration"), { duration: 2000 };
     }
      })
->>>>>>> main
   }
 }
 
