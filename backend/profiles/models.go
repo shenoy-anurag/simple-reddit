@@ -35,9 +35,24 @@ type EditProfileRequest struct {
 	UserName  string `json:"username" validate:"required"`
 }
 
-// Convertion functions to convert between different models.
+type DeleteProfileRequest struct {
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}
 
-func ConvertEditProfileRequestToProfileDBModel(editProfile EditProfileRequest) ProfileDBModel {
+type UserDBModel struct {
+	ID        primitive.ObjectID `bson:"_id"`
+	FirstName string             `json:"firstname,omitempty"`
+	LastName  string             `json:"lastname,omitempty"`
+	Email     string             `json:"email"`
+	Username  string             `json:"username"`
+	Password  string             `json:"password"`
+	Joined    time.Time          `bson:"joined"`
+}
+
+// Convertion functions to convertbetween different models.
+
+func ConvertEditProfileRequestToPrfileDBModel(editProfile EditProfileRequest) ProfileDBModel {
 	return ProfileDBModel{
 		FirstName: editProfile.FirstName,
 		LastName:  editProfile.LastName,
