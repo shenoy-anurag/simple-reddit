@@ -3,10 +3,14 @@
     <!-- Username, until cookies are made -->
     <mat-form-field class="full-width1" appearance="fill">
         <mat-label>Username</mat-label>
-        <input name='username' formControlName="username" matInput #username required placeholder="JohnDoe" value="">
-        <!-- <mat-error *ngIf="f['username'].touched && f['username'].invalid">
+        <!-- <mat-form-field class="full-width1" appearance="fill">
+            <mat-label>Username</mat-label>
+            <input matInput placeholder="JohnDoe" value="Username">
+          </mat-form-field> -->
+        <input name='username' formControlName="username" matInput #username required placeholder="JohnDoe" value="profile.username">
+        <mat-error *ngIf="f['username'].touched && f['username'].invalid">
             Username cannot be empty
-        </mat-error> -->
+        </mat-error>
     </mat-form-field>
 
      <!-- Community Name -->

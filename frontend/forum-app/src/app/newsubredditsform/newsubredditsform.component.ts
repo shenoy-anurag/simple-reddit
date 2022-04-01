@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { SignupService } from '../signup.service';
 import { FormBuilder, FormGroup, Validator, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ProfileService } from '../profile.service';
+import { Storage } from '../storage';
 
 @Component({
   selector: 'app-newsubredditsform',
@@ -10,8 +12,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class NewsubredditsformComponent implements OnInit {
 
+  profile: any
   form: FormGroup = new FormGroup({});
-  constructor(private signupService: SignupService, private fb: FormBuilder, private snackBar: MatSnackBar) {
+  constructor(private signupService: SignupService, private fb: FormBuilder, private snackBar: MatSnackBar, private service: ProfileService) {
     this.form = this.fb.group({
       username: ['', [Validators.required]],
       name: ['', [Validators.required]],
@@ -26,7 +29,23 @@ export class NewsubredditsformComponent implements OnInit {
 
   ngOnInit(): void 
   {
+    this.getUsername();
   }
+
+  getUsername() {
+    this.service.getProfile(Storage.username).subscribe((response: any) => {
+      console.log(response);
+      console.log(response.status);
+      
+      if (response.status == 200) {
+        console.log(response.data.Profile.username);
+        this.profile = {
+          "username": response.data.Profile.username,
+        }
+      }
+    });
+  }
+
 
   createSubreddit(username: string, name: string, description: string)
   {
