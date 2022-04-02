@@ -12,6 +12,7 @@ type ProfileDBModel struct {
 	Email     string             `json:"email"`
 	UserName  string             `json:"username"`
 	Karma     int                `json:"karma"`
+	SavedPC   SavedDBModel	 `json:"savedpc"`
 	Birthday  time.Time          `bson:"birthday"`
 }
 
@@ -50,10 +51,11 @@ type UserDBModel struct {
 	Joined    time.Time          `bson:"joined"`
 }
 
-type Saved struct {
-	ID         primitive.ObjectID `bson:"_id"`
-	SavedPosts []primitive.ObjectID `bson:"saved_posts"`
-	SavedComments []primitive.ObjectID `bson:"saved_posts"`
+type SavedDBModel struct {
+	ID         primitive.ObjectID `bson:"_id" validate:"required"`
+	Username string `json:"username" validate:"required"`
+	SavedPosts []primitive.ObjectID `bson:"savedposts" validate:"required"`
+	SavedComments []primitive.ObjectID `bson:"savedcomments" validate:"required"`
 }
 
 // Convertion functions to convertbetween different models.
@@ -75,5 +77,14 @@ func ConvertProfileDBModelToProfileResponse(profileDB ProfileDBModel) ProfileRes
 		UserName:  profileDB.UserName,
 		Karma:     profileDB.Karma,
 		Birthday:  profileDB.Birthday,
+	}
+}
+
+func CreateSavedDBModel(UserName string) SavedDBModel{
+	return SavedDBModel{
+		ID:        primitive.NewObjectID(),
+		Username: UserName,
+		SavedPosts: []primitive.ObjectID{},
+		SavedComments: []primitive.ObjectID{},
 	}
 }
