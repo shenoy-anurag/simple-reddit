@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"simple-reddit/common"
 	"simple-reddit/configs"
+	// "simple-reddit/comments"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -19,9 +20,13 @@ const PROFILE_ROUTE_PREFIX = "/profile"
 
 const ProfilesCollectionName string = "profiles"
 const UsersCollectionName string = "users"
+const CommentsCollectionName string = "comments"
+const SavedCollectionName string ="saved"
 
 var ProfileCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, ProfilesCollectionName)
 var UsersCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, UsersCollectionName)
+var CommentsCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, CommentsCollectionName)
+var SavedCollection *mongo.Collection = configs.GetCollection(configs.MongoDB,SavedCollectionName)
 var validate = validator.New()
 
 func CreateProfile(profileReq ProfileDBModel) bool {
@@ -311,8 +316,21 @@ func login(profileReq DeleteProfileRequest,userDB UserDBModel) (resultUser *mong
 	return resultUser,true,err
 }
 
+func CreateSavedPC(UserName string)(SavedDBModel){
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	SavedDB := CreateSavedDBModel(UserName)
+	// if err != nil {
+	// 	return result, err
+	// }
+	_, _ = SavedCollection.InsertOne(ctx, SavedDB)
+	return SavedDB
+
+}
+
 func Routes(router *gin.Engine) {
 	router.POST(PROFILE_ROUTE_PREFIX, GetProfile())
-	router.PATCH(PROFILE_ROUTE_PREFIX, EditProfile())
-	router.DELETE(PROFILE_ROUTE_PREFIX, DeleteProfile())
+	router.PATCH(PROFILE_ROUTE_PREFIX, EditProfile()) // maybe PATCH > DELETE
+	router.POST(PROFILE_ROUTE_PREFIX+"/delete", DeleteProfile()) // router.DELETE(PROFILE_ROUTE_PREFIX, DeleteProfile()) // DELETE -> POST
+	// router.PATCH(PROFILE_ROUTE_PREFIX+"/comment", SaveComment()) // maybe PATCH > DELETE
 }

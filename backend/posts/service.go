@@ -564,7 +564,7 @@ func Routes(router *gin.Engine) {
 	router.POST(POST_ROUTE_PREFIX, CreatePost())
 	router.GET(POST_ROUTE_PREFIX, GetPosts()) // GET -> POST SP3
 	router.POST(HOME_ROUTE_PREFIX, GetFeed()) // maybe PATCH > POST
-	router.DELETE(POST_ROUTE_PREFIX, DeletePost()) // maybe DELETE > POST
+	router.POST(POST_ROUTE_PREFIX+"/delete", DeletePost()) // router.DELETE(POST_ROUTE_PREFIX, DeletePost()) // maybe DELETE > POST
 	router.PATCH(POST_ROUTE_PREFIX, EditPost()) // maybe PATCH > POST
 	router.PATCH(POST_ROUTE_PREFIX+"/vote", Vote()) // maybe PATCH > POST
 }
