@@ -22,11 +22,13 @@ const ProfilesCollectionName string = "profiles"
 const UsersCollectionName string = "users"
 const CommentsCollectionName string = "comments"
 const SavedCollectionName string ="saved"
+const PostsCollectionName string = "posts"
 
 var ProfileCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, ProfilesCollectionName)
 var UsersCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, UsersCollectionName)
 var CommentsCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, CommentsCollectionName)
 var SavedCollection *mongo.Collection = configs.GetCollection(configs.MongoDB,SavedCollectionName)
+var PostsCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, PostsCollectionName)
 var validate = validator.New()
 
 func CreateProfile(profileReq ProfileDBModel) bool {
@@ -158,7 +160,28 @@ func DeleteProfile() gin.HandlerFunc {
 			)
 			return
 		}
-
+		// update posts that the user has created
+		postsResult, verifiedPosts, err:=updatePostsForDeletedUser(delProfileReq)
+		if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+		if !verifiedPosts {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
 		// Delete the saved record for the user
 		savedResult, verifiedSaved, err:= deleteSaved(delProfileReq)
 		if err != nil {
@@ -233,7 +256,7 @@ func DeleteProfile() gin.HandlerFunc {
 			common.APIResponse{
 				Status:  http.StatusOK,
 				Message: common.API_SUCCESS,
-				Data:    map[string]interface{}{"deletedProfile": profileResult,"deletedUser":userResult,"deletedSaved":savedResult, "username":delProfileReq.Username }},
+				Data:    map[string]interface{}{"deletedProfile": profileResult,"deletedUser":userResult,"deletedSaved":savedResult,"updated_posts":postsResult, "username":delProfileReq.Username }},
 		)
 	}
 }
@@ -331,6 +354,28 @@ func deleteSaved(delProfileReq DeleteProfileRequest) (*mongo.DeleteResult,bool, 
 	defer cancel()
 	filter := bson.D{primitive.E{Key: "username", Value: delProfileReq.Username}}
 	result, err := SavedCollection.DeleteOne(ctx, filter)
+	if err!=nil {
+		return result,false,err
+	}
+	return result,true,err
+}
+
+func updatePostsForDeletedUser(delProfileReq DeleteProfileRequest) (*mongo.UpdateResult,bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	filter := bson.D{primitive.E{Key: "username", Value: delProfileReq.Username}}
+	updateQuery := bson.D{
+		primitive.E{
+			Key: "$set",
+			Value: bson.D{
+				primitive.E{Key: "username", Value: "deleted-user"},
+				// primitive.E{Key: "lastname", Value: editProfileReq.LastName},
+				// primitive.E{Key: "email", Value: editProfileReq.Email},
+			},
+		},
+	}
+	result, err := PostsCollection.UpdateMany(ctx, filter, updateQuery)
+	// result, err = ProfileCollection.UpdateOne(ctx, filter, updateQuery)
 	if err!=nil {
 		return result,false,err
 	}
