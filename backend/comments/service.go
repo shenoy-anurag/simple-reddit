@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -173,7 +174,6 @@ func VoteComment() gin.HandlerFunc {
 			return
 		}
 
-		// Update Vote in DB
 		result, err := updateVote(cVoteReq)
 		if err != nil {
 			c.JSON(
@@ -187,17 +187,84 @@ func VoteComment() gin.HandlerFunc {
 		}
 
 		c.JSON(
-			http.StatusCreated,
+			http.StatusOK,
 			common.APIResponse{
-				Status:  http.StatusCreated,
+				Status:  http.StatusOK,
 				Message: common.API_SUCCESS,
-				Data:    map[string]interface{}{"created": result}},
+				Data:    map[string]interface{}{"result": result}},
+		)
+	}
+}
+
+func GetComments() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var commentReq GetCommentRequest
+
+		if err := c.BindQuery(&commentReq); err != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+		// use the validator library to validate required fields
+		if validationErr := validate.Struct(&commentReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
+
+		comments, err := retrieveAllCommentsOfPost(commentReq.PostId)
+		if err == mongo.ErrNoDocuments {
+			c.JSON(
+				http.StatusOK,
+				common.APIResponse{
+					Status:  http.StatusOK,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": common.ERR_COMMENTS_NOT_FOUND.Message}},
+			)
+			return
+		} else if err == primitive.ErrInvalidHex {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		} else if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		c.JSON(
+			http.StatusOK,
+			common.APIResponse{
+				Status:  http.StatusOK,
+				Message: common.API_SUCCESS,
+				Data:    map[string]interface{}{"comments": comments}},
 		)
 	}
 }
 
 func Routes(router *gin.Engine) {
 	router.POST(COMMENTS_ROUTE_PREFIX, CreateComment())
-	router.POST(COMMENTS_ROUTE_PREFIX+"/vote", CreateComment())
+	router.GET(COMMENTS_ROUTE_PREFIX, GetComments())
+	router.POST(COMMENTS_ROUTE_PREFIX+"/vote", VoteComment())
 	router.DELETE(COMMENTS_ROUTE_PREFIX, DeleteComment())
 }
