@@ -1,4 +1,3 @@
-import { PopupMessageComponent } from './popup-message/popup-message.component';
 import { SignupformComponent } from './signupform/signupform.component';
 import { NgModule, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -18,7 +17,6 @@ const routes: Routes = [
   {path: 'subreddits', component: SubredditsComponent},
   {path: 'profile', component: ProfileComponent},
   {path: 'signupform', component: SignupformComponent},
-  {path: 'popup-message', component: PopupMessageComponent},
   {path: 'delete-user', component: DeleteuserformComponent},
   {path: 'newpostform', component: NewpostformComponent},
   {path: 'newsubredditsform', component: NewsubredditsformComponent},

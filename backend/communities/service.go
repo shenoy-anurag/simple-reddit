@@ -14,6 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const COMMUNITY_ROUTE_PREFIX = "/community"
@@ -205,7 +206,32 @@ func GetCommunity() gin.HandlerFunc {
 
 func GetAllCommunities() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		communities, err := retrieveAllCommunitiesDetails()
+		var getCommunityReq GetAllCommunitiesRequest
+		// validate the request body
+		if err := c.BindQuery(&getCommunityReq); err != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+		// use the validator library to validate required fields
+		if validationErr := validate.Struct(&getCommunityReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
+		getCommunityReq.fill_defaults()
+
+		communities, docCount, err := retrieveAllCommunitiesDetails(getCommunityReq)
 		if err == mongo.ErrNoDocuments {
 			c.JSON(
 				http.StatusOK,
@@ -231,7 +257,7 @@ func GetAllCommunities() gin.HandlerFunc {
 			common.APIResponse{
 				Status:  http.StatusOK,
 				Message: common.API_SUCCESS,
-				Data:    map[string]interface{}{"communities": communities}},
+				Data:    map[string]interface{}{"num_communities": docCount, "communities": communities}},
 		)
 	}
 }
@@ -497,25 +523,34 @@ func retrieveCommunityDetails(commReq GetCommunityRequest) (CommunityDBModel, er
 	return community, err
 }
 
-func retrieveAllCommunitiesDetails() ([]CommunityResponse, error) {
+func retrieveAllCommunitiesDetails(getCommunityReq GetAllCommunitiesRequest) ([]CommunityResponse, int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	var communities []CommunityDBModel
 	var communitiesResponses []CommunityResponse
+
+	// Count the total number of documents in order to decide the number of pages.
 	filter := bson.D{}
-	cursor, err := CommunityCollection.Find(ctx, filter)
+	docCount, err := CommunityCollection.CountDocuments(ctx, filter)
 	if err != nil {
-		return communitiesResponses, err
+		return communitiesResponses, docCount, err
+	}
+	// Retrieve documents required for the page.
+	var numItemsToSkip uint32 = (getCommunityReq.PageNumber - 1) * getCommunityReq.ItemsPerPage
+	queryOptions := options.Find().SetSkip(int64(numItemsToSkip)).SetLimit(int64(getCommunityReq.ItemsPerPage))
+	cursor, err := CommunityCollection.Find(ctx, filter, queryOptions)
+	if err != nil {
+		return communitiesResponses, docCount, err
 	}
 	if err = cursor.All(ctx, &communities); err != nil {
-		return communitiesResponses, err
+		return communitiesResponses, docCount, err
 	}
 	for _, community := range communities {
 		item := ConvertCommunityDBModelToCommunityResponse(community)
 		communitiesResponses = append(communitiesResponses, item)
 	}
-	return communitiesResponses, err
+	return communitiesResponses, docCount, err
 }
 
 func retrieveAllCommunitiesOfUser(commReq GetCommunityRequest) ([]CommunityResponse, error) {
