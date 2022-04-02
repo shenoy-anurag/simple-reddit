@@ -39,8 +39,6 @@ Checkout the test results [here](https://github.com/shenoy-anurag/simple-reddit/
 
 Demo video and wiki: <https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#sprint-3-back-end-demo>
 
-Demo Video: <>
-
 ## Frontend
 User Stories for Frontend
 - View Posts
