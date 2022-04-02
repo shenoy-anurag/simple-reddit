@@ -58,6 +58,16 @@ type SavedDBModel struct {
 	SavedComments []primitive.ObjectID `bson:"savedcomments" validate:"required"`
 }
 
+type SavePostRequest struct {
+	PostID primitive.ObjectID `json:"post_id" validate:"required"`
+	Username string `json:"username" validate:"required"`
+}
+
+type SaveCommentRequest struct {
+	CommentID primitive.ObjectID `json:"comment_id" validate:"required"`
+	Username string `json:"username" validate:"required"`
+}
+
 // Convertion functions to convertbetween different models.
 
 func ConvertEditProfileRequestToPrfileDBModel(editProfile EditProfileRequest) ProfileDBModel {

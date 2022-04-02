@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"simple-reddit/common"
 	"simple-reddit/configs"
-	// "simple-reddit/comments"
+	"simple-reddit/comments"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -22,11 +22,13 @@ const ProfilesCollectionName string = "profiles"
 const UsersCollectionName string = "users"
 const CommentsCollectionName string = "comments"
 const SavedCollectionName string ="saved"
+const PostsCollectionName string = "posts"
 
 var ProfileCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, ProfilesCollectionName)
 var UsersCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, UsersCollectionName)
 var CommentsCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, CommentsCollectionName)
 var SavedCollection *mongo.Collection = configs.GetCollection(configs.MongoDB,SavedCollectionName)
+var PostsCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, PostsCollectionName)
 var validate = validator.New()
 
 func CreateProfile(profileReq ProfileDBModel) bool {
@@ -158,7 +160,28 @@ func DeleteProfile() gin.HandlerFunc {
 			)
 			return
 		}
-
+		// update posts that the user has created
+		postsResult, verifiedPosts, err:=updatePostsForDeletedUser(delProfileReq)
+		if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+		if !verifiedPosts {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
 		// Delete the saved record for the user
 		savedResult, verifiedSaved, err:= deleteSaved(delProfileReq)
 		if err != nil {
@@ -233,8 +256,60 @@ func DeleteProfile() gin.HandlerFunc {
 			common.APIResponse{
 				Status:  http.StatusOK,
 				Message: common.API_SUCCESS,
-				Data:    map[string]interface{}{"deletedProfile": profileResult,"deletedUser":userResult,"deletedSaved":savedResult, "username":delProfileReq.Username }},
+				Data:    map[string]interface{}{"deletedProfile": profileResult,"deletedUser":userResult,"deletedSaved":savedResult,"updated_posts":postsResult, "username":delProfileReq.Username }},
 		)
+	}
+}
+
+func SaveComment() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var saveCommentReq SaveCommentRequest
+
+		// Bind the JSON to the request
+		if err := c.BindJSON(&saveCommentReq); err != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		// Validate the request body
+		if validationErr := validate.Struct(&saveCommentReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
+
+		result, err := UpdateSavedComments(saveCommentReq)
+
+		if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		c.JSON(
+			http.StatusCreated,
+			common.APIResponse{
+				Status:  http.StatusCreated,
+				Message: common.API_SUCCESS,
+				Data:    map[string]interface{}{"Updated": result}},
+		)
+
 	}
 }
 
@@ -337,6 +412,28 @@ func deleteSaved(delProfileReq DeleteProfileRequest) (*mongo.DeleteResult,bool, 
 	return result,true,err
 }
 
+func updatePostsForDeletedUser(delProfileReq DeleteProfileRequest) (*mongo.UpdateResult,bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	filter := bson.D{primitive.E{Key: "username", Value: delProfileReq.Username}}
+	updateQuery := bson.D{
+		primitive.E{
+			Key: "$set",
+			Value: bson.D{
+				primitive.E{Key: "username", Value: "deleted-user"},
+				// primitive.E{Key: "lastname", Value: editProfileReq.LastName},
+				// primitive.E{Key: "email", Value: editProfileReq.Email},
+			},
+		},
+	}
+	result, err := PostsCollection.UpdateMany(ctx, filter, updateQuery)
+	// result, err = ProfileCollection.UpdateOne(ctx, filter, updateQuery)
+	if err!=nil {
+		return result,false,err
+	}
+	return result,true,err
+}
+
 func getUserDetails(userName string) (UserDBModel, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -366,9 +463,39 @@ func CreateSavedPC(UserName string)(SavedDBModel){
 
 }
 
+func UpdateSavedComments(saveCommentReq SaveCommentRequest)(result *mongo.UpdateResult,err error){
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var SavedPostCommentDB SavedDBModel
+	filter := bson.D{primitive.E{Key: "username", Value: saveCommentReq.Username}}
+	err = SavedCollection.FindOne(ctx, filter).Decode(&SavedPostCommentDB)
+	updatedSavedComments := SavedPostCommentDB.SavedComments
+	//newSaveComment, err := GetComment(saveCommentReq)
+	updatedSavedComments = append(updatedSavedComments, saveCommentReq.CommentID)
+	updateQuery := bson.D{
+		primitive.E{
+			Key: "$set",
+			Value: bson.D{
+				primitive.E{Key: "savedcomments", Value: updatedSavedComments},
+			},
+		},
+	}
+	result, err = SavedCollection.UpdateOne(ctx, filter, updateQuery)
+	return result, err
+}
+
+func GetComment(commentReq SaveCommentRequest) (comments.CommentDBModel, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var commentDB comments.CommentDBModel
+	filter := bson.D{primitive.E{Key: "id", Value: commentReq.CommentID}}
+	err := CommentsCollection.FindOne(ctx, filter).Decode(&commentDB)
+	return commentDB, err
+}
+
 func Routes(router *gin.Engine) {
 	router.POST(PROFILE_ROUTE_PREFIX, GetProfile())
 	router.PATCH(PROFILE_ROUTE_PREFIX, EditProfile()) // maybe PATCH > DELETE
 	router.POST(PROFILE_ROUTE_PREFIX+"/delete", DeleteProfile()) // router.DELETE(PROFILE_ROUTE_PREFIX, DeleteProfile()) // DELETE -> POST
-	// router.PATCH(PROFILE_ROUTE_PREFIX+"/comment", SaveComment()) // maybe PATCH > DELETE
+	router.PATCH(PROFILE_ROUTE_PREFIX+"/savecomment", SaveComment()) // maybe PATCH > DELETE
 }
