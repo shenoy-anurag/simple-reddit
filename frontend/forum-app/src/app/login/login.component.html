@@ -1,4 +1,4 @@
-<div class='center' *ngIf='!getLogInStatus(); else elseTemplate'>
+<div class='center' *ngIf='!getLogInStatus()'>
     <form action=" /" id="myLogin" [formGroup]="form">
         <br>
         <!-- Username -->
@@ -10,6 +10,7 @@
                 Username cannot be empty
             </mat-error>
         </mat-form-field>
+        
         <!-- password -->
         <mat-form-field class="full-width" appearance="fill">
             <mat-label>Password</mat-label>
@@ -28,11 +29,7 @@
                 <!-- Routing Links -->
                 &nbsp;
                 <td>
-                    <!-- <button name='loginbutton' class='full-width' mat-raised-button color="primary" (click)="getLogIn(usrInput.value, usrPwd.value)">
-                        Log In
-                    </button> -->
                     <div *ngIf="usrLoggedIn">
-                        <!-- <button> Log Out </button> -->
                         <button name='logoutbutton' class='full-width hover-class1' mat-raised-button color="primary"
                             (click)="getLogOut()">
                             Log Out
@@ -48,10 +45,6 @@
                 &nbsp;
                 &nbsp;
                 <td>
-                    <!-- <button class='full-width' mat-raised-button color="warn" a routerLink="/signupform" >
-                        Sign Up
-                    </button>-->
-
                     <button class='full-width hover-class2' mat-raised-button color="accent" a routerLink="/signupform">
                         Sign Up
                     </button>
@@ -59,24 +52,4 @@
             </tr>
         </table>
     </form>
-</div>
-<!--redirect to Home Page-->
-<div class='center'>
-    <ng-template #elseTemplate>
-        <!-- <a mat-button routerLink="/home">
-            Home
-        </a> -->
-        <br>
-        <button class='hover-class1' mat-raised-button color="primary" a routerLink="/home">
-            Home
-        </button>
-        &nbsp;
-        &nbsp;
-        <!-- <button mat-raised-button color="warn" (click)="getLogOut()">
-            Log Out
-        </button> -->
-        <button class='hover-class2' mat-raised-button color="accent" (click)="getLogOut()">
-            Log Out
-        </button>
-    </ng-template>
 </div>
