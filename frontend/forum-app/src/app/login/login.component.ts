@@ -38,7 +38,7 @@ export class LoginComponent implements OnInit {
     return this.form.controls;
   }
 
-  getLogIn(username: string, password: string) {
+  public getLogIn(username: string, password: string) {
     this.signupService.checkLogIn(username, password).subscribe((response: any) => {
       if (response.status == 200 && response.message == "success") {
         // LogIn Attempt Sucessful

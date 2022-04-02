@@ -74,6 +74,7 @@ func ConvertUserDBModelToProfileDBModel(userDB UserDBModel) profiles.ProfileDBMo
 		Email:     userDB.Email,
 		UserName:  userDB.Username,
 		Karma:     0,
+		SavedPC: profiles.CreateSavedPC(userDB.Username),
 		Birthday:  userDB.Joined,
 	}
 }
