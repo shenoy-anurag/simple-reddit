@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Validators, FormBuilder, ValidatorFn, AbstractControl, ValidationErrors, FormGroup } from '@angular/forms';
 import { SignupService } from '../signup.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Storage } from '../storage';
+import { Router } from '@angular/router';
 
 export function checkIfMatchingPasswords(passwordKey: string, passwordConfirmationKey: string) {
   return (group: FormGroup) => {
@@ -85,7 +87,7 @@ export class SignupformComponent implements OnInit {
   public showPassword: boolean = false;
   form: FormGroup = new FormGroup({});
 
-  constructor(private snackBar: MatSnackBar, private signupService: SignupService, private fb: FormBuilder) {
+  constructor(private router: Router, private snackBar: MatSnackBar, private signupService: SignupService, private fb: FormBuilder) {
     this.form = this.fb.group({
       firstname: ['', [Validators.required]],
       lastname: ['', [Validators.required]],
@@ -114,17 +116,42 @@ export class SignupformComponent implements OnInit {
     console.log("GETTING: "+ this.form.get('password'));
     return this.form.get('password');
   }
+
+  getLogIn(username: string, password: string) {
+    this.signupService.checkLogIn(username, password).subscribe((response: any) => {
+      if (response.status == 200 && response.message == "success") {
+        // LogIn Attempt Sucessful
+        Storage.isLoggedIn = true;
+        Storage.username = username;
+        this.snackBar.open("Logged in as " + username, "Dismiss", { duration: 1500 });
+
+        // Route to Home
+        this.router.navigate(['/home']);
+      }
+      else if (response.status == 200 && response.message == "failure") {
+        // Prompt user, incorrect login
+        this.snackBar.open("Failed login", "Dismiss", { duration: 1500 });
+      }
+      else {
+        // Something else is wrong
+        this.snackBar.open("Something is wrong", "Alert Adminstration"), { duration: 1500 };
+      }
+    })
+  }
   
   getSignUp(first: string, last: string, username: string, email: string, password: string): void {
     console.log(`sign up attempt with: ${first} ${last} ${username} ${email} ${password}`);
     this.signupService.addNewAccount(email.trim(), username.trim(), password.trim(), first.trim(), last.trim()).subscribe((response: any) => {
       console.log(response);
       if (response.status == 201 && response.message == "success") {
-        this.snackBar.open("Sign Up Successfull", "Dismiss", { duration: 1000});
+      // Log User In
+      this.getLogIn(username, password);
+
+        this.snackBar.open("Sign Up Successfull", "Dismiss", { duration: 1500});
       }
       
       else if (response.status == 200 && response.data.usernameAlreadyExists == true) {
-          this.snackBar.open("Sign Up Failed. Username is already taken.", "Dismiss", { duration: 2000});
+          this.snackBar.open("Sign Up Failed. Username is already taken.", "Dismiss", { duration: 1500});
       }
     });
   }
