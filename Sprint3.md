@@ -44,6 +44,11 @@ Demo Video: <>
 ## Frontend
 User Stories for Frontend
 - View Posts
+- Create Posts
+- Post connected with Database
+- View Communities
+- Communities connected with Database
+- Posts are now connected with attached Communities
 - Integrate BE with Posts
 - Create New Communities
 - User logged in session management
@@ -53,16 +58,26 @@ User Stories for Frontend
 - Delete Communities
 - Delete Posts
 - Delete User
+- Visual UI update, Colors
 
 
 [Userstories and Issues Closed](https://github.com/shenoy-anurag/simple-reddit/issues?q=is%3Aissue+is%3Aclosed+label%3Asprint3+label%3A%22User+Stories+-+FE%22)
 
 
-For Sprint 3, frontend devs focused on Posts, Communities, User profile, Login session, Notifications for user actions, CSS Styling for most of the frontend components.
-
 ### Accomplishments:
 
+
+For Sprint 3, frontend devs focused on:
+- Posts, Communities and their connection with Database 
+- User profile, Login session
+- Notifications for user actions
+- CSS Styling for most of the frontend components
+
+
+
 #### Angular Unit Testing and Testing using Cypress:
+
+
 
 
 Demo video and wiki: <https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#sprint-3-frontend-demo>
