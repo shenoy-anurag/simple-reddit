@@ -32,11 +32,12 @@ export class SignupService {
     })
   }
 
-  deleteUser(username: string) {
-    // return this.WebReqService.delete('users/user',
-    // {
-    //   "username": username
-    // });
+  deleteUser(username: string, password: string) {
+    return this.WebReqService.post('profile/delete',
+    {
+      "username": username,
+      "password": password
+    });
   }
 
   createPost(username: string, community_id: string, title: string, body: string) {

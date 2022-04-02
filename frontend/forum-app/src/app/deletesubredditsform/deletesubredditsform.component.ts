@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { SignupService } from '../signup.service';
 import { Storage } from '../storage';
 
@@ -12,7 +13,7 @@ import { Storage } from '../storage';
 
 export class DeletesubredditsformComponent implements OnInit {
   form: FormGroup = new FormGroup({});
-  constructor(public signupService: SignupService, public snackBar: MatSnackBar, public fb: FormBuilder) {
+  constructor(private signupService: SignupService, public snackBar: MatSnackBar, public fb: FormBuilder) {
     this.form = this.fb.group({
       username: ['', [Validators.required]],
       name: ['', [Validators.required]]
@@ -60,6 +61,5 @@ export class DeletesubredditsformComponent implements OnInit {
         this.snackBar.open("Something is wrong", "Alert Adminstration"), { duration: 2000 };
       }
     })
-
   }
 }
