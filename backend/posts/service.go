@@ -374,6 +374,19 @@ func CheckPostExists(postReq DeletePostRequest) (bool, error) {
 	return true, err
 }
 
+func GetPostbyID(postReq DeletePostRequest) (PostDBModel, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var post PostDBModel
+	filter := bson.M{"$and": []bson.M{{"username": postReq.UserName}, {"_id": postReq.ID}}}
+	//cursor, err := postCollection.FindOne(ctx, filter)
+	err := PostsCollection.FindOne(ctx, filter).Decode(&post)
+	if err != nil {
+		return post, err
+	}
+	return post, err
+}
+
 func retrievePostDetails(postReq GetPostRequest) ([]PostResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -511,30 +524,11 @@ func UpDownVotePosts(voteReq VoteRequest) (result *mongo.UpdateResult, err error
 	// updating the data in db
 	delPostReq, err := ConvertVotePostReqToDeletePostReq(voteReq)
 	postExists, err := CheckPostExists(delPostReq)
+	postDB, err :=GetPostbyID(delPostReq)
 	if !postExists {
 		return result, err
 	}
-	filter := bson.M{"$and": []bson.M{{"username": postReq.UserName}, {"_id": postReq.ID}}}
-	if voteReq.Vote > 0 {
-		updateQuery := bson.D{
-			primitive.E{
-				Key: "$set",
-				Value: bson.D{
-					primitive.E{Key: "upvotes", Value: voteReq.Vote},
-				},
-			},
-		}
-	}
-	if voteReq.Vote < 0 {
-		updateQuery := bson.D{
-			primitive.E{
-				Key: "$set",
-				Value: bson.D{
-					primitive.E{Key: "downvotes", Value: voteReq.Vote},
-				},
-			},
-		}
-	}
+	filter := bson.M{"$and": []bson.M{{"username": voteReq.UserName}, {"_id": voteReq.ID}}}
 	updateQuery := bson.D{
 		primitive.E{
 			Key: "$set",
@@ -542,15 +536,35 @@ func UpDownVotePosts(voteReq VoteRequest) (result *mongo.UpdateResult, err error
 			},
 		},
 	}
+	if voteReq.Vote > 0 {
+		updateQuery = bson.D{
+			primitive.E{
+				Key: "$set",
+				Value: bson.D{
+					primitive.E{Key: "upvotes", Value: postDB.Upvotes + voteReq.Vote},
+				},
+			},
+		}
+	}
+	if voteReq.Vote < 0 {
+		updateQuery = bson.D{
+			primitive.E{
+				Key: "$set",
+				Value: bson.D{
+					primitive.E{Key: "downvotes", Value: postDB.Downvotes - voteReq.Vote},
+				},
+			},
+		}
+	}
 	result, err = PostsCollection.UpdateOne(ctx, filter, updateQuery)
 	return result, err
 }
 
 func Routes(router *gin.Engine) {
 	router.POST(POST_ROUTE_PREFIX, CreatePost())
-	router.GET(POST_ROUTE_PREFIX, GetPosts())
-	router.POST(HOME_ROUTE_PREFIX, GetFeed())
-	router.DELETE(POST_ROUTE_PREFIX, DeletePost())
-	router.PATCH(POST_ROUTE_PREFIX, EditPost())
-	router.PATCH(POST_ROUTE_PREFIX, Vote())
+	router.GET(POST_ROUTE_PREFIX, GetPosts()) // GET -> POST SP3
+	router.POST(HOME_ROUTE_PREFIX, GetFeed()) // maybe PATCH > POST
+	router.DELETE(POST_ROUTE_PREFIX, DeletePost()) // maybe DELETE > POST
+	router.PATCH(POST_ROUTE_PREFIX, EditPost()) // maybe PATCH > POST
+	router.PATCH(POST_ROUTE_PREFIX+"/vote", Vote()) // maybe PATCH > POST
 }

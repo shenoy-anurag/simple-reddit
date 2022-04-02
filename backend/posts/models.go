@@ -101,8 +101,8 @@ func ConvertEditPostReqToDeletePostReq(postReq EditPostRequest) (DeletePostReque
 func ConvertVotePostReqToDeletePostReq(votereq VoteRequest) (DeletePostRequest, error) {
 	var err error
 	return DeletePostRequest{
-		ID:       postReq.ID,
-		UserName: postReq.UserName,
+		ID:       votereq.ID,
+		UserName: votereq.UserName,
 	}, err
 }
 
