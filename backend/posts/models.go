@@ -12,7 +12,7 @@ type PostDBModel struct {
 	CommunityID primitive.ObjectID `bson:"community_id"`
 	UserName    string             `bson:"username"`
 	Title       string             `bson:"title"`
-	Body        string             `json:"body"`
+	Body        string             `bson:"body"`
 	Upvotes     int                `bson:"upvotes"`
 	Downvotes   int                `bson:"downvotes"`
 	Ranking     int                `bson:"ranking"`

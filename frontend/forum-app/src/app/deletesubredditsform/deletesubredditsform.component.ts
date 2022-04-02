@@ -38,17 +38,23 @@ export class DeletesubredditsformComponent implements OnInit {
   deletesubreddit(username: string, name: string) {
     this.signupService.deletecommunity(username, name).subscribe((response: any) => {
       console.log(response);
+      console.log(response.status);
+      console.log(response.message);
       if(response.status == 200 && response.message == "success"){
         this.snackBar.open("Subreddit deleted.", "Dismiss"), { duration: 2000 };
-       }
-      
-      if(response.status == 400 && response.message == "failure"){
+      }
+      else if(response.status == 400 && response.message == "failure"){
         this.snackBar.open("No such Community Exists", "Dismiss"), 
         {
           duration: 2000
         }
       }
-
+      else if(response.status == 401) {
+        this.snackBar.open("No Communities Owned by User", "Dismiss"), 
+        {
+          duration: 2000
+        }
+      }
       else {
         // Something else is wrong
         this.snackBar.open("Something is wrong", "Alert Adminstration"), { duration: 2000 };

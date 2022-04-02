@@ -9,21 +9,17 @@
 
 mat-card-header {
     background: rgb(182, 207, 124);
-    padding: 8px !important;
+    padding: 7px !important;
     margin-top: 5px !important;
-    /* width: ; */
 }
 
 mat-card-content {
     background: rgb(235, 235, 240); 
-    padding:40px !important;
-    /* max-width: ; */
+    padding:30px !important;
 }
 
 mat-card-actions {
     padding:3px;
-    /* float: right; */
-    /* width: ; */
 } 
   
 mat-card-footer {

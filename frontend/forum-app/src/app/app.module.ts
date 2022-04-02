@@ -5,7 +5,6 @@ import { AppComponent } from './app.component';
 import { PostsComponent } from './posts/posts.component';
 import { PostsService } from './posts.service';
 import { SubredditsService } from './subreddits.service';
-import { ButtonComponent } from './button/button.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgMaterialModule } from './ng-material/ng-material.module';
 import { FormsModule } from '@angular/forms';
@@ -28,7 +27,6 @@ import { DeletesubredditsformComponent } from './deletesubredditsform/deletesubr
   declarations: [
     AppComponent,
     PostsComponent,
-    ButtonComponent,
     SignupformComponent,
     PopupMessageComponent,
     NavbarComponent,
