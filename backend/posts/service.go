@@ -220,7 +220,7 @@ func GetFeed() gin.HandlerFunc {
 			return
 		}
 
-		postDetails, err := retrieveFeedDetails(feedReq) // retrieveAllPostDetails()
+		postDetails,postCount, err := retrieveFeedDetails(feedReq) // retrieveAllPostDetails()
 		if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
@@ -238,7 +238,7 @@ func GetFeed() gin.HandlerFunc {
 				common.APIResponse{
 					Status:  http.StatusOK,
 					Message: common.API_SUCCESS,
-					Data:    map[string]interface{}{"posts": postDetails}},
+					Data:    map[string]interface{}{"posts": postDetails, "Total Posts":postCount}},
 			)
 			return
 		} else {
@@ -407,12 +407,16 @@ func retrievePostDetails(postReq GetPostRequest) ([]PostResponse, error) {
 	return postResp, err
 }
 
-func retrieveFeedDetails(feedReq GetFeedRequest) ([]PostResponse, error) {
+func retrieveFeedDetails(feedReq GetFeedRequest) ([]PostResponse,int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var posts []PostDBModel
 	var postResp []PostResponse
 	feedFilter := bson.D{primitive.E{}}
+	postCount, err := PostsCollection.CountDocuments(ctx, feedFilter)
+	if err != nil {
+		return postResp, postCount, err
+	}
 	feedOptions := options.Find()
 	if feedReq.Mode == "latest" {
 		//fmt.Println("in feedReq.Mode == 'latest'")
@@ -439,16 +443,16 @@ func retrieveFeedDetails(feedReq GetFeedRequest) ([]PostResponse, error) {
 	}
 	cursor, err := PostsCollection.Find(ctx, feedFilter, feedOptions)
 	if err = cursor.All(ctx, &posts); err != nil {
-		return postResp, err
+		return postResp,postCount, err
 	}
 	for _, post := range posts {
 		item, err := ConvertPostDBModelToPostResponse(post)
 		if err != nil {
-			return postResp, err
+			return postResp,postCount, err
 		}
 		postResp = append(postResp, item)
 	}
-	return postResp, err
+	return postResp,postCount, err
 }
 
 func deletePost(postReq DeletePostRequest) (*mongo.DeleteResult, error) {

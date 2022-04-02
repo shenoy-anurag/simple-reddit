@@ -158,6 +158,31 @@ func DeleteProfile() gin.HandlerFunc {
 			)
 			return
 		}
+
+		// Delete the saved record for the user
+		savedResult, verifiedSaved, err:= deleteSaved(delProfileReq)
+		if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+		if !verifiedSaved {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+			// Delete the profile record for the user
 		profileResult, verifiedProfile, err:= deleteProfile(delProfileReq)
 		if err != nil {
 			c.JSON(
@@ -179,6 +204,8 @@ func DeleteProfile() gin.HandlerFunc {
 			)
 			return
 		}
+
+			// Delete the user record for the user
 		userResult,verifiedUser, err := deleteUser(delProfileReq)
 		if err != nil {
 			c.JSON(
@@ -206,7 +233,7 @@ func DeleteProfile() gin.HandlerFunc {
 			common.APIResponse{
 				Status:  http.StatusOK,
 				Message: common.API_SUCCESS,
-				Data:    map[string]interface{}{"deletedProfile": profileResult,"deletedUser":userResult, "username":delProfileReq.Username }},
+				Data:    map[string]interface{}{"deletedProfile": profileResult,"deletedUser":userResult,"deletedSaved":savedResult, "username":delProfileReq.Username }},
 		)
 	}
 }
@@ -297,6 +324,17 @@ func deleteUser(delProfileReq DeleteProfileRequest) (userResult *mongo.DeleteRes
 	}
 	userResult, err = UsersCollection.DeleteOne(ctx, filter)
 	return userResult,true, err
+}
+
+func deleteSaved(delProfileReq DeleteProfileRequest) (*mongo.DeleteResult,bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	filter := bson.D{primitive.E{Key: "username", Value: delProfileReq.Username}}
+	result, err := SavedCollection.DeleteOne(ctx, filter)
+	if err!=nil {
+		return result,false,err
+	}
+	return result,true,err
 }
 
 func getUserDetails(userName string) (UserDBModel, error) {
