@@ -1,9 +1,45 @@
+
+.center {
+    justify-content: center;
+}
+
 .full-width{
     width: 100%;
 }
 
 td {
     padding-right: 8px;
+}
+
+/* mat-card-header {
+    background: rgb(182, 207, 124);
+    padding: 8px !important;
+    margin-top: 5px !important;
+    /* width: ; 
+}*/
+
+mat-card-content {
+    background: rgb(235, 235, 240); 
+    padding:25px !important;
+}
+
+mat-card-subtitile {
+    background: rgb(182, 207, 124);
+    padding: 8px !important;
+    margin-top: 5px !important;
+    /* width: ; 
+}
+
+mat-card-actions {
+    padding:3px;
+    /* float: right; */
+    /* width: ; */
+} 
+  
+mat-card-footer {
+    background: rgb(153, 149, 149); 
+    margin:0;
+    padding: 20px;
 }
 
 .hover-class:hover {

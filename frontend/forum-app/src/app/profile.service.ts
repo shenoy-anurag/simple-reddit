@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
+import { WebRequestService } from './web-request.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProfileService {
 
-  constructor() { }
+  constructor(private WebReqService: WebRequestService) { }
 
-  getProfile() {
+  getProfile(username: string) {
     // get data from Backend
-    return {"firstname" : "John", "lastname": "Doe", "username": "JohnDoe", "email": "JohnDoe@email.com"};
+    return this.WebReqService.post('profile',
+    {
+      "username": username
+    });
   }
 }

@@ -3,3 +3,44 @@
     justify-content: left;
     justify-items: left;
 }
+
+mat-card-header {
+    background: rgb(182, 207, 124);
+    padding: 7px !important;
+    margin-top: 5px !important;
+}
+
+mat-card-content {
+    background: rgb(235, 235, 240); 
+    padding:30px !important;
+}
+
+mat-card-actions {
+    padding:3px;
+} 
+  
+mat-card-footer {
+    background: rgb(153, 149, 149); 
+    margin:0;
+    padding: 20px;
+}
+
+.hover-class1:hover {
+    /* margin-right: 15px; */
+    background-color: rgb(24, 138, 24);
+}
+
+.hover-class2:hover {
+    /* margin-right: 15px; */
+    background-color: rgba(255, 0, 0, 0.952);
+}
+
+.hover-class3:hover {
+    /* margin-right: 10px; */
+    background-color: rgb(236, 74, 10);
+}
+
+.hover-class4:hover {
+    /* margin-left: -10px; */
+    background-color: rgb(243, 11, 11);
+}

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, Validators, FormArray, FormBuilder, ValidatorFn, AbstractControl, Validator, ValidationErrors, FormGroup } from '@angular/forms';
+import { Validators, FormBuilder, ValidatorFn, AbstractControl, ValidationErrors, FormGroup } from '@angular/forms';
 import { SignupService } from '../signup.service';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 export function checkIfMatchingPasswords(passwordKey: string, passwordConfirmationKey: string) {
   return (group: FormGroup) => {
@@ -114,14 +114,10 @@ export class SignupformComponent implements OnInit {
     console.log("GETTING: "+ this.form.get('password'));
     return this.form.get('password');
   }
-
-  // get password2() {
-  //   return this.form.controls['password2'];
-  // }
-
+  
   getSignUp(first: string, last: string, username: string, email: string, password: string): void {
     console.log(`sign up attempt with: ${first} ${last} ${username} ${email} ${password}`);
-    this.signupService.addNewAccount(email, username, password, first + " " + last).subscribe((response: any) => {
+    this.signupService.addNewAccount(email.trim(), username.trim(), password.trim(), first.trim(), last.trim()).subscribe((response: any) => {
       console.log(response);
       if (response.status == 201 && response.message == "success") {
         this.snackBar.open("Sign Up Successfull", "Dismiss", { duration: 1000});

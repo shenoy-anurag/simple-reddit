@@ -1,9 +1,35 @@
+
 .center {
     justify-content: center;
 }
 
+.full-width {
+    width: 100%;
+}
+
+mat-card-header {
+    background: rgb(182, 207, 124);
+    padding: 7px !important;
+    margin-top: 5px !important;
+}
+
+mat-card-content {
+    background: rgb(235, 235, 240); 
+    padding:30px !important;
+}
+
+mat-card-actions {
+    padding:3px;
+} 
+  
+mat-card-footer {
+    background: rgb(153, 149, 149); 
+    margin:0;
+    padding: 20px;
+}
+
 .hover-class1:hover {
-    background-color: red;
+    background-color: rgb(194, 93, 11);
 }
 
 .hover-class2:hover {

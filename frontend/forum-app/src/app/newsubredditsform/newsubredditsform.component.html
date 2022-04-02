@@ -1,31 +1,43 @@
 <form [formGroup]="form">
     <br>
-    <!-- Userid, until cookies are made -->
-    <mat-form-field class="full-width" appearance="fill">
-        <mat-label>User_id</mat-label>
-        <input name='user_id' formControlName="user_id" matInput #user_id required placeholder="JohnDoe123" value="">
-        <mat-error *ngIf="f['user_id'].touched && f['user_id'].invalid">
-            User_id cannot be empty
+    <!-- Username, until cookies are made -->
+    <mat-form-field class="full-width1" appearance="fill">
+        <mat-label>Username</mat-label>
+        <!-- <mat-form-field class="full-width1" appearance="fill">
+            <mat-label>Username</mat-label>
+            <input matInput placeholder="JohnDoe" value="Username">
+          </mat-form-field> -->
+        <input name='username' formControlName="username" matInput #username required placeholder="JohnDoe" value="profile.username">
+        <mat-error *ngIf="f['username'].touched && f['username'].invalid">
+            Username cannot be empty
         </mat-error>
     </mat-form-field>
 
-    <!-- Subreddit Name -->
-    <mat-form-field class="full-width" appearance="fill">
+     <!-- Community Name -->
+    <mat-form-field class="full-width1" appearance="fill">
         <mat-label>Name</mat-label>
-        <input name='name' formControlName="name" matInput #name required placeholder="Subreddit Name" value="">
+        <input name='name' formControlName="name" matInput #name required placeholder="Community Name" value="">
+        
         <mat-error *ngIf="f['name'].touched && f['name'].invalid">
             Name cannot be empty
         </mat-error>
     </mat-form-field>
 
     <!-- Subreddit Description --> 
-    <mat-form-field class="full-width" appearance="fill">
+    <mat-form-field class="full-width1" appearance="fill">
         <mat-label>Description</mat-label>
-        <textarea name='description' formControlName="description" matInput type="text" #description required placeholder="This is the description." value="">
-        </textarea>
+        <input name='description' formControlName="description" matInput #description required placeholder="This is the description." value="">
+        <!-- </textarea> -->
         <mat-error *ngIf="f['description'].touched && f['description'].invalid">
             Description cannot be empty
         </mat-error>
     </mat-form-field>
-    <button class='full-width' mat-raised-button (click)="createSubreddit(user_id.value, name.value, description.value)">Create Subreddit</button>
+    
+    &nbsp;
+    &nbsp;
+    <!-- Create New Subreddit -->
+    &nbsp;&nbsp;
+    <button class='button1 hover-class' color="primary" mat-raised-button (click)="createSubreddit(username.value, name.value, description.value)">
+        Create Subreddit
+    </button>
 </form>

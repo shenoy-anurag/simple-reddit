@@ -9,13 +9,14 @@ export class SignupService {
 
   constructor(private WebReqService: WebRequestService) { }
   
-  addNewAccount(email: string, username: string, password: string, name: string) {
+  addNewAccount(email: string, username: string, password: string, firstname: string, lastname: string) {
     return this.WebReqService.post('users/signup', 
     {
       "email": email,
       "username": username,
       "password": password,
-      "name": name
+      "firstname": firstname,
+      "lastname": lastname
     });
   }
 
@@ -39,7 +40,7 @@ export class SignupService {
   }
 
   createPost(username: string, community_id: string, title: string, body: string) {
-    return this.WebReqService.post('post/create',
+    return this.WebReqService.post('post',
     {
       "username": username,
     	"community_id": community_id,
@@ -48,17 +49,19 @@ export class SignupService {
     });
   }
 
-  createcommunity(user_id: string, name: string, description: string) {
-    return this.WebReqService.post('community',
+  createcommunity(username: string, name: string, description: string) {
+    console.log("into post block");
+    return this.WebReqService.post('community/create',
     {
-      "user_id": user_id,
+      "username": username,
       "name": name,
       "description": description
     });
   }
 
   deletecommunity(username: string, name: string) {
-    return this.WebReqService.post('community', 
+    console.log("delete post block")
+    return this.WebReqService.post('community/delete', 
     {
       "username": username,
       "name": name

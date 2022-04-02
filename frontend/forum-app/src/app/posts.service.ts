@@ -1,18 +1,27 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Storage } from './storage';
+import { WebRequestService } from './web-request.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PostsService {
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private WebReqService: WebRequestService) { }
 
   getPosts() {
     // get data from Backend
-    // this.httpClient.get<any>("httplocalhost:8080")
-    return [
-      {"title" : "Fake Post", "body" : "This is a fake post with fake body", "owner": "John", "created_on" : "02/11/2022"},
-      {"title" : "Another Fake Post", "body" : "This is a second fake post with fake body", "owner": "John 2", "created_on" : "02/12/2022"}];
+    return this.WebReqService.post('home', {
+      "pagenumber" : 1,
+      "numberofposts" : 100,
+      "mode" : "hot",
+    });
+  }
+
+  deletePost(post_id: string) {
+    return this.WebReqService.delete('post', {
+      "id": post_id,
+      "username": Storage.username
+    })
   }
 }

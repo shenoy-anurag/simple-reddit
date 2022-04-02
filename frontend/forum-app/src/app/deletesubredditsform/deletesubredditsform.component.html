@@ -9,7 +9,7 @@
         </mat-error>
     </mat-form-field>
 
-    <!-- Name -->
+    <!-- Community Name -->
     <mat-form-field class="full-width" appearance="fill">
         <mat-label>Name</mat-label>
         <textarea name='name' formControlName="name" matInput type="text" #name required placeholder="Community Name" value="">
@@ -18,5 +18,9 @@
             Name cannot be empty
         </mat-error>
     </mat-form-field>
-    <button class='full-width' mat-raised-button color="warn" (click)="createdeletesubreddit(username.value, name.value)">Delete Subreddit</button>
+
+    <!-- Delete User if the authentication is Succesfull-->
+    <button class='full-width hover-class' mat-raised-button color="primary" (click)="deletesubreddit(username.value, name.value)">
+        Delete Subreddit
+    </button>
 </form>

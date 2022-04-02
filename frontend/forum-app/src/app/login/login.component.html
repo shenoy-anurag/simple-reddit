@@ -1,18 +1,21 @@
-<div class='center' *ngIf='!getLogInStatus(); else elseTemplate'>
+<div class='center' *ngIf='!getLogInStatus()'>
     <form action=" /" id="myLogin" [formGroup]="form">
         <br>
         <!-- Username -->
         <mat-form-field class="full-width" appearance="fill">
             <mat-label>Username</mat-label>
-            <input name='username' formControlName="username" matInput #usrInput required placeholder="username" value="">
+            <input name='username' formControlName="username" matInput #usrInput required placeholder="username"
+                value="">
             <mat-error *ngIf="f['username'].touched && f['username'].invalid">
                 Username cannot be empty
             </mat-error>
         </mat-form-field>
+        
         <!-- password -->
         <mat-form-field class="full-width" appearance="fill">
             <mat-label>Password</mat-label>
-            <input matInput [type]="showPassword ? 'text' : 'password'" name="password" formControlName=password #usrPwd required placeholder="password" value="">
+            <input matInput [type]="showPassword ? 'text' : 'password'" name="password" formControlName=password #usrPwd
+                required placeholder="password" value="">
             <mat-icon matSuffix (click)="togglePasswordVisibility()">
                 {{showPassword?'visibility_off':'visibility'}}
             </mat-icon>
@@ -24,20 +27,29 @@
         <table class="full-width" cellspacing="0">
             <tr>
                 <!-- Routing Links -->
+                &nbsp;
                 <td>
-                    <button name='loginbutton' class='full-width' mat-raised-button color="primary" (click)="getLogIn(usrInput.value, usrPwd.value)">Log In</button>
+                    <div *ngIf="usrLoggedIn">
+                        <button name='logoutbutton' class='full-width hover-class1' mat-raised-button color="primary"
+                            (click)="getLogOut()">
+                            Log Out
+                        </button>
+                    </div>
+                    <div *ngIf=!usrLoggedIn>
+                        <button name='loginbutton' class='full-width hover-class1' mat-raised-button color="primary"
+                            (click)="getLogIn(usrInput.value, usrPwd.value)">
+                            Log In
+                        </button>
+                    </div>
                 </td>
+                &nbsp;
+                &nbsp;
                 <td>
-                    <button class='full-width' mat-raised-button color="warn" a routerLink="/signupform" >Sign Up</button>
+                    <button class='full-width hover-class2' mat-raised-button color="accent" a routerLink="/signupform">
+                        Sign Up
+                    </button>
                 </td>
             </tr>
         </table>
     </form>
-</div>
-<!--redirect to Home Page-->
-<div class='center'>
-    <ng-template #elseTemplate>
-        <a mat-button routerLink="/home">Home</a>
-        <button mat-raised-button color="warn" (click)="getLogOut()">Log Out</button>
-    </ng-template>
 </div>

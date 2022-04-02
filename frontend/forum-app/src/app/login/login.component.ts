@@ -3,6 +3,7 @@ import { SignupService } from '../signup.service';
 import { FormControl, Validators, FormArray, FormBuilder, ValidatorFn, AbstractControl, Validator, ValidationErrors, FormGroup } from '@angular/forms';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Storage } from '../storage';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -12,7 +13,7 @@ import { Storage } from '../storage';
 export class LoginComponent implements OnInit {
   public showPassword: boolean = false;
   form: FormGroup = new FormGroup({});
-  constructor(private signupService: SignupService, private snackBar: MatSnackBar, private fb: FormBuilder) {
+  constructor(private signupService: SignupService, private snackBar: MatSnackBar, private fb: FormBuilder, private router: Router) {
     this.form = this.fb.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required]]
@@ -38,31 +39,32 @@ export class LoginComponent implements OnInit {
   }
 
   getLogIn(username: string, password: string) {
-    console.log('Attempted login: USR:' + username + ' PWD:' + password);
     this.signupService.checkLogIn(username, password).subscribe((response: any) => {
-      console.log(response);
-
       if (response.status == 200 && response.message == "success") {
         // LogIn Attempt Sucessful
         Storage.isLoggedIn = true;
+        Storage.username = username;
         this.usr = username;
-        this.snackBar.open("Logged in as " + username, "Dismiss", { duration: 2000 });
+        this.snackBar.open("Logged in as " + username, "Dismiss", { duration: 1500 });
 
-        // update profile page
+        // Route to Home
+        this.router.navigate(['/home']);
       }
-      else if (response.status == 200 && response.message == "failure" && response.data.data == 'Incorrect Credentials') {
+      else if (response.status == 200 && response.message == "failure") {
         // Prompt user, incorrect login
-        this.snackBar.open("Failed login", "Dismiss", { duration: 2000 });
+        this.snackBar.open("Failed login", "Dismiss", { duration: 1500 });
       }
       else {
         // Something else is wrong
-        this.snackBar.open("Something is wrong", "Alert Adminstration"), { duration: 2000 };
+        this.snackBar.open("Something is wrong", "Alert Adminstration"), { duration: 1500 };
       }
     })
   }
 
   getLogOut() {
     Storage.isLoggedIn = false;
+    Storage.username = "";
     this.usr = "";
+    this.snackBar.open("Logged out ", "Dismiss",{ duration: 3000 });
   }
 }

@@ -2,6 +2,19 @@
     width: 100%;
 }
 
+.center {
+    justify-content: center;
+}
+
+.hover-class:hover {
+    background-color: rgb(3, 124, 84);
+    width: 100%;
+}
+
+.button1{
+    width: 100%;
+}
+
 td {
     padding-right: 8px;
 }
