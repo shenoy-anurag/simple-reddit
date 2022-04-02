@@ -13,25 +13,33 @@ For Sprint 3, backend devs focused on Home Page, Feed, and Comment threads. Go t
 
 ### Accomplishments:
 
-#### Comments
+#### APIs
+##### Comments
 - Create Comment
 - Get Comments for Post
-- Edit Comment
 - Vote Comment Up/Down
 - Delete Comment
 
-#### Feed
+##### Communities
+- Get All Communities
 
+##### Feed
+- Feed/Homepage Latest
+- Feed/Homepage Hot
 
 #### Go Tests:
-- Test 1
+- Create Post
+- Get Post
 
 Checkout the test results [here](https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#testing).
 
 #### Bugs:
-- Bug 1
+- Voting on Comments doesn't change score #202
+- Feed API allows 0 posts in a page, and negative pages allowed #156
 
 Demo video and wiki: <https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#sprint-3-back-end-demo>
+
+Demo Video: <>
 
 ## Frontend
 User Stories for Frontend

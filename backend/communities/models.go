@@ -27,6 +27,23 @@ type GetCommunityRequest struct {
 	IsUser bool   `json:"isuser" validate:"exists"`
 }
 
+type GetAllCommunitiesRequest struct {
+	PageNumber   uint32 `json:"p" form:"p"`
+	ItemsPerPage uint32 `json:"per_page" form:"per_page"`
+}
+
+// GetAllCommunitiesRequest struct constructor function
+func (gcr *GetAllCommunitiesRequest) fill_defaults() {
+	// setting default values
+	// if no values present
+	if gcr.PageNumber == 0 {
+		gcr.PageNumber = 1
+	}
+	if gcr.ItemsPerPage == 0 {
+		gcr.ItemsPerPage = 25
+	}
+}
+
 type GetPostsRequest struct {
 	Name string `json:"name" validate:"required"`
 }
