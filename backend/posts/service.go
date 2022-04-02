@@ -541,7 +541,7 @@ func UpDownVotePosts(voteReq VoteRequest) (result *mongo.UpdateResult, err error
 			primitive.E{
 				Key: "$set",
 				Value: bson.D{
-					primitive.E{Key: "upvotes", Value: postDB.Upvotes + voteReq.Vote},
+					primitive.E{Key: "upvotes", Value: postDB.Upvotes + 1},// + voteReq.Vote},
 				},
 			},
 		}
@@ -551,7 +551,7 @@ func UpDownVotePosts(voteReq VoteRequest) (result *mongo.UpdateResult, err error
 			primitive.E{
 				Key: "$set",
 				Value: bson.D{
-					primitive.E{Key: "downvotes", Value: postDB.Downvotes - voteReq.Vote},
+					primitive.E{Key: "downvotes", Value: postDB.Downvotes + 1}, // voteReq.Vote},
 				},
 			},
 		}
