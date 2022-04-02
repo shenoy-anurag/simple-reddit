@@ -233,7 +233,7 @@ func DeleteProfile() gin.HandlerFunc {
 			common.APIResponse{
 				Status:  http.StatusOK,
 				Message: common.API_SUCCESS,
-				Data:    map[string]interface{}{"deletedProfile": profileResult,"deletedUser":userResult, "username":delProfileReq.Username }},
+				Data:    map[string]interface{}{"deletedProfile": profileResult,"deletedUser":userResult,"deletedSaved":savedResult, "username":delProfileReq.Username }},
 		)
 	}
 }
