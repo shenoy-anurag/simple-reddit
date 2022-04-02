@@ -77,5 +77,4 @@ For Sprint 3, frontend devs focused on:
 
 
 
-
-Demo video and wiki: <https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#sprint-3-frontend-demo>
+Frontend Demo video and wiki: <https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#sprint-3-frontend-demo>
