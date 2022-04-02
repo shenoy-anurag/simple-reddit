@@ -18,15 +18,20 @@ td {
     /* width: ; 
 }*/
 
-mat-card-content {
-    background: rgb(235, 235, 240); 
+mat-card-title {
+    background: #cadf0f; 
     padding:25px !important;
 }
 
-mat-card-subtitile {
-    background: rgb(182, 207, 124);
-    padding: 8px !important;
-    margin-top: 5px !important;
+mat-card-content {
+    background: rgb(16, 227, 235); 
+    padding:25px !important;
+}
+
+mat-card-subtitle {
+    background: rgb(191, 105, 165);
+    padding: 25px !important;
+    margin-top: 1px !important;
     /* width: ; 
 }
 

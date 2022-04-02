@@ -36,9 +36,12 @@
     <!-- Username -->
     <mat-form-field class="full-width" appearance="fill">
         <mat-label>User Name</mat-label>
-        <input name='username' matInput type="text" formControlName="username" #username placeholder="JohnDoe">
-        <mat-error *ngIf="f['username'].touched && f['username'].invalid">
+        <input name='username' matInput formControlName="username" type="text" #username placeholder="JohnDoe">
+        <!-- <mat-error *ngIf="f['username'].touched && f['username'].invalid">
             Username is not valid
+        </mat-error> -->
+        <mat-error *ngIf="f['username'].touched && f['username'].invalid">
+            Username Cannot be empty
         </mat-error>
     </mat-form-field>
 
