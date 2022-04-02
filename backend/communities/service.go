@@ -14,6 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const COMMUNITY_ROUTE_PREFIX = "/community"
@@ -127,7 +128,7 @@ func GetCommunity() gin.HandlerFunc {
 		// }
 		//communityReq.Name = c.Request.URL.Query().Get("name")
 		if communityReq.IsUser {
-			allCommunities, err := retrieveAllCommuntities(communityReq)
+			allCommunities, err := retrieveAllCommunitiesOfUser(communityReq)
 			if err == mongo.ErrNoDocuments {
 				c.JSON(
 					http.StatusOK,
@@ -157,7 +158,6 @@ func GetCommunity() gin.HandlerFunc {
 				)
 				return
 			}
-
 		}
 		communityDB, err := retrieveCommunityDetails(communityReq)
 		if err == mongo.ErrNoDocuments {
@@ -201,6 +201,64 @@ func GetCommunity() gin.HandlerFunc {
 			)
 			return
 		}
+	}
+}
+
+func GetAllCommunities() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var getCommunityReq GetAllCommunitiesRequest
+		// validate the request body
+		if err := c.BindQuery(&getCommunityReq); err != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+		// use the validator library to validate required fields
+		if validationErr := validate.Struct(&getCommunityReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
+		getCommunityReq.fill_defaults()
+
+		communities, docCount, err := retrieveAllCommunitiesDetails(getCommunityReq)
+		if err == mongo.ErrNoDocuments {
+			c.JSON(
+				http.StatusOK,
+				common.APIResponse{
+					Status:  http.StatusOK,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": common.ERR_COMMUNITY_NOT_FOUND.Message}},
+			)
+			return
+		} else if err != nil {
+			c.JSON(
+				http.StatusOK,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		c.JSON(
+			http.StatusOK,
+			common.APIResponse{
+				Status:  http.StatusOK,
+				Message: common.API_SUCCESS,
+				Data:    map[string]interface{}{"num_communities": docCount, "communities": communities}},
+		)
 	}
 }
 
@@ -386,7 +444,6 @@ func GetCommunityPosts() gin.HandlerFunc {
 				Message: common.API_SUCCESS,
 				Data:    map[string]interface{}{"posts": communityPosts}},
 		)
-		return
 	}
 }
 
@@ -466,13 +523,46 @@ func retrieveCommunityDetails(commReq GetCommunityRequest) (CommunityDBModel, er
 	return community, err
 }
 
-func retrieveAllCommuntities(commReq GetCommunityRequest) ([]CommunityResponse, error) {
+func retrieveAllCommunitiesDetails(getCommunityReq GetAllCommunitiesRequest) ([]CommunityResponse, int64, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var communities []CommunityDBModel
+	var communitiesResponses []CommunityResponse
+
+	// Count the total number of documents in order to decide the number of pages.
+	filter := bson.D{}
+	docCount, err := CommunityCollection.CountDocuments(ctx, filter)
+	if err != nil {
+		return communitiesResponses, docCount, err
+	}
+	// Retrieve documents required for the page.
+	var numItemsToSkip uint32 = (getCommunityReq.PageNumber - 1) * getCommunityReq.ItemsPerPage
+	queryOptions := options.Find().SetSkip(int64(numItemsToSkip)).SetLimit(int64(getCommunityReq.ItemsPerPage))
+	cursor, err := CommunityCollection.Find(ctx, filter, queryOptions)
+	if err != nil {
+		return communitiesResponses, docCount, err
+	}
+	if err = cursor.All(ctx, &communities); err != nil {
+		return communitiesResponses, docCount, err
+	}
+	for _, community := range communities {
+		item := ConvertCommunityDBModelToCommunityResponse(community)
+		communitiesResponses = append(communitiesResponses, item)
+	}
+	return communitiesResponses, docCount, err
+}
+
+func retrieveAllCommunitiesOfUser(commReq GetCommunityRequest) ([]CommunityResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var communities []CommunityDBModel
 	var communitiesResponses []CommunityResponse
 	filter := bson.M{"username": commReq.Name}
 	cursor, err := CommunityCollection.Find(ctx, filter)
+	if err != nil {
+		return communitiesResponses, err
+	}
 	if err = cursor.All(ctx, &communities); err != nil {
 		return communitiesResponses, err
 	}
@@ -494,6 +584,9 @@ func retrieveAllPosts(postReq GetPostsRequest) ([]PostResponse, error) {
 	var community CommunityDBModel
 	communityFilter := bson.D{primitive.E{Key: "name", Value: postReq.Name}}
 	err := CommunityCollection.FindOne(ctx, communityFilter).Decode(&community)
+	if err != nil {
+		return postResp, err
+	}
 	postFilter := bson.M{"community_id": community.ID}
 	cursor, err := PostsCollection.Find(ctx, postFilter)
 	if err != nil {
@@ -570,10 +663,14 @@ func checkCommunityNameExists(communityName string) (bool, error) {
 }
 
 func Routes(router *gin.Engine) {
-	router.POST(COMMUNITY_ROUTE_PREFIX, CreateCommunity())
+	router.POST(COMMUNITY_ROUTE_PREFIX+"/create", CreateCommunity())
 	router.POST(COMMUNITY_ROUTE_PREFIX+"/check-name", CheckCommunityExists())
-	router.GET(COMMUNITY_ROUTE_PREFIX, GetCommunity())
-	router.GET(COMMUNITY_ROUTE_PREFIX+"/home", GetCommunityPosts())
+	// router.GET(COMMUNITY_ROUTE_PREFIX, GetCommunity())
+	router.POST(COMMUNITY_ROUTE_PREFIX, GetCommunity())
+	router.GET(COMMUNITY_ROUTE_PREFIX+"/all", GetAllCommunities())
+	// router.GET(COMMUNITY_ROUTE_PREFIX+"/home", GetCommunityPosts())
+	router.POST(COMMUNITY_ROUTE_PREFIX+"/home", GetCommunityPosts())
 	router.PATCH(COMMUNITY_ROUTE_PREFIX, EditCommunity())
-	router.DELETE(COMMUNITY_ROUTE_PREFIX, DeleteCommunity())
+	// router.DELETE(COMMUNITY_ROUTE_PREFIX, DeleteCommunity())
+	router.POST(COMMUNITY_ROUTE_PREFIX+"/delete", DeleteCommunity())
 }

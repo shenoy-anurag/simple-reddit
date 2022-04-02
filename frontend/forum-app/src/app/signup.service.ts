@@ -32,15 +32,16 @@ export class SignupService {
     })
   }
 
-  deleteUser(username: string) {
-    // return this.WebReqService.delete('users/user',
-    // {
-    //   "username": username
-    // });
+  deleteUser(username: string, password: string) {
+    return this.WebReqService.post('profile/delete',
+    {
+      "username": username,
+      "password": password
+    });
   }
 
   createPost(username: string, community_id: string, title: string, body: string) {
-    return this.WebReqService.post('post/create',
+    return this.WebReqService.post('post',
     {
       "username": username,
     	"community_id": community_id,
@@ -51,7 +52,7 @@ export class SignupService {
 
   createcommunity(username: string, name: string, description: string) {
     console.log("into post block");
-    return this.WebReqService.post('community',
+    return this.WebReqService.post('community/create',
     {
       "username": username,
       "name": name,
@@ -61,10 +62,10 @@ export class SignupService {
 
   deletecommunity(username: string, name: string) {
     console.log("delete post block")
-    return this.WebReqService.delete('community', 
+    return this.WebReqService.post('community/delete', 
     {
-      "username": 'albert',
-      "name": 'science'
+      "username": username,
+      "name": name
     });
   }
 

@@ -3,6 +3,7 @@ import { SignupService } from '../signup.service';
 import { FormControl, Validators, FormArray, FormBuilder, ValidatorFn, AbstractControl, Validator, ValidationErrors, FormGroup } from '@angular/forms';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Storage } from '../storage';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -12,7 +13,7 @@ import { Storage } from '../storage';
 export class LoginComponent implements OnInit {
   public showPassword: boolean = false;
   form: FormGroup = new FormGroup({});
-  constructor(private signupService: SignupService, private snackBar: MatSnackBar, private fb: FormBuilder) {
+  constructor(private signupService: SignupService, private snackBar: MatSnackBar, private fb: FormBuilder, private router: Router) {
     this.form = this.fb.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required]]
@@ -37,7 +38,7 @@ export class LoginComponent implements OnInit {
     return this.form.controls;
   }
 
-  getLogIn(username: string, password: string) {
+  public getLogIn(username: string, password: string) {
     this.signupService.checkLogIn(username, password).subscribe((response: any) => {
       if (response.status == 200 && response.message == "success") {
         // LogIn Attempt Sucessful
@@ -45,6 +46,9 @@ export class LoginComponent implements OnInit {
         Storage.username = username;
         this.usr = username;
         this.snackBar.open("Logged in as " + username, "Dismiss", { duration: 1500 });
+
+        // Route to Home
+        this.router.navigate(['/home']);
       }
       else if (response.status == 200 && response.message == "failure") {
         // Prompt user, incorrect login
