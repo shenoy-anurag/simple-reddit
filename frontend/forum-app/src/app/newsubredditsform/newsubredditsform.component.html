@@ -7,7 +7,7 @@
             <mat-label>Username</mat-label>
             <input matInput placeholder="JohnDoe" value="Username">
           </mat-form-field> -->
-        <input name='username' formControlName="username" matInput #username required placeholder="JohnDoe" value="profile.username">
+        <input name='username' formControlName="username" matInput #username required placeholder="JohnDoe" value="username">
         <mat-error *ngIf="f['username'].touched && f['username'].invalid">
             Username cannot be empty
         </mat-error>
