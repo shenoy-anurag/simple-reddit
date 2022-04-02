@@ -43,6 +43,11 @@ type EditPostRequest struct {
 	Body     string             `json:"body" validate:"required"`
 }
 
+type VoteRequest struct {
+	ID       primitive.ObjectID `json:"id" validate:"required"`
+	UserName string             `json:"username" validate:"required"`
+	Vote int  `json:"vote" validate:"required"`
+}
 type GetFeedRequest struct {
 	PageNumber    int    `json:"pagenumber"`
 	NumberOfPosts int    `json:"numberofposts"`
@@ -90,6 +95,14 @@ func ConvertEditPostReqToDeletePostReq(postReq EditPostRequest) (DeletePostReque
 	return DeletePostRequest{
 		ID:       postReq.ID,
 		UserName: postReq.UserName,
+	}, err
+}
+
+func ConvertVotePostReqToDeletePostReq(votereq VoteRequest) (DeletePostRequest, error) {
+	var err error
+	return DeletePostRequest{
+		ID:       votereq.ID,
+		UserName: votereq.UserName,
 	}, err
 }
 
