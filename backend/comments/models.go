@@ -2,7 +2,6 @@ package comments
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -38,7 +37,7 @@ type CreateCommentRequest struct {
 }
 
 type DeleteCommentRequest struct {
-	CommentId string `json:"comment_id" uri:"comment_id" validate:"required"`
+	CommentId string `json:"comment_id" uri:"comment_id" form:"comment_id" validate:"required"`
 }
 
 type GetCommentRequest struct {
@@ -264,8 +263,6 @@ func updateVote(cVoteReq CommentVoteRequest) (result string, err error) {
 	if err != nil && err != mongo.ErrNoDocuments {
 		return "voted", err
 	}
-	fmt.Println(commentHist)
-	fmt.Println(cVoteReq)
 
 	var is_upvote bool = false
 	var is_remove_vote bool = false
