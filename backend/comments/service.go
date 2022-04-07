@@ -101,7 +101,7 @@ func DeleteComment() gin.HandlerFunc {
 		var delCommentReq DeleteCommentRequest
 
 		// validate the request body
-		if err := c.BindJSON(&delCommentReq); err != nil {
+		if err := c.BindQuery(&delCommentReq); err != nil {
 			c.JSON(
 				http.StatusBadRequest,
 				common.APIResponse{
@@ -262,9 +262,14 @@ func GetComments() gin.HandlerFunc {
 	}
 }
 
+const COMMENTS_ROUTE_VOTE string = COMMENTS_ROUTE_PREFIX + "/vote"
+const COMMENTS_ROUTE_CREATE string = COMMENTS_ROUTE_PREFIX
+const COMMENTS_ROUTE_GET string = COMMENTS_ROUTE_PREFIX
+const COMMENTS_ROUTE_DELETE string = COMMENTS_ROUTE_PREFIX
+
 func Routes(router *gin.Engine) {
-	router.POST(COMMENTS_ROUTE_PREFIX, CreateComment())
-	router.GET(COMMENTS_ROUTE_PREFIX, GetComments())
-	router.POST(COMMENTS_ROUTE_PREFIX+"/vote", VoteComment())
-	router.DELETE(COMMENTS_ROUTE_PREFIX, DeleteComment())
+	router.POST(COMMENTS_ROUTE_CREATE, CreateComment())
+	router.GET(COMMENTS_ROUTE_GET, GetComments())
+	router.POST(COMMENTS_ROUTE_VOTE, VoteComment())
+	router.DELETE(COMMENTS_ROUTE_DELETE, DeleteComment())
 }
