@@ -39,8 +39,8 @@ export class PostsComponent implements OnInit {
   }
 
   deletePost(id: string, title: string) { 
-    console.log("Deleting post: " + title + "id: " + id);
     if (Storage.isLoggedIn) {
+      console.log("Deleting post: " + title + "id: " + id + " username: " + Storage.username);
       this.service.deletePost(id).subscribe((response: any) => {
         if (response.status == 200) {
           this.snackbar.open("Post Deleted", "Dismiss", {duration: 1500 });

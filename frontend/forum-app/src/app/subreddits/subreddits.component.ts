@@ -24,6 +24,7 @@ export class SubredditsComponent implements OnInit {
         this.snackbar.open("You are not the community owner. You do not have permission to delete this community.", "Dismiss", { duration: 1500 });
       }
       else {
+        console.log(Storage.username + "," + title);
         this.service.deleteSubreddit(Storage.username, title).subscribe((response: any) => {
           if (response.status == 200) {
             this.snackbar.open(title + " has been deleted.", "Dismiss", { duration: 1500 });
