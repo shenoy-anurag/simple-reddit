@@ -27,8 +27,10 @@ export class SubredditsComponent implements OnInit {
         console.log(Storage.username + "," + title);
         this.service.deleteSubreddit(Storage.username, title).subscribe((response: any) => {
           if (response.status == 200) {
-            this.snackbar.open(title + " has been deleted.", "Dismiss", { duration: 1500 });
-          }
+            this.snackbar.open(title + " has been deleted.", "Dismiss", { duration: 1500 });          }
+
+            // update communities
+            this.getCommunities();
         });
       }
     }
