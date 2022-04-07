@@ -20,8 +20,12 @@ const HASHING_COST = 10
 const USER_ROUTE_PREFIX = "/users"
 
 const UsersCollectionName string = "users"
+const CommunitiesCollectionName string = "communities"
+// const PostsCollectionName string = "posts"
 
 var UsersCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, UsersCollectionName)
+var CommunityCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, CommunitiesCollectionName)
+// var PostsCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, PostsCollectionName)
 var validate = validator.New()
 
 func CreateUser() gin.HandlerFunc {
@@ -225,6 +229,54 @@ func CheckUsernameExists() gin.HandlerFunc {
 	}
 }
 
+func GetUserSubscriptions() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var updateSubReq UpdateSubsciptionRequest
+		// validate the request body
+		if err := c.BindJSON(&updateSubReq); err != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		// use the validator library to validate required fields
+		if validationErr := validate.Struct(&updateSubReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
+
+		result, err := UpdateSubsciptions(updateSubReq)
+		if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+		c.JSON(
+			http.StatusCreated,
+			common.APIResponse{
+				Status:  http.StatusCreated,
+				Message: common.API_SUCCESS,
+				Data:    map[string]interface{}{"updatedSubscriptions": result}},
+		)
+	}
+}
+
 func CreateUserInDB(user CreateUserRequest) (result *mongo.InsertOneResult, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -264,8 +316,48 @@ func CheckUsername(username string) (bool, error) {
 	return alreadyExists, err
 }
 
+
+func UpdateSubsciptions(updateSubReq UpdateSubsciptionRequest) (result *mongo.UpdateResult, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	// var alreadyExists bool
+	// userDB,err :=GetUserDetails(username)
+	var userDB UserDBModel
+	filter := bson.D{primitive.E{Key: "username", Value: updateSubReq.Username}}
+	err = UsersCollection.FindOne(ctx, filter).Decode(&userDB)
+	if err == mongo.ErrNoDocuments {
+		err = nil
+		return result,err
+	}
+	CommunityDB, err :=retrieveCommunityDetails(updateSubReq.CommunityName)
+	updatedSubscriptions := userDB.Subcriptions
+	//newSaveComment, err := GetComment(saveCommentReq)
+	updatedSubscriptions = append(updatedSubscriptions, CommunityDB.ID)
+	updateQuery := bson.D{
+		primitive.E{
+			Key: "$set",
+			Value: bson.D{
+				primitive.E{Key: "subcriptions", Value: updatedSubscriptions},
+			},
+		},
+	}
+	result, err = UsersCollection.UpdateOne(ctx, filter, updateQuery)
+	return result, err
+}
+
+func retrieveCommunityDetails(communityName string) (CommunityDBModel, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var community CommunityDBModel
+	filter := bson.D{primitive.E{Key: "name", Value: communityName}}
+	err := CommunityCollection.FindOne(ctx, filter).Decode(&community)
+	return community, err
+}
+
 func Routes(router *gin.Engine) {
 	router.POST(USER_ROUTE_PREFIX+"/signup", CreateUser())
 	router.POST(USER_ROUTE_PREFIX+"/loginuser", LoginUser())
 	router.POST(USER_ROUTE_PREFIX+"/check-username", CheckUsernameExists())
+	router.POST(USER_ROUTE_PREFIX+"/GetCommunitiesFollowed",GetUserSubscriptions())
 }

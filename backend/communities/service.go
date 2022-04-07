@@ -667,9 +667,10 @@ func Routes(router *gin.Engine) {
 	router.POST(COMMUNITY_ROUTE_PREFIX+"/check-name", CheckCommunityExists())
 	// router.GET(COMMUNITY_ROUTE_PREFIX, GetCommunity())
 	router.POST(COMMUNITY_ROUTE_PREFIX, GetCommunity())
-	router.POST(COMMUNITY_ROUTE_PREFIX+"/all", GetAllCommunities())
+	// TODO - user who have following a community - POST - username
+	router.POST(COMMUNITY_ROUTE_PREFIX+"/all", GetAllCommunities())  //all community that exists
 	// router.GET(COMMUNITY_ROUTE_PREFIX+"/home", GetCommunityPosts())
-	router.POST(COMMUNITY_ROUTE_PREFIX+"/home", GetCommunityPosts())
+	//router.POST(COMMUNITY_ROUTE_PREFIX+"/home", GetCommunityPosts())
 	router.PATCH(COMMUNITY_ROUTE_PREFIX, EditCommunity())
 	// router.DELETE(COMMUNITY_ROUTE_PREFIX, DeleteCommunity())
 	router.POST(COMMUNITY_ROUTE_PREFIX+"/delete", DeleteCommunity())
