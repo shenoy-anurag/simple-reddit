@@ -44,6 +44,10 @@ type CheckUsernameRequest struct {
 	Username string `json:"username" validate:"required"`
 }
 
+type GetSubsciptionsRequest struct {
+	Username string `json:"username" validate:"required"`
+}
+
 type UpdateSubsciptionRequest struct {
 	Username string `json:"username" validate:"required"`
 	CommunityName        string `json:"communityname" validate:"required"`
@@ -67,6 +71,7 @@ func ConvertUserRequestToUserDBModel(usrReq CreateUserRequest) UserDBModel {
 		Email:     usrReq.Email,
 		Username:  usrReq.Username,
 		Password:  usrReq.Password,
+		Subcriptions: []primitive.ObjectID{},// CreateSubcriptions(),
 		Joined:    time.Now().UTC(),
 	}
 }
