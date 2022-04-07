@@ -12,10 +12,6 @@
 &nbsp;
 &nbsp;
 
-<button mat-raised-button color="" class="hover-class4" a routerLink="/deletesubredditsform">
-    Delete Subreddit
-</button>
-
 <!-- Public Subreddits -->
 <ul *ngFor="let subreddit of this.subreddits">
     <mat-card>
@@ -30,16 +26,21 @@
         </mat-card-content>
         <!-- Upvote and Downvote the Subreddits -->
         <mat-card-actions>
-            <!-- <button mat-button>Upvote</button> -->
             <button mat-flat-button color="primary" class="hover-class1">
                 Upvote
             </button>
             &nbsp;
             &nbsp;
-            <!-- <button mat-button>Downvote</button> -->
             <button mat-flat-button color="primary" class="hover-class2">
                 Downvote
             </button>
-          </mat-card-actions>
+            &nbsp;
+            &nbsp;
+            &nbsp;
+
+            <button mat-button color="warn" (click)="deleteCommunity(subreddit.name, 'johntest')">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </mat-card-actions>
       </mat-card>
 </ul>
