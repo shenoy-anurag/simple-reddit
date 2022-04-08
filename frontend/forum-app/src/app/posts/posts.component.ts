@@ -55,6 +55,11 @@ export class PostsComponent implements OnInit {
     else {
       this.snackbar.open("Log in to vote on posts", "Dismiss", { duration: 1500 });
     }
+
+    // getComments works
+    // this.service.getComments(id).subscribe((response: any) => {
+    //   console.log(response);
+    // });
   }
 
   deletePost(id: string, title: string, postusername: string) { 

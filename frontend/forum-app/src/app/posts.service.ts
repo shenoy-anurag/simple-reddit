@@ -1,3 +1,4 @@
+import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Storage } from './storage';
 import { WebRequestService } from './web-request.service';
@@ -8,6 +9,12 @@ import { WebRequestService } from './web-request.service';
 export class PostsService {
 
   constructor(private WebReqService: WebRequestService) { }
+
+  getComments(post_id: string) {
+    let queryParams = new HttpParams();
+    queryParams = queryParams.append("post_id", post_id);
+    return this.WebReqService.get("comment", queryParams);
+  }
 
   getPosts() {
     // get data from Backend
