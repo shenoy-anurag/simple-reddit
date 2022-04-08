@@ -289,7 +289,7 @@ func UpdateSavedComments() gin.HandlerFunc {
 			return
 		}
 
-		result, err := UpdateSavedComments(saveCommentReq)
+		result, err := UpdateSavedModelComments(saveCommentReq)
 
 		if err != nil {
 			c.JSON(
@@ -313,7 +313,7 @@ func UpdateSavedComments() gin.HandlerFunc {
 	}
 }
 
-func UpdatedSavedPosts() gin.HandlerFunc {
+func UpdateSavedPosts() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var savePostReq SavePostRequest
 
@@ -341,7 +341,7 @@ func UpdatedSavedPosts() gin.HandlerFunc {
 			return
 		}
 
-		result, err := UpdateSavedPosts(savePostReq)
+		result, err := UpdateSavedModelPosts(savePostReq)
 
 		if err != nil {
 			c.JSON(
@@ -540,7 +540,7 @@ func UpdateSavedModelPosts(savePostReq SavePostRequest)(result *mongo.UpdateResu
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var SavedPostCommentDB SavedDBModel
-	filter := bson.D{primitive.E{Key: "username", Value: saveCommentReq.Username}}
+	filter := bson.D{primitive.E{Key: "username", Value: savePostReq.Username}}
 	err = SavedCollection.FindOne(ctx, filter).Decode(&SavedPostCommentDB)
 	updatedSavedPosts := SavedPostCommentDB.SavedPosts
 	//newSaveComment, err := GetComment(saveCommentReq)
