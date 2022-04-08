@@ -261,7 +261,7 @@ func DeleteProfile() gin.HandlerFunc {
 	}
 }
 
-func SaveComment() gin.HandlerFunc {
+func UpdateSavedComments() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var saveCommentReq SaveCommentRequest
 
@@ -289,7 +289,59 @@ func SaveComment() gin.HandlerFunc {
 			return
 		}
 
-		result, err := UpdateSavedComments(saveCommentReq)
+		result, err := UpdateSavedModelComments(saveCommentReq)
+
+		if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		c.JSON(
+			http.StatusCreated,
+			common.APIResponse{
+				Status:  http.StatusCreated,
+				Message: common.API_SUCCESS,
+				Data:    map[string]interface{}{"Updated": result}},
+		)
+
+	}
+}
+
+func UpdateSavedPosts() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var savePostReq SavePostRequest
+
+		// Bind the JSON to the request
+		if err := c.BindJSON(&savePostReq); err != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		// Validate the request body
+		if validationErr := validate.Struct(&savePostReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
+
+		result, err := UpdateSavedModelPosts(savePostReq)
 
 		if err != nil {
 			c.JSON(
@@ -463,7 +515,7 @@ func CreateSavedPC(UserName string)(SavedDBModel){
 
 }
 
-func UpdateSavedComments(saveCommentReq SaveCommentRequest)(result *mongo.UpdateResult,err error){
+func UpdateSavedModelComments(saveCommentReq SaveCommentRequest)(result *mongo.UpdateResult,err error){
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var SavedPostCommentDB SavedDBModel
@@ -484,6 +536,27 @@ func UpdateSavedComments(saveCommentReq SaveCommentRequest)(result *mongo.Update
 	return result, err
 }
 
+func UpdateSavedModelPosts(savePostReq SavePostRequest)(result *mongo.UpdateResult,err error){
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var SavedPostCommentDB SavedDBModel
+	filter := bson.D{primitive.E{Key: "username", Value: savePostReq.Username}}
+	err = SavedCollection.FindOne(ctx, filter).Decode(&SavedPostCommentDB)
+	updatedSavedPosts := SavedPostCommentDB.SavedPosts
+	//newSaveComment, err := GetComment(saveCommentReq)
+	updatedSavedPosts = append(updatedSavedPosts, savePostReq.PostID)
+	updateQuery := bson.D{
+		primitive.E{
+			Key: "$set",
+			Value: bson.D{
+				primitive.E{Key: "savedposts", Value: updatedSavedPosts},
+			},
+		},
+	}
+	result, err = SavedCollection.UpdateOne(ctx, filter, updateQuery)
+	return result, err
+}
+
 func GetComment(commentReq SaveCommentRequest) (comments.CommentDBModel, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -495,7 +568,8 @@ func GetComment(commentReq SaveCommentRequest) (comments.CommentDBModel, error) 
 
 func Routes(router *gin.Engine) {
 	router.POST(PROFILE_ROUTE_PREFIX, GetProfile())
-	router.PATCH(PROFILE_ROUTE_PREFIX, EditProfile()) // maybe PATCH > DELETE
+	router.PATCH(PROFILE_ROUTE_PREFIX, EditProfile()) // maybe PATCH > POST
 	router.POST(PROFILE_ROUTE_PREFIX+"/delete", DeleteProfile()) // router.DELETE(PROFILE_ROUTE_PREFIX, DeleteProfile()) // DELETE -> POST
-	router.PATCH(PROFILE_ROUTE_PREFIX+"/savecomment", SaveComment()) // maybe PATCH > DELETE
+	router.PATCH(PROFILE_ROUTE_PREFIX+"/savedcomments", UpdateSavedComments()) // maybe PATCH > POST
+	router.PATCH(PROFILE_ROUTE_PREFIX+"/savedposts", UpdateSavedPosts())
 }
