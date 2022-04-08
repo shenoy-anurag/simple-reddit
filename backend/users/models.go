@@ -31,6 +31,7 @@ type UserDBModel struct {
 	Email     string             `json:"email"`
 	Username  string             `json:"username"`
 	Password  string             `json:"password"`
+	Subcriptions []primitive.ObjectID `json:"subcriptions"`
 	Joined    time.Time          `bson:"joined"`
 }
 
@@ -43,6 +44,24 @@ type CheckUsernameRequest struct {
 	Username string `json:"username" validate:"required"`
 }
 
+type GetSubsciptionsRequest struct {
+	Username string `json:"username" validate:"required"`
+}
+
+type UpdateSubsciptionRequest struct {
+	Username string `json:"username" validate:"required"`
+	CommunityName        string `json:"communityname" validate:"required"`
+}
+
+type CommunityDBModel struct {
+	ID              primitive.ObjectID `bson:"_id"`
+	UserName        string             `json:"username" validate:"required"`
+	Name            string             `bson:"name"`
+	Description     string             `bson:"description"`
+	SubscriberCount int                `bson:"subscriber_count"`
+	CreatedAt       time.Time          `bson:"created_at"`
+}
+
 // Convertion functions to convert between different models.
 func ConvertUserRequestToUserDBModel(usrReq CreateUserRequest) UserDBModel {
 	return UserDBModel{
@@ -52,6 +71,7 @@ func ConvertUserRequestToUserDBModel(usrReq CreateUserRequest) UserDBModel {
 		Email:     usrReq.Email,
 		Username:  usrReq.Username,
 		Password:  usrReq.Password,
+		Subcriptions: []primitive.ObjectID{},// CreateSubcriptions(),
 		Joined:    time.Now().UTC(),
 	}
 }
