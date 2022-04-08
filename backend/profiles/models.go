@@ -58,35 +58,15 @@ type SavedDBModel struct {
 	SavedComments []primitive.ObjectID `bson:"savedcomments" validate:"required"`
 }
 
-type PostDBModel struct {
-	ID          primitive.ObjectID `bson:"_id"`
-	CommunityID primitive.ObjectID `bson:"community_id"`
-	UserName    string             `bson:"username"`
-	Title       string             `bson:"title"`
-	Body        string             `bson:"body"`
-	Upvotes     int                `bson:"upvotes"`
-	Downvotes   int                `bson:"downvotes"`
-	Ranking     int                `bson:"ranking"`
-	CreatedAt   time.Time          `bson:"created_at"`
-}
-
-type UpdateSavedPostRequest struct {
+type SavePostRequest struct {
 	PostID primitive.ObjectID `json:"post_id" validate:"required"`
 	Username string `json:"username" validate:"required"`
 }
 
-type UpdateSavedCommentRequest struct {
+type SaveCommentRequest struct {
 	CommentID primitive.ObjectID `json:"comment_id" validate:"required"`
 	Username string `json:"username" validate:"required"`
 }
-
-type GetSavedItemRequest struct {
-	Username string `json:"username" validate:"required"`
-}
-
-// type GetSavedCommentRequest struct {
-// 	Username string `json:"username" validate:"required"`
-// }
 
 // Convertion functions to convertbetween different models.
 
