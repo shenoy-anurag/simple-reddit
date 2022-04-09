@@ -263,7 +263,7 @@ func DeleteProfile() gin.HandlerFunc {
 
 func UpdateSavedComments() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var saveCommentReq SaveCommentRequest
+		var saveCommentReq UpdateSavedCommentRequest
 
 		// Bind the JSON to the request
 		if err := c.BindJSON(&saveCommentReq); err != nil {
@@ -315,7 +315,7 @@ func UpdateSavedComments() gin.HandlerFunc {
 
 func UpdateSavedPosts() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var savePostReq SavePostRequest
+		var savePostReq UpdateSavedPostRequest
 
 		// Bind the JSON to the request
 		if err := c.BindJSON(&savePostReq); err != nil {
@@ -360,6 +360,58 @@ func UpdateSavedPosts() gin.HandlerFunc {
 				Status:  http.StatusCreated,
 				Message: common.API_SUCCESS,
 				Data:    map[string]interface{}{"Updated": result}},
+		)
+
+	}
+}
+
+func GetSavedPosts() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var savedPostReq GetSavedItemRequest
+
+		// Bind the JSON to the request
+		if err := c.BindJSON(&savedPostReq); err != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		// Validate the request body
+		if validationErr := validate.Struct(&savedPostReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
+
+		result, err := GetSavedModelPosts(savedPostReq)
+
+		if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+
+		c.JSON(
+			http.StatusCreated,
+			common.APIResponse{
+				Status:  http.StatusCreated,
+				Message: common.API_SUCCESS,
+				Data:    map[string]interface{}{"saved_posts": result}},
 		)
 
 	}
@@ -515,7 +567,7 @@ func CreateSavedPC(UserName string)(SavedDBModel){
 
 }
 
-func UpdateSavedModelComments(saveCommentReq SaveCommentRequest)(result *mongo.UpdateResult,err error){
+func UpdateSavedModelComments(saveCommentReq UpdateSavedCommentRequest)(result *mongo.UpdateResult,err error){
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var SavedPostCommentDB SavedDBModel
@@ -536,7 +588,7 @@ func UpdateSavedModelComments(saveCommentReq SaveCommentRequest)(result *mongo.U
 	return result, err
 }
 
-func UpdateSavedModelPosts(savePostReq SavePostRequest)(result *mongo.UpdateResult,err error){
+func UpdateSavedModelPosts(savePostReq UpdateSavedPostRequest)(result *mongo.UpdateResult,err error){
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var SavedPostCommentDB SavedDBModel
@@ -554,10 +606,69 @@ func UpdateSavedModelPosts(savePostReq SavePostRequest)(result *mongo.UpdateResu
 		},
 	}
 	result, err = SavedCollection.UpdateOne(ctx, filter, updateQuery)
+	status, err := UpdateProfileSavedPC(savePostReq.Username)
+	if status {
+		return result, err
+	}
 	return result, err
 }
 
-func GetComment(commentReq SaveCommentRequest) (comments.CommentDBModel, error) {
+func UpdateProfileSavedPC(UserName string)(bool,error){
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var SavedPostCommentDB SavedDBModel
+	filter := bson.D{primitive.E{Key: "username", Value: UserName}}
+	err := SavedCollection.FindOne(ctx, filter).Decode(&SavedPostCommentDB)
+	updateQuery := bson.D{
+		primitive.E{
+			Key: "$set",
+			Value: bson.D{
+				primitive.E{Key: "savedpc", Value: SavedPostCommentDB},
+			},
+		},
+	}
+	_, nerr := ProfileCollection.UpdateOne(ctx, filter, updateQuery)
+	if nerr!=nil {
+		return false, err
+	}
+	return true, err
+}
+
+func GetSavedModelPosts(savedItemtReq GetSavedItemRequest)(savedPosts []PostDBModel,err error){
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var SavedPostCommentDB SavedDBModel
+	//var posts []PostDBModel
+	filter := bson.D{primitive.E{Key: "username", Value: savedItemtReq.Username}}
+	err = SavedCollection.FindOne(ctx, filter).Decode(&SavedPostCommentDB)
+	savedPostIDs := SavedPostCommentDB.SavedPosts
+	//newSaveComment, err := GetComment(saveCommentReq)
+	// updatedSavedPosts = append(updatedSavedPosts, savePostReq.PostID)
+	// updateQuery := bson.D{
+	// 	primitive.E{
+	// 		Key: "$set",
+	// 		Value: bson.D{
+	// 			primitive.E{Key: "savedposts", Value: updatedSavedPosts},
+	// 		},
+	// 	},
+	// }
+	// result, err = SavedCollection.UpdateOne(ctx, filter, updateQuery)
+	for _,postID := range savedPostIDs {
+		post, err := retrievePostDetailsByID(postID)
+		if err != nil {
+			return savedPosts, err
+		}
+		savedPosts = append(savedPosts,post)
+		// item, err := ConvertPostDBModelToPostResponse(post)
+		// if err != nil {
+		// 	return postResp, err
+		// }
+		// postResp = append(postResp, item)
+	}
+	return savedPosts, err
+}
+
+func GetComment(commentReq UpdateSavedCommentRequest) (comments.CommentDBModel, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var commentDB comments.CommentDBModel
@@ -566,10 +677,51 @@ func GetComment(commentReq SaveCommentRequest) (comments.CommentDBModel, error) 
 	return commentDB, err
 }
 
+// func FetchPosts(postIDs []primitive.ObjectID) ([]CommunityDBModel,error) { // UserDBModel,error) {
+// 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+// 	defer cancel()
+// 	var alreadyExists bool
+// 	userDB,err :=GetUserDetails(username)
+// 	var userDB UserDBModel
+// 	filter := bson.D{primitive.E{Key: "username", Value: getSubReq.Username}}
+// 	err := UsersCollection.FindOne(ctx, filter).Decode(&userDB)
+// 	if err == mongo.ErrNoDocuments {
+// 		err = nil
+// 		return comunitiesSubscribed,err
+// 	}
+// 	subscriptions := userDB.Subcriptions
+//
+// 	CommunityDB, err :=retrieveCommunityDetails(updateSubReq.CommunityName)
+// 	updatedSubscriptions := userDB.Subcriptions
+// 	//newSaveComment, err := GetComment(saveCommentReq)
+// 	updatedSubscriptions = append(updatedSubscriptions, CommunityDB.ID)
+// 	updateQuery := bson.D{
+// 		primitive.E{
+// 			Key: "$set",
+// 			Value: bson.D{
+// 				primitive.E{Key: "subcriptions", Value: updatedSubscriptions},
+// 			},
+// 		},
+// 	}
+// 	result, err = UsersCollection.UpdateOne(ctx, filter, updateQuery)
+// 	return result, err
+// 	return comunitiesSubscribed,err
+// }
+
+func retrievePostDetailsByID(postID primitive.ObjectID) (PostDBModel, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var postDB PostDBModel
+	filter := bson.D{primitive.E{Key: "_id", Value: postID}}
+	err := PostsCollection.FindOne(ctx, filter).Decode(&postDB)
+	return postDB, err
+}
+
 func Routes(router *gin.Engine) {
 	router.POST(PROFILE_ROUTE_PREFIX, GetProfile())
 	router.PATCH(PROFILE_ROUTE_PREFIX, EditProfile()) // maybe PATCH > POST
 	router.POST(PROFILE_ROUTE_PREFIX+"/delete", DeleteProfile()) // router.DELETE(PROFILE_ROUTE_PREFIX, DeleteProfile()) // DELETE -> POST
 	router.PATCH(PROFILE_ROUTE_PREFIX+"/savedcomments", UpdateSavedComments()) // maybe PATCH > POST
 	router.PATCH(PROFILE_ROUTE_PREFIX+"/savedposts", UpdateSavedPosts())
+	router.POST(PROFILE_ROUTE_PREFIX+"/getsavedposts",GetSavedPosts())
 }
