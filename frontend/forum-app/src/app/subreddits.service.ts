@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Storage } from './storage';
 import { SignupService } from './signup.service';
 import { WebRequestService } from './web-request.service';
 
@@ -21,3 +22,11 @@ export class SubredditsService {
 
   constructor(private WebReqService: WebRequestService) { }
 }
+
+// voteCommunity(community_id: string, username: string, vote: number) {
+//   return this.WebReqService.patch("community/vote", {
+//     "id": community_id,
+//     "username": username,
+//     "vote": vote
+//   });
+// }
