@@ -14,7 +14,7 @@ export class NewsubredditsformComponent implements OnInit {
 
   profile: any
   form: FormGroup = new FormGroup({});
-  constructor(private signupService: SignupService, private fb: FormBuilder, private snackBar: MatSnackBar, private service: ProfileService) {
+  constructor(private signupService: SignupService,private service1: ProfileService , private fb: FormBuilder, private snackBar: MatSnackBar, private service: ProfileService) {
     this.form = this.fb.group({
       username: ['', [Validators.required]],
       name: ['', [Validators.required]],
@@ -33,25 +33,28 @@ export class NewsubredditsformComponent implements OnInit {
   }
 
   getUsername() {
-    this.service.getProfile(Storage.username).subscribe((response: any) => {
+    // this.service.getProfile(Storage.username).subscribe((response: any) => {
+      this.service1.getProfile(Storage.username).subscribe((response: any) => {
       console.log(response);
       console.log(response.status);
       
       if (response.status == 200) {
-        console.log(response.data.Profile.username);
+        // console.log(response.data.Profile.username);
+        // console.log(response.data.Profile.email);
         this.profile = {
           "username": response.data.Profile.username,
+          "email": response.data.Profile.email,
         }
       }
     });
   }
 
 
-  createSubreddit(username: string, name: string, description: string)
+  createSubreddit(name: string, description: string)
   {
-    console.log("new subreddit: " + username + " " + name + " " + description);
+    // console.log("new subreddit: " + username + " " + name + " " + description);
     if (Storage.isLoggedIn) {
-    this.signupService.createcommunity(username, name, description).subscribe((response: any) => {
+    this.signupService.createcommunity(this.profile.username, name, description).subscribe((response: any) => {
     console.log(response.status);
     console.log(response.message);
      if(response.status == 201 && response.message == "success"){
@@ -64,8 +67,8 @@ export class NewsubredditsformComponent implements OnInit {
       // Something else is wrong
       this.snackBar.open("Something is wrong", "Alert Adminstration"), { duration: 2000 };
      }
-    });
-  }
+     });
+    }
 
   else{
     this.snackBar.open("Log in to vote on posts", "Dismiss", { duration: 1500 });

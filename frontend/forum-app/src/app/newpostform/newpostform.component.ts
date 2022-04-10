@@ -62,10 +62,11 @@ export class NewpostformComponent implements OnInit {
     this.getCommunities();
   }
 
-  createPost(username: string, community: string, title: string, body: string) {
+  createPost(community: string, title: string, body: string) {
+    // console.log("testing the code")
     console.log("new post: " + title + " " + "community: " + community + " " + body);
     if (Storage.isLoggedIn) {
-    this.signupService.createPost(username, community, title, body).subscribe((response: any) => {
+    this.signupService.createPost(this.profile.username, community, title, body).subscribe((response: any) => {
       console.log(response);
       if(response.status == 201 && response.message == "success"){
         this.snackBar.open("New post created.", "Dismiss", { duration: 1500 });
