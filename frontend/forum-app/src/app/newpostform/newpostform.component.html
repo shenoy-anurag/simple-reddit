@@ -41,7 +41,8 @@
     <!-- <button class='button1 hover-class' mat-raised-button color="warn" (click)="createPost(username.value, selectedCommunity, title.value, body.value)">
         Create Post
     </button> -->
-    <button class='button1 hover-class' mat-raised-button color="warn" (click)="createPost(profile.username, selectedCommunity, title.value, body.value)">
+    <!-- Username is directley read from logged in user data -->
+    <button class='button1 hover-class' mat-raised-button color="warn" (click)="createPost(selectedCommunity, title.value, body.value)">
         Create Post
     </button>
 </form>
