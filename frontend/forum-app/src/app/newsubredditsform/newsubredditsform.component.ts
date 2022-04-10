@@ -50,6 +50,7 @@ export class NewsubredditsformComponent implements OnInit {
   createSubreddit(username: string, name: string, description: string)
   {
     console.log("new subreddit: " + username + " " + name + " " + description);
+    if (Storage.isLoggedIn) {
     this.signupService.createcommunity(username, name, description).subscribe((response: any) => {
     console.log(response.status);
     console.log(response.message);
@@ -63,7 +64,12 @@ export class NewsubredditsformComponent implements OnInit {
       // Something else is wrong
       this.snackBar.open("Something is wrong", "Alert Adminstration"), { duration: 2000 };
      }
-    })
+    });
+  }
+
+  else{
+    this.snackBar.open("Log in to vote on posts", "Dismiss", { duration: 1500 });
+  }
   }
 }
 

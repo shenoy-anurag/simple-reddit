@@ -4,6 +4,7 @@ import { SubredditsService } from '../subreddits.service';
 import { SignupService } from '../signup.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Storage } from '../storage';
+import { ProfileService } from '../profile.service';
 
 @Component({
   selector: 'app-newpostform',
@@ -12,6 +13,7 @@ import { Storage } from '../storage';
 })
 export class NewpostformComponent implements OnInit {
   communities: any[] = [];
+  profile: any;
   // communities: any[] = [
   //   {value: '6247263303a4c16c6d6470de', viewValue: 'Sociology'},
   //   {value: '6247263303a4c16c6d6470de', viewValue: 'Pizza'},
@@ -19,7 +21,7 @@ export class NewpostformComponent implements OnInit {
   // ];
   selectedCommunity: string = "";
   form: FormGroup = new FormGroup({});
-  constructor(private service: SubredditsService, private signupService: SignupService, private fb: FormBuilder, private snackBar: MatSnackBar) {
+  constructor(private service1: SubredditsService, private service2: ProfileService, private signupService: SignupService, private fb: FormBuilder, private snackBar: MatSnackBar) {
     this.form = this.fb.group({
       username: ['', [Validators.required]],
       title: ['', [Validators.required]],
@@ -28,12 +30,26 @@ export class NewpostformComponent implements OnInit {
   }
 
   getCommunities() {
-    this.service.getSubreddits().subscribe((response: any) => {
+    this.service1.getSubreddits().subscribe((response: any) => {
       console.log(response.data.communities);
       if (response.status == 200) {
         this.communities = response.data.communities;
       }
       else {
+      }
+    });
+
+    this.service2.getProfile(Storage.username).subscribe((response: any) => {
+      console.log(response);
+      console.log(response.status);
+      
+      if (response.status == 200) {
+        console.log(response.data.Profile.username);
+        console.log(response.data.Profile.email);
+        this.profile = {
+          "username": response.data.Profile.username,
+          "email": response.data.Profile.email,
+        }
       }
     });
   }
