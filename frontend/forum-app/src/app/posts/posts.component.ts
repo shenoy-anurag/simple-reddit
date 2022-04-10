@@ -36,6 +36,11 @@ export class PostsComponent implements OnInit {
       this.service.votePost(id, Storage.username, -1).subscribe((response: any) => {
         if (response.status == 200) {
           this.getPosts();
+          this.snackbar.open("Downvote Succesfull", "Dismiss", { duration: 1500 });
+        }
+
+        if (response.status == 500) {
+          this.snackbar.open("Downvote Unsuccesfull", "Dismiss", { duration: 1500 });
         }
       });
     }

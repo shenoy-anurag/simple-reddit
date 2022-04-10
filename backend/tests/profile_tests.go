@@ -21,7 +21,7 @@ func TestGetProfile(t *testing.T) {
 		log.Fatal(err.Error())
 	}
 	var body = profiles.GetProfileRequest{
-    UserName: "samclub"
+    UserName: "samclub",
 }
 	var expected = common.APIResponse{
 		Status:  http.StatusOK,
@@ -60,7 +60,7 @@ func TestGetProfile(t *testing.T) {
 		log.Fatal(err.Error())
 	}
 	var body = profiles.GetProfileRequest{
-    UserName: "samclub"
+    UserName: "samclub",
 }
 	var expected = common.APIResponse{
 		Status:  http.StatusOK,
