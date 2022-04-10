@@ -119,9 +119,35 @@ describe('Create Post', () => {
 
     it('Populate Form', () => {
         cy.get('input[name="username"]').type("JohnDoe123").should('have.value', 'JohnDoe123');
-        cy.get('input[name="title"]').type('Cypress Community Title').should('have.value', "Cypress Community Title");
+        cy.get('input[name="title"]').type('Cypress Post Title').should('have.value', "Cypress Post Title");
+        cy.get('textarea[name="body"]').type('Cypress Post Body').should('have.value', "Cypress Post Body");
+
+        cy.get('mat-select[formControlName="community"]').click().get('mat-option').contains('sociology').click();
+    })
+
+    it('Submit Form', () => {
+        cy.contains('Create Post').click();
     })
 })
+
+describe('View New Post', () => {
+    it('Navigate to Home', () => {
+        cy.contains('Home').click();
+        cy.url().should('include', '/home');
+
+        cy.contains('Cypress Post Title');
+    })
+})
+
+// Once DeletePost works
+// describe('Delete New Post', () => {
+//     it('Navigate to Home', () => {
+//         cy.contains('Home').click();
+//         cy.url().should('include', '/home');
+
+//         cy.contains('Cypress Post Title');
+//     })
+// })
 
 describe('Delete Test User', () => {
     it('Navigate to Profile', () => {

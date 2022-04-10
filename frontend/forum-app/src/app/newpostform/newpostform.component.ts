@@ -27,29 +27,14 @@ export class NewpostformComponent implements OnInit {
   }
 
   getCommunities() {
-    // let rawCommunities: any = []
     this.service.getSubreddits().subscribe((response: any) => {
       console.log(response.data.communities);
       if (response.status == 200) {
-        // rawCommunities = response.data.communities;
         this.communities = response.data.communities;
       }
       else {
-        // rawCommunities = []
-        // this.communities = [
-        //   {value: '6247263303a4c16c6d6470de', viewValue: 'Sociology'}];
       }
     });
-    // populate dropdown menu
-
-    // for (let i = 0; i < rawCommunities.length; i++) {
-    //   console.log(rawCommunities[i]._id);
-      // let temp: any = {
-      //   value: rawCommunities[i]._id,
-      //   viewValue: rawCommunities[i].name
-      // }
-      // this.communities.push(temp);
-    // }
   }
 
   get f() {
@@ -65,11 +50,11 @@ export class NewpostformComponent implements OnInit {
     this.signupService.createPost(username, community, title, body).subscribe((response: any) => {
       console.log(response);
       if(response.status == 201 && response.message == "success"){
-        this.snackBar.open("New post created."), { duration: 1500 };
+        this.snackBar.open("New post created.", "Dismiss", { duration: 1500 });
        }
       else {
         // Something else is wrong
-        this.snackBar.open("Failed to create new post", "Dismiss"), { duration: 1500 };
+        this.snackBar.open("Failed to create new post", "Dismiss", { duration: 1500 });
       }
     })
   }

@@ -91,7 +91,7 @@ func TestGetPost(t *testing.T) {
 		log.Println(err.Error())
 	}
 
-	log.Println(resp)
+	// log.Println(resp)
 
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, expected.Status, resp.Status)

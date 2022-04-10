@@ -12,5 +12,12 @@ export class SubredditsService {
     return this.WebReqService.post("community/all", {});
   }
 
+  deleteSubreddit(username: string, title: string) {
+    return this.WebReqService.post("community/delete", {
+      "username": username,
+      "name": title
+    });
+  }
+
   constructor(private WebReqService: WebRequestService) { }
 }

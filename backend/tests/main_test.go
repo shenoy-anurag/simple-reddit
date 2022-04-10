@@ -8,9 +8,11 @@ import (
 	"testing"
 	"time"
 
+	"simple-reddit/comments"
 	"simple-reddit/communities"
 	"simple-reddit/configs"
 	"simple-reddit/posts"
+	"simple-reddit/profiles"
 	"simple-reddit/routes"
 	"simple-reddit/users"
 
@@ -42,8 +44,10 @@ func CreateCollections(MongoDB *mongo.Database) {
 
 func ReplaceCollectionObjects(MongoDB *mongo.Database) {
 	users.UsersCollection = configs.GetCollection(MongoDB, users.UsersCollectionName)
+	profiles.ProfileCollection = configs.GetCollection(MongoDB, profiles.ProfilesCollectionName)
 	communities.CommunityCollection = configs.GetCollection(MongoDB, communities.CommunitiesCollectionName)
 	posts.PostsCollection = configs.GetCollection(MongoDB, posts.PostsCollectionName)
+	comments.CommentsCollection = configs.GetCollection(MongoDB, comments.CommentsCollectionName)
 }
 
 func TestMain(m *testing.M) {
