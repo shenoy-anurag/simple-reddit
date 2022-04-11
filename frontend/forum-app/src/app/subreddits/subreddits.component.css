@@ -5,13 +5,13 @@
 }
 
 mat-card-header {
-    background: rgb(182, 207, 124);
+    background: rgb(194, 228, 146);
     padding: 7px !important;
     margin-top: 5px !important;
 }
 
 mat-card-content {
-    background: rgb(222, 170, 212); 
+    background: rgb(220, 182, 212); 
     padding:30px !important;
 }
 
