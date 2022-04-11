@@ -21,24 +21,25 @@ td {
 mat-card-title {
     background: #cadf0f; 
     padding:25px !important;
+    margin-top: 50px ;
 }
 
 mat-card-content {
     background: rgb(16, 227, 235); 
-    padding:25px !important;
+    padding:35px !important;
+    margin-top: 0px ;
 }
 
-mat-card-subtitle {
+/* mat-card-subtitle {
     background: rgb(191, 105, 165);
     padding: 25px !important;
-    margin-top: 1px !important;
-    /* width: ; 
-}
+    margin-top: 10px !important;
+}  */
 
-mat-card-actions {
-    padding:3px;
-    /* float: right; */
-    /* width: ; */
+mat-card-subtitle {
+    background: rgb(220, 170, 210);
+    padding: 20px ;
+    margin-top: 0px ;
 } 
   
 mat-card-footer {
