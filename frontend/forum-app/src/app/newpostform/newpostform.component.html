@@ -17,6 +17,9 @@
             <mat-option #community *ngFor="let community of communities" [value]="community._id">
               {{ community.name }}
             </mat-option>
+            <mat-error *ngIf="f['community'].touched && f['community'].invalid">
+                Community cannot be empty
+            </mat-error>
         </mat-select>
     </mat-form-field>
 

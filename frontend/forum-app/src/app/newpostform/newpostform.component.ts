@@ -26,6 +26,7 @@ export class NewpostformComponent implements OnInit {
       username: ['', [Validators.required]],
       title: ['', [Validators.required]],
       body: ['', [Validators.required]],
+      community: ['', [Validators.required]],
     })
   }
 
