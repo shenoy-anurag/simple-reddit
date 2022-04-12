@@ -26,6 +26,9 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-duration-seconds: 1200
+          role-session-name: ci-session
       # Step 5
       - name: Run Application
         run: |
@@ -44,6 +47,9 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-duration-seconds: 1200
+          role-session-name: cd-session
       # Step 2
       - name: Create CodeDeploy Deployment
         id: deploy
@@ -52,4 +58,5 @@ jobs:
             --application-name simple-reddit \
             --deployment-group-name PersonalProjectDeploymentGroup \
             --deployment-config-name CodeDeployDefault.OneAtATime \
+            --service-role-arn ${{ secrets.AWS_ROLE_TO_ASSUME }} \
             --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
