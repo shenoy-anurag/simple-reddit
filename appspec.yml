@@ -5,7 +5,7 @@ files:
     destination: /opt
 hooks:
   BeforeInstall:
-    - location: scripts/install_dependencies.sh
+    - location: scripts/before_install.sh
       runas: root
   AfterInstall:
     - location: scripts/after_install.sh
