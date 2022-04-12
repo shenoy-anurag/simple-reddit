@@ -21,10 +21,12 @@ const USER_ROUTE_PREFIX = "/users"
 
 const UsersCollectionName string = "users"
 const CommunitiesCollectionName string = "communities"
+
 // const PostsCollectionName string = "posts"
 
 var UsersCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, UsersCollectionName)
 var CommunityCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, CommunitiesCollectionName)
+
 // var PostsCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, PostsCollectionName)
 var validate = validator.New()
 
@@ -257,7 +259,16 @@ func GetUserSubscriptions() gin.HandlerFunc {
 		}
 
 		result, err := FetchSubsciptions(getSubReq)
-		if err != nil {
+		if err == mongo.ErrNoDocuments {
+			c.JSON(
+				http.StatusNotFound,
+				common.APIResponse{
+					Status:  http.StatusNotFound,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		} else if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
 				common.APIResponse{
@@ -364,7 +375,7 @@ func CheckUsername(username string) (bool, error) {
 	return alreadyExists, err
 }
 
-func FetchSubsciptions(getSubReq GetSubsciptionsRequest) ([]CommunityDBModel,error) { // UserDBModel,error) {
+func FetchSubsciptions(getSubReq GetSubsciptionsRequest) ([]CommunityDBModel, error) { // UserDBModel,error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	// var alreadyExists bool
@@ -375,15 +386,15 @@ func FetchSubsciptions(getSubReq GetSubsciptionsRequest) ([]CommunityDBModel,err
 	err := UsersCollection.FindOne(ctx, filter).Decode(&userDB)
 	if err == mongo.ErrNoDocuments {
 		err = nil
-		return comunitiesSubscribed,err
+		return comunitiesSubscribed, err
 	}
 	subscriptions := userDB.Subcriptions
-	for _,communityID := range subscriptions {
+	for _, communityID := range subscriptions {
 		community, err := retrieveCommunityDetailsByID(communityID)
 		if err != nil {
 			return comunitiesSubscribed, err
 		}
-		comunitiesSubscribed = append(comunitiesSubscribed,community)
+		comunitiesSubscribed = append(comunitiesSubscribed, community)
 		// item, err := ConvertPostDBModelToPostResponse(post)
 		// if err != nil {
 		// 	return postResp, err
@@ -404,7 +415,7 @@ func FetchSubsciptions(getSubReq GetSubsciptionsRequest) ([]CommunityDBModel,err
 	// }
 	// result, err = UsersCollection.UpdateOne(ctx, filter, updateQuery)
 	// return result, err
-	return comunitiesSubscribed,err
+	return comunitiesSubscribed, err
 }
 
 func UpdateSubsciptions(updateSubReq UpdateSubsciptionRequest) (result *mongo.UpdateResult, err error) {
@@ -417,9 +428,9 @@ func UpdateSubsciptions(updateSubReq UpdateSubsciptionRequest) (result *mongo.Up
 	err = UsersCollection.FindOne(ctx, filter).Decode(&userDB)
 	if err == mongo.ErrNoDocuments {
 		err = nil
-		return result,err
+		return result, err
 	}
-	CommunityDB, err :=retrieveCommunityDetails(updateSubReq.CommunityName)
+	CommunityDB, err := retrieveCommunityDetails(updateSubReq.CommunityName)
 	updatedSubscriptions := userDB.Subcriptions
 	//newSaveComment, err := GetComment(saveCommentReq)
 	updatedSubscriptions = append(updatedSubscriptions, CommunityDB.ID)
@@ -445,7 +456,6 @@ func retrieveCommunityDetails(communityName string) (CommunityDBModel, error) {
 	return community, err
 }
 
-
 func retrieveCommunityDetailsByID(communityID primitive.ObjectID) (CommunityDBModel, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -459,6 +469,6 @@ func Routes(router *gin.Engine) {
 	router.POST(USER_ROUTE_PREFIX+"/signup", CreateUser())
 	router.POST(USER_ROUTE_PREFIX+"/loginuser", LoginUser())
 	router.POST(USER_ROUTE_PREFIX+"/check-username", CheckUsernameExists())
-	router.POST(USER_ROUTE_PREFIX+"/GetCommunitiesFollowed",GetUserSubscriptions())
-	router.POST(USER_ROUTE_PREFIX+"/UpdateSubsciptions",UpdateUserSubscriptions())
+	router.POST(USER_ROUTE_PREFIX+"/GetCommunitiesFollowed", GetUserSubscriptions())
+	router.POST(USER_ROUTE_PREFIX+"/UpdateSubsciptions", UpdateUserSubscriptions())
 }

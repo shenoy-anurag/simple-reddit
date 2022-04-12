@@ -1,8 +1,9 @@
 package profiles
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type ProfileDBModel struct {
@@ -12,7 +13,7 @@ type ProfileDBModel struct {
 	Email     string             `json:"email"`
 	UserName  string             `json:"username"`
 	Karma     int                `json:"karma"`
-	SavedPC   SavedDBModel	 `json:"savedpc"`
+	SavedPC   SavedDBModel       `json:"savedpc"`
 	Birthday  time.Time          `bson:"birthday"`
 }
 
@@ -52,9 +53,9 @@ type UserDBModel struct {
 }
 
 type SavedDBModel struct {
-	ID         primitive.ObjectID `bson:"_id" validate:"required"`
-	Username string `json:"username" validate:"required"`
-	SavedPosts []primitive.ObjectID `bson:"savedposts" validate:"required"`
+	ID            primitive.ObjectID   `bson:"_id" validate:"required"`
+	Username      string               `json:"username" validate:"required"`
+	SavedPosts    []primitive.ObjectID `bson:"savedposts" validate:"required"`
 	SavedComments []primitive.ObjectID `bson:"savedcomments" validate:"required"`
 }
 
@@ -71,13 +72,13 @@ type PostDBModel struct {
 }
 
 type UpdateSavedPostRequest struct {
-	PostID primitive.ObjectID `json:"post_id" validate:"required"`
-	Username string `json:"username" validate:"required"`
+	PostID   primitive.ObjectID `json:"post_id" validate:"required"`
+	Username string             `json:"username" validate:"required"`
 }
 
 type UpdateSavedCommentRequest struct {
 	CommentID primitive.ObjectID `json:"comment_id" validate:"required"`
-	Username string `json:"username" validate:"required"`
+	Username  string             `json:"username" validate:"required"`
 }
 
 type GetSavedItemRequest struct {
@@ -110,11 +111,11 @@ func ConvertProfileDBModelToProfileResponse(profileDB ProfileDBModel) ProfileRes
 	}
 }
 
-func CreateSavedDBModel(UserName string) SavedDBModel{
+func CreateSavedDBModel(UserName string) SavedDBModel {
 	return SavedDBModel{
-		ID:        primitive.NewObjectID(),
-		Username: UserName,
-		SavedPosts: []primitive.ObjectID{},
+		ID:            primitive.NewObjectID(),
+		Username:      UserName,
+		SavedPosts:    []primitive.ObjectID{},
 		SavedComments: []primitive.ObjectID{},
 	}
 }
