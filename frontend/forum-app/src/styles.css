@@ -38,4 +38,55 @@ header nav {
 	}
 }
 
+header nav {
+	display: block;
+  }
+  
+  @media screen and (max-width: 768px) {
+	header nav {
+	  display: none;
+	}
+  }
+  @media screen and (orientation: landscape) {
+	header nav {
+	  position: fixed;
+	  left: 0;
+	  width: 20vw;
+	}
+  }
+
+  nav {
+	display: block;
+  }
+  nav ul {
+	float: right;
+  }
+  nav ul li {
+	display: inline-block;
+  }
+  @media screen and (max-width: 768px) {
+	nav {
+	  display: flex;
+	  position: fixed;
+	  z-index: 999;
+	  width: 73vw;
+	  height: 100%;
+	  background: #fff;
+	  top: 0;
+	  left: -100vw;
+	  float: none;
+	  transition: .25s ease-in-out;
+	}
+	nav ul {
+	  float: none;
+	  width: 100%;
+	}
+	nav ul li {
+	  display: block;
+	}
+	nav.opened {
+	  left: 0;
+	}
+  }
+  
 
