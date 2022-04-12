@@ -70,6 +70,22 @@ type PostDBModel struct {
 	CreatedAt   time.Time          `bson:"created_at"`
 }
 
+type CommentDBModel struct {
+	ID         primitive.ObjectID `bson:"_id"`
+	UserName   string             `bson:"username"`
+	PostId     primitive.ObjectID `bson:"post_id" validate:"required"`
+	ParentId   primitive.ObjectID `bson:"parent_id"`
+	Body       string             `bson:"body" validate:"required"`
+	Upvotes    int                `bson:"upvotes"`
+	Downvotes  int                `bson:"downvotes"`
+	TotalVotes int                `bson:"total_votes"`
+	IsRoot     bool               `bson:"is_root"`
+	IsVotable  bool               `bson:"is_votable"`
+	IsDeleted  bool               `bson:"is_deleted"`
+	CreatedAt  time.Time          `bson:"created_at"`
+	DeletedAt  time.Time          `bson:"deleted_at"`
+}
+
 type UpdateSavedPostRequest struct {
 	PostID primitive.ObjectID `json:"post_id" validate:"required"`
 	Username string `json:"username" validate:"required"`
