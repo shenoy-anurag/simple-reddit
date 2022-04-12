@@ -48,12 +48,23 @@ mat-card-footer {
 
 .scroll-to-top {
     position: fixed;
+    display:flex;
+    z-index: 87; 
+    border: none; 
+    outline: none; 
+    background-color: rgb(122, 230, 20); 
+    border-radius: 15px; 
+    font-size: 20px;
     bottom: 15px;
     right: 15px;
     opacity: 0;
     transition: all .2s ease-in-out;
    }
+
    .show-scrollTop {
+    position: fixed;
+    background-color: rgb(122, 230, 20);
+    font-size: 16px;
     opacity: 1;
     transition: all .2s ease-in-out;
    }
