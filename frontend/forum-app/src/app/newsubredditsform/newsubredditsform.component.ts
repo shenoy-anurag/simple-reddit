@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, HostListener } from '@angular/core';
 import { SignupService } from '../signup.service';
 import { FormBuilder, FormGroup, Validator, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProfileService } from '../profile.service';
 import { Storage } from '../storage';
+import { Router } from '@angular/router';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-newsubredditsform',
@@ -12,9 +14,10 @@ import { Storage } from '../storage';
 })
 export class NewsubredditsformComponent implements OnInit {
 
+  windowScrolled!: boolean;
   profile: any
   form: FormGroup = new FormGroup({});
-  constructor(private signupService: SignupService,private service1: ProfileService , private fb: FormBuilder, private snackBar: MatSnackBar, private service: ProfileService) {
+  constructor(private signupService: SignupService,private service1: ProfileService , private fb: FormBuilder, private snackBar: MatSnackBar, private service: ProfileService, @Inject(DOCUMENT) private document: Document) {
     this.form = this.fb.group({
       username: ['', [Validators.required]],
       name: ['', [Validators.required]],
@@ -22,6 +25,28 @@ export class NewsubredditsformComponent implements OnInit {
     })
   }
   
+  @HostListener("window:scroll", [])
+
+onWindowScroll() {
+    if (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop > 100) {
+        this.windowScrolled = true;
+    } 
+   else if (this.windowScrolled && window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop < 10) {
+        this.windowScrolled = false;
+    }
+}
+
+
+scrollToTop() {
+  (function smoothscroll() {
+      var currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
+      if (currentScroll > 0) {
+          window.requestAnimationFrame(smoothscroll);
+          window.scrollTo(0, currentScroll - (currentScroll / 8));
+      }
+  })();
+}
+
   get f() 
   {  
   return this.form.controls;
