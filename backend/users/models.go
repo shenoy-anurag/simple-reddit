@@ -59,6 +59,7 @@ type CommunityDBModel struct {
 	Name            string             `bson:"name"`
 	Description     string             `bson:"description"`
 	SubscriberCount int                `bson:"subscriber_count"`
+	Subscribers []primitive.ObjectID `bson:"subscribers" validate:"required"`
 	CreatedAt       time.Time          `bson:"created_at"`
 }
 

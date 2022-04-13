@@ -432,6 +432,33 @@ func UpdateSubsciptions(updateSubReq UpdateSubsciptionRequest) (result *mongo.Up
 		},
 	}
 	result, err = UsersCollection.UpdateOne(ctx, filter, updateQuery)
+	if err!=nil {
+		return result,err
+	}
+	_, err = UpdateSubscriberInCommunity(CommunityDB,userDB)
+	if err!=nil {
+		return result,err
+	}
+	return result, err
+}
+
+func UpdateSubscriberInCommunity(community CommunityDBModel,user UserDBModel) (result *mongo.UpdateResult, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	// var community CommunityDBModel
+	filter := bson.D{primitive.E{Key: "name", Value: community.Name}}
+	updatedSubscribers := community.Subscribers
+	updatedSubscribers = append(updatedSubscribers, user.ID)
+	updateQuery := bson.D{
+		primitive.E{
+			Key: "$set",
+			Value: bson.D{
+				primitive.E{Key: "subscribers", Value: updatedSubscribers},
+			},
+		},
+	}
+	// err := CommunityCollection.FindOne(ctx, filter).Decode(&community)
+	result, err = CommunityCollection.UpdateOne(ctx, filter, updateQuery)
 	return result, err
 }
 
