@@ -3,9 +3,9 @@ package profiles
 import (
 	"context"
 	"net/http"
+	//"simple-reddit/comments"
 	"simple-reddit/common"
 	"simple-reddit/configs"
-	// "simple-reddit/comments"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -442,10 +442,9 @@ func GetSavedPosts() gin.HandlerFunc {
 
 func GetSavedComments() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var savedPostReq GetSavedItemRequest
-
+		var savedcommenttReq GetSavedItemRequest
 		// Bind the JSON to the request
-		if err := c.BindJSON(&savedPostReq); err != nil {
+		if err := c.BindJSON(&savedcommenttReq); err != nil {
 			c.JSON(
 				http.StatusBadRequest,
 				common.APIResponse{
@@ -455,9 +454,8 @@ func GetSavedComments() gin.HandlerFunc {
 			)
 			return
 		}
-
 		// Validate the request body
-		if validationErr := validate.Struct(&savedPostReq); validationErr != nil {
+		if validationErr := validate.Struct(&savedcommenttReq); validationErr != nil {
 			c.JSON(
 				http.StatusBadRequest,
 				common.APIResponse{
@@ -467,9 +465,7 @@ func GetSavedComments() gin.HandlerFunc {
 			)
 			return
 		}
-
-		result, err := GetSavedModelComments(savedPostReq)
-
+		result, err := GetSavedModelComments(savedcommenttReq)
 		if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
@@ -480,7 +476,6 @@ func GetSavedComments() gin.HandlerFunc {
 			)
 			return
 		}
-
 		c.JSON(
 			http.StatusCreated,
 			common.APIResponse{
@@ -488,7 +483,6 @@ func GetSavedComments() gin.HandlerFunc {
 				Message: common.API_SUCCESS,
 				Data:    map[string]interface{}{"saved_comments": result}},
 		)
-
 	}
 }
 
@@ -660,6 +654,10 @@ func UpdateSavedModelComments(saveCommentReq UpdateSavedCommentRequest) (result 
 		},
 	}
 	result, err = SavedCollection.UpdateOne(ctx, filter, updateQuery)
+	status, err := UpdateProfileSavedPC(saveCommentReq.Username)
+	if status {
+		return result, err
+	}
 	return result, err
 }
 
@@ -713,9 +711,13 @@ func GetSavedModelPosts(savedItemtReq GetSavedItemRequest) (savedPosts []PostDBM
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var SavedPostCommentDB SavedDBModel
-	//var posts []PostDBModel
+	var profileDB ProfileDBModel
 	filter := bson.D{primitive.E{Key: "username", Value: savedItemtReq.Username}}
-	err = SavedCollection.FindOne(ctx, filter).Decode(&SavedPostCommentDB)
+	err = ProfileCollection.FindOne(ctx, filter).Decode(&profileDB)
+	//var posts []PostDBModel
+	filter = bson.D{primitive.E{Key: "username", Value: profileDB.UserName}}
+	// err = SavedCollection.FindOne(ctx, filter).Decode(&SavedPostCommentDB)
+	SavedPostCommentDB = profileDB.SavedPC
 	savedPostIDs := SavedPostCommentDB.SavedPosts
 	//newSaveComment, err := GetComment(saveCommentReq)
 	// updatedSavedPosts = append(updatedSavedPosts, savePostReq.PostID)
@@ -747,9 +749,13 @@ func GetSavedModelComments(savedItemtReq GetSavedItemRequest)(savedComments []Co
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var SavedPostCommentDB SavedDBModel
-	//var posts []PostDBModel
+	var profileDB ProfileDBModel
 	filter := bson.D{primitive.E{Key: "username", Value: savedItemtReq.Username}}
-	err = SavedCollection.FindOne(ctx, filter).Decode(&SavedPostCommentDB)
+	err = ProfileCollection.FindOne(ctx, filter).Decode(&profileDB)
+	//var posts []PostDBModel
+	filter = bson.D{primitive.E{Key: "username", Value: profileDB.UserName}}
+	// err = SavedCollection.FindOne(ctx, filter).Decode(&SavedPostCommentDB)
+	SavedPostCommentDB = profileDB.SavedPC
 	savedCommentIDs := SavedPostCommentDB.SavedComments
 	//newSaveComment, err := GetComment(saveCommentReq)
 	// updatedSavedPosts = append(updatedSavedPosts, savePostReq.PostID)
@@ -777,7 +783,7 @@ func GetSavedModelComments(savedItemtReq GetSavedItemRequest)(savedComments []Co
 	return savedComments, err
 }
 
-// func GetComment(commentReq UpdateSavedCommentRequest) (CommentDBModel, error) {
+// func GetComment(commentReq UpdateSavedCommentRequest) (comments.CommentDBModel, error) {
 // 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 // 	defer cancel()
 // 	var commentDB comments.CommentDBModel
@@ -830,7 +836,7 @@ func retrieveCommentDetailsByID(commentID primitive.ObjectID) (CommentDBModel, e
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var commentDB CommentDBModel
-	filter := bson.D{primitive.E{Key: "id", Value: commentID}}
+	filter := bson.D{primitive.E{Key: "_id", Value: commentID}}
 	err := CommentsCollection.FindOne(ctx, filter).Decode(&commentDB)
 	return commentDB, err
 }
@@ -841,6 +847,5 @@ func Routes(router *gin.Engine) {
 	router.POST(PROFILE_ROUTE_PREFIX+"/delete", DeleteProfile())               // router.DELETE(PROFILE_ROUTE_PREFIX, DeleteProfile()) // DELETE -> POST
 	router.PATCH(PROFILE_ROUTE_PREFIX+"/savedcomments", UpdateSavedComments()) // maybe PATCH > POST
 	router.PATCH(PROFILE_ROUTE_PREFIX+"/savedposts", UpdateSavedPosts())
-	router.POST(PROFILE_ROUTE_PREFIX+"/getsavedposts",GetSavedPosts())
-	router.POST(PROFILE_ROUTE_PREFIX+"/getsavedcomments",GetSavedComments())
+	router.POST(PROFILE_ROUTE_PREFIX+"/getsavedposts", GetSavedPosts())
 }
