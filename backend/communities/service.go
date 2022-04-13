@@ -116,16 +116,16 @@ func GetCommunity() gin.HandlerFunc {
 			return
 		}
 		// use the validator library to validate required fields
-		// if validationErr := validate.Struct(&communityReq); validationErr != nil {
-		// 	c.JSON(
-		// 		http.StatusBadRequest,
-		// 		common.APIResponse{
-		// 			Status:  http.StatusBadRequest,
-		// 			Message: common.API_FAILURE,
-		// 			Data:    map[string]interface{}{"error": validationErr.Error()}},
-		// 	)
-		// 	return
-		// }
+		if validationErr := validate.Struct(&communityReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
 		//communityReq.Name = c.Request.URL.Query().Get("name")
 		if communityReq.IsUser {
 			allCommunities, err := retrieveAllCommunitiesOfUser(communityReq)
@@ -668,7 +668,7 @@ func Routes(router *gin.Engine) {
 	// router.GET(COMMUNITY_ROUTE_PREFIX, GetCommunity())
 	router.POST(COMMUNITY_ROUTE_PREFIX, GetCommunity())
 	// TODO - user who have following a community - POST - username
-	router.POST(COMMUNITY_ROUTE_PREFIX+"/all", GetAllCommunities())  //all community that exists
+	router.POST(COMMUNITY_ROUTE_PREFIX+"/all", GetAllCommunities()) //all community that exists
 	// router.GET(COMMUNITY_ROUTE_PREFIX+"/home", GetCommunityPosts())
 	//router.POST(COMMUNITY_ROUTE_PREFIX+"/home", GetCommunityPosts())
 	router.PATCH(COMMUNITY_ROUTE_PREFIX, EditCommunity())
