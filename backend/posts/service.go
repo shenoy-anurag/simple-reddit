@@ -159,7 +159,16 @@ func GetPosts() gin.HandlerFunc {
 			return
 		}
 		postDetails, err := retrievePostDetails(postReq)
-		if err != nil {
+		if err == mongo.ErrNoDocuments {
+			c.JSON(
+				http.StatusNotFound,
+				common.APIResponse{
+					Status:  http.StatusNotFound,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		} else if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
 				common.APIResponse{
@@ -220,8 +229,17 @@ func GetFeed() gin.HandlerFunc {
 			return
 		}
 
-		postDetails,postCount, err := retrieveFeedDetails(feedReq) // retrieveAllPostDetails()
-		if err != nil {
+		postDetails, postCount, err := retrieveFeedDetails(feedReq) // retrieveAllPostDetails()
+		if err == mongo.ErrNoDocuments {
+			c.JSON(
+				http.StatusNotFound,
+				common.APIResponse{
+					Status:  http.StatusNotFound,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		} else if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
 				common.APIResponse{
@@ -238,7 +256,7 @@ func GetFeed() gin.HandlerFunc {
 				common.APIResponse{
 					Status:  http.StatusOK,
 					Message: common.API_SUCCESS,
-					Data:    map[string]interface{}{"posts": postDetails, "Total Posts":postCount}},
+					Data:    map[string]interface{}{"posts": postDetails, "Total Posts": postCount}},
 			)
 			return
 		} else {
@@ -331,9 +349,9 @@ func Vote() gin.HandlerFunc {
 		result, err := UpDownVotePosts(voteReq)
 		if err != nil {
 			c.JSON(
-				http.StatusInternalServerError,
+				http.StatusOK,
 				common.APIResponse{
-					Status:  http.StatusInternalServerError,
+					Status:  http.StatusOK,
 					Message: common.API_ERROR,
 					Data:    map[string]interface{}{"error": err.Error()}},
 			)
@@ -407,7 +425,7 @@ func retrievePostDetails(postReq GetPostRequest) ([]PostResponse, error) {
 	return postResp, err
 }
 
-func retrieveFeedDetails(feedReq GetFeedRequest) ([]PostResponse,int64, error) {
+func retrieveFeedDetails(feedReq GetFeedRequest) ([]PostResponse, int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var posts []PostDBModel
@@ -443,16 +461,16 @@ func retrieveFeedDetails(feedReq GetFeedRequest) ([]PostResponse,int64, error) {
 	}
 	cursor, err := PostsCollection.Find(ctx, feedFilter, feedOptions)
 	if err = cursor.All(ctx, &posts); err != nil {
-		return postResp,postCount, err
+		return postResp, postCount, err
 	}
 	for _, post := range posts {
 		item, err := ConvertPostDBModelToPostResponse(post)
 		if err != nil {
-			return postResp,postCount, err
+			return postResp, postCount, err
 		}
 		postResp = append(postResp, item)
 	}
-	return postResp,postCount, err
+	return postResp, postCount, err
 }
 
 func deletePost(postReq DeletePostRequest) (*mongo.DeleteResult, error) {
@@ -528,16 +546,15 @@ func UpDownVotePosts(voteReq VoteRequest) (result *mongo.UpdateResult, err error
 	// updating the data in db
 	delPostReq, err := ConvertVotePostReqToDeletePostReq(voteReq)
 	postExists, err := CheckPostExists(delPostReq)
-	postDB, err :=GetPostbyID(delPostReq)
+	postDB, err := GetPostbyID(delPostReq)
 	if !postExists {
 		return result, err
 	}
 	filter := bson.M{"$and": []bson.M{{"username": voteReq.UserName}, {"_id": voteReq.ID}}}
 	updateQuery := bson.D{
 		primitive.E{
-			Key: "$set",
-			Value: bson.D{
-			},
+			Key:   "$set",
+			Value: bson.D{},
 		},
 	}
 	if voteReq.Vote > 0 {
@@ -545,7 +562,7 @@ func UpDownVotePosts(voteReq VoteRequest) (result *mongo.UpdateResult, err error
 			primitive.E{
 				Key: "$set",
 				Value: bson.D{
-					primitive.E{Key: "upvotes", Value: postDB.Upvotes + 1},// + voteReq.Vote},
+					primitive.E{Key: "upvotes", Value: postDB.Upvotes + 1}, // + voteReq.Vote},
 				},
 			},
 		}
@@ -566,9 +583,9 @@ func UpDownVotePosts(voteReq VoteRequest) (result *mongo.UpdateResult, err error
 
 func Routes(router *gin.Engine) {
 	router.POST(POST_ROUTE_PREFIX, CreatePost())
-	router.GET(POST_ROUTE_PREFIX, GetPosts()) // GET -> POST SP3
-	router.POST(HOME_ROUTE_PREFIX, GetFeed()) // maybe PATCH > POST
+	router.GET(POST_ROUTE_PREFIX, GetPosts())              // GET -> POST SP3
+	router.POST(HOME_ROUTE_PREFIX, GetFeed())              // maybe PATCH > POST
 	router.POST(POST_ROUTE_PREFIX+"/delete", DeletePost()) // router.DELETE(POST_ROUTE_PREFIX, DeletePost()) // maybe DELETE > POST
-	router.PATCH(POST_ROUTE_PREFIX, EditPost()) // maybe PATCH > POST
-	router.PATCH(POST_ROUTE_PREFIX+"/vote", Vote()) // maybe PATCH > POST
+	router.PATCH(POST_ROUTE_PREFIX, EditPost())            // maybe PATCH > POST
+	router.PATCH(POST_ROUTE_PREFIX+"/vote", Vote())        // maybe PATCH > POST
 }

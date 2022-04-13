@@ -1,13 +1,14 @@
 <form [formGroup]="form">
     <br>
+    <!-- Username isn't needed as the User already Logged in -->
     <!-- Username, until cookies are made -->
-    <mat-form-field class="full-width" appearance="fill">
+    <!-- <mat-form-field class="full-width" appearance="fill">
         <mat-label>Username</mat-label>
         <input name='username' formControlName="username" matInput #username required placeholder="JohnDoe" value="">
         <mat-error *ngIf="f['username'].touched && f['username'].invalid">
             Username cannot be empty
         </mat-error>
-    </mat-form-field>
+    </mat-form-field> -->
 
     <!-- Post Community -->
     <mat-form-field class="full-width" appearance="fill">
@@ -16,6 +17,9 @@
             <mat-option #community *ngFor="let community of communities" [value]="community._id">
               {{ community.name }}
             </mat-option>
+            <mat-error *ngIf="f['community'].touched && f['community'].invalid">
+                Community cannot be empty
+            </mat-error>
         </mat-select>
     </mat-form-field>
 
@@ -37,7 +41,21 @@
             Body cannot be empty
         </mat-error>
     </mat-form-field>
-    <button class='button1 hover-class' mat-raised-button color="warn" (click)="createPost(username.value, selectedCommunity, title.value, body.value)">
+    <!-- <button class='button1 hover-class' mat-raised-button color="warn" (click)="createPost(username.value, selectedCommunity, title.value, body.value)">
+        Create Post
+    </button> -->
+    <!-- Username is directley read from logged in user data -->
+    <button class='button1 hover-class1' mat-raised-button color="warn" (click)="createPost(selectedCommunity, title.value, body.value)">
         Create Post
     </button>
 </form>
+
+<!--Scroll to top-->
+
+<div class="scroll-to-top " [ngClass]="{'show-scrollTop': windowScrolled}">
+    <button type="button" class="btn active hover-class2" data-toggle="button" aria-pressed="true" (click)="scrollToTop()">
+        <i class="fas fa-chevron-up" ></i>
+        Top
+    </button>
+  </div>
+    

@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, HostListener } from '@angular/core';
 import { SignupService } from '../signup.service';
 import { FormControl, Validators, FormArray, FormBuilder, ValidatorFn, AbstractControl, Validator, ValidationErrors, FormGroup } from '@angular/forms';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Storage } from '../storage';
 import { Router } from '@angular/router';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-login',
@@ -11,14 +12,38 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+  windowScrolled!: boolean;
   public showPassword: boolean = false;
   form: FormGroup = new FormGroup({});
-  constructor(private signupService: SignupService, private snackBar: MatSnackBar, private fb: FormBuilder, private router: Router) {
+  constructor(private signupService: SignupService, private snackBar: MatSnackBar, private fb: FormBuilder, private router: Router, @Inject(DOCUMENT) private document: Document) {
+    
     this.form = this.fb.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required]]
     })
   }
+
+  @HostListener("window:scroll", [])
+
+  onWindowScroll() {
+    if (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop > 100) {
+        this.windowScrolled = true;
+    } 
+   else if (this.windowScrolled && window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop < 10) {
+        this.windowScrolled = false;
+    }
+}
+
+
+scrollToTop() {
+  (function smoothscroll() {
+      var currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
+      if (currentScroll > 0) {
+          window.requestAnimationFrame(smoothscroll);
+          window.scrollTo(0, currentScroll - (currentScroll / 8));
+      }
+  })();
+}
 
   usrLoggedIn: boolean = Storage.isLoggedIn;
   usr: string = "";

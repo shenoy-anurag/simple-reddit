@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, HostListener } from '@angular/core';
 import { SignupService } from '../signup.service';
 import { FormBuilder, FormGroup, Validator, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProfileService } from '../profile.service';
 import { Storage } from '../storage';
+import { Router } from '@angular/router';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-newsubredditsform',
@@ -12,9 +14,10 @@ import { Storage } from '../storage';
 })
 export class NewsubredditsformComponent implements OnInit {
 
+  windowScrolled!: boolean;
   profile: any
   form: FormGroup = new FormGroup({});
-  constructor(private signupService: SignupService, private fb: FormBuilder, private snackBar: MatSnackBar, private service: ProfileService) {
+  constructor(private signupService: SignupService,private service1: ProfileService , private fb: FormBuilder, private snackBar: MatSnackBar, private service: ProfileService, @Inject(DOCUMENT) private document: Document) {
     this.form = this.fb.group({
       username: ['', [Validators.required]],
       name: ['', [Validators.required]],
@@ -22,6 +25,28 @@ export class NewsubredditsformComponent implements OnInit {
     })
   }
   
+  @HostListener("window:scroll", [])
+
+onWindowScroll() {
+    if (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop > 100) {
+        this.windowScrolled = true;
+    } 
+   else if (this.windowScrolled && window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop < 10) {
+        this.windowScrolled = false;
+    }
+}
+
+
+scrollToTop() {
+  (function smoothscroll() {
+      var currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
+      if (currentScroll > 0) {
+          window.requestAnimationFrame(smoothscroll);
+          window.scrollTo(0, currentScroll - (currentScroll / 8));
+      }
+  })();
+}
+
   get f() 
   {  
   return this.form.controls;
@@ -33,24 +58,28 @@ export class NewsubredditsformComponent implements OnInit {
   }
 
   getUsername() {
-    this.service.getProfile(Storage.username).subscribe((response: any) => {
+    // this.service.getProfile(Storage.username).subscribe((response: any) => {
+      this.service1.getProfile(Storage.username).subscribe((response: any) => {
       console.log(response);
       console.log(response.status);
       
       if (response.status == 200) {
-        console.log(response.data.Profile.username);
+        // console.log(response.data.Profile.username);
+        // console.log(response.data.Profile.email);
         this.profile = {
           "username": response.data.Profile.username,
+          "email": response.data.Profile.email,
         }
       }
     });
   }
 
 
-  createSubreddit(username: string, name: string, description: string)
+  createSubreddit(name: string, description: string)
   {
-    console.log("new subreddit: " + username + " " + name + " " + description);
-    this.signupService.createcommunity(username, name, description).subscribe((response: any) => {
+    // console.log("new subreddit: " + username + " " + name + " " + description);
+    if (Storage.isLoggedIn) {
+    this.signupService.createcommunity(this.profile.username, name, description).subscribe((response: any) => {
     console.log(response.status);
     console.log(response.message);
      if(response.status == 201 && response.message == "success"){
@@ -63,7 +92,12 @@ export class NewsubredditsformComponent implements OnInit {
       // Something else is wrong
       this.snackBar.open("Something is wrong", "Alert Adminstration"), { duration: 2000 };
      }
-    })
+     });
+    }
+
+  else{
+    this.snackBar.open("Log in to vote on posts", "Dismiss", { duration: 1500 });
+  }
   }
 }
 

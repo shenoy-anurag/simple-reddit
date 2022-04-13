@@ -13,7 +13,7 @@
 
 <!-- Public Posts -->
 <ul *ngFor='let post of this.posts'>
-    <mat-card>
+    <mat-card >
         <mat-card-header>
           <mat-card-title>{{ post.title }}</mat-card-title>
           <mat-card-subtitle>created at {{ post.created_at }}</mat-card-subtitle>
@@ -38,10 +38,27 @@
             &nbsp;
             &nbsp;
             &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
             <!-- no post.username field yet -->
+            &nbsp;
+            &nbsp;
+            &nbsp;
             <button mat-button color="warn"(click)="deletePost(post._id, post.title, post.username)"><mat-icon>
               delete
             </mat-icon></button>
         </mat-card-actions>
       </mat-card>
+      
+      
+      <!--Scroll to top-->
+
+      <div class="scroll-to-top " [ngClass]="{'show-scrollTop': windowScrolled}">
+        <button type="button" class="btn active hover-class4" data-toggle="button" aria-pressed="true" (click)="scrollToTop()">
+            <i class="fas fa-chevron-up" ></i>
+            Top
+        </button>
+      </div>
+        
 </ul>

@@ -1,17 +1,13 @@
 <form [formGroup]="form">
     <br>
     <!-- Username, until cookies are made -->
-    <mat-form-field class="full-width1" appearance="fill">
+    <!-- <mat-form-field class="full-width1" appearance="fill">
         <mat-label>Username</mat-label>
-        <!-- <mat-form-field class="full-width1" appearance="fill">
-            <mat-label>Username</mat-label>
-            <input matInput placeholder="JohnDoe" value="Username">
-          </mat-form-field> -->
         <input name='username' formControlName="username" matInput #username required placeholder="JohnDoe" value="username">
         <mat-error *ngIf="f['username'].touched && f['username'].invalid">
             Username cannot be empty
         </mat-error>
-    </mat-form-field>
+    </mat-form-field> -->
 
      <!-- Community Name -->
     <mat-form-field class="full-width1" appearance="fill">
@@ -37,7 +33,17 @@
     &nbsp;
     <!-- Create New Subreddit -->
     &nbsp;&nbsp;
-    <button class='button1 hover-class' color="primary" mat-raised-button (click)="createSubreddit(username.value, name.value, description.value)">
+    <button class='button1 hover-class1' color="primary" mat-raised-button (click)="createSubreddit(name.value, description.value)">
         Create Subreddit
     </button>
 </form>
+
+<!--Scroll to top-->
+
+<div class="scroll-to-top " [ngClass]="{'show-scrollTop': windowScrolled}">
+    <button type="button" class="btn active hover-class2" data-toggle="button" aria-pressed="true" (click)="scrollToTop()">
+        <i class="fas fa-chevron-up" ></i>
+        Top
+    </button>
+  </div>
+    

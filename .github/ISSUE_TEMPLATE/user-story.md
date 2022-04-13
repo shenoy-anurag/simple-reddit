@@ -7,11 +7,14 @@ assignees: ''
 
 ---
 
-**Describe the feature/user story**
+## Description
 A clear and concise description of what you want to happen.
 
-**Additional context**
+## Additional context
 Add any other context or screenshots about the user story/feature request here.
 
-**Acceptance Criteria**
+## Acceptance Criteria
 Add the tasks that need to be accomplished in order to close this issue.
+Tasks:
+- [ ] Task 1
+- [ ] Task 2

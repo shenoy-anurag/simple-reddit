@@ -21,6 +21,8 @@ Users will be able to:
 * View posts on communities
 * Comment on posts
 * Upvote/Downvote posts
+* Upvote/Downvote comments
+* Save posts and comments to their profile
 
 ## Built With
 
