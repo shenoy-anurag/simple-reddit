@@ -46,7 +46,7 @@ type EditPostRequest struct {
 type VoteRequest struct {
 	ID       primitive.ObjectID `json:"id" validate:"required"`
 	UserName string             `json:"username" validate:"required"`
-	Vote int  `json:"vote" validate:"required"`
+	Vote     int                `json:"vote" validate:"required"`
 }
 type GetFeedRequest struct {
 	PageNumber    int    `json:"pagenumber"`
