@@ -449,7 +449,7 @@ func GetCommunityPosts() gin.HandlerFunc {
 
 func CheckCommunityExists() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var communityReq GetCommunityRequest
+		var communityReq GetPostsRequest
 
 		// validate the request body
 		if err := c.BindJSON(&communityReq); err != nil {

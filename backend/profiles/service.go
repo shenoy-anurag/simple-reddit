@@ -848,4 +848,5 @@ func Routes(router *gin.Engine) {
 	router.PATCH(PROFILE_ROUTE_PREFIX+"/savedcomments", UpdateSavedComments()) // maybe PATCH > POST
 	router.PATCH(PROFILE_ROUTE_PREFIX+"/savedposts", UpdateSavedPosts())
 	router.POST(PROFILE_ROUTE_PREFIX+"/getsavedposts", GetSavedPosts())
+	router.POST(PROFILE_ROUTE_PREFIX+"/getsavedcomments", GetSavedComments())
 }
