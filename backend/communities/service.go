@@ -116,16 +116,16 @@ func GetCommunity() gin.HandlerFunc {
 			return
 		}
 		// use the validator library to validate required fields
-		if validationErr := validate.Struct(&communityReq); validationErr != nil {
-			c.JSON(
-				http.StatusBadRequest,
-				common.APIResponse{
-					Status:  http.StatusBadRequest,
-					Message: common.API_FAILURE,
-					Data:    map[string]interface{}{"error": validationErr.Error()}},
-			)
-			return
-		}
+		// if validationErr := validate.Struct(&communityReq); validationErr != nil {
+		// 	c.JSON(
+		// 		http.StatusBadRequest,
+		// 		common.APIResponse{
+		// 			Status:  http.StatusBadRequest,
+		// 			Message: common.API_FAILURE,
+		// 			Data:    map[string]interface{}{"error": validationErr.Error()}},
+		// 	)
+		// 	return
+		// }
 		//communityReq.Name = c.Request.URL.Query().Get("name")
 		if communityReq.IsUser {
 			allCommunities, err := retrieveAllCommunitiesOfUser(communityReq)
