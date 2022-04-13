@@ -29,11 +29,6 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-duration-seconds: 1200
           role-session-name: ci-session
-      # Step 5
-      - name: Run Application
-        run: |
-          cd backend
-          go run main.go
 
   continuous-deployment:
     runs-on: ubuntu-latest
@@ -58,5 +53,4 @@ jobs:
             --application-name simple-reddit \
             --deployment-group-name PersonalProjectDeploymentGroup \
             --deployment-config-name CodeDeployDefault.OneAtATime \
-            --service-role-arn ${{ secrets.AWS_ROLE_TO_ASSUME }} \
             --github-location repository=${{ github.repository }},commitId=${{ github.sha }}

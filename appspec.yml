@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /opt
+    destination: /opt/simple-reddit
 hooks:
   BeforeInstall:
     - location: scripts/before_install.sh
