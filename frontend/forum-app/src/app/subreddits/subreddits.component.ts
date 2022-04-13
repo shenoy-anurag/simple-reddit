@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, HostListener } from '@angular/core';
+import { Router } from '@angular/router';
+import { DOCUMENT } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Storage } from '../storage';
 import { SubredditsService } from '../subreddits.service';
@@ -10,9 +12,32 @@ import { SignupService } from '../signup.service';
   styleUrls: ['./subreddits.component.css']
 })
 export class SubredditsComponent implements OnInit {
+  windowScrolled!: boolean;
   subreddits: any[] = [];
-  constructor(private service: SubredditsService, private snackbar: MatSnackBar) {
+  constructor(private service: SubredditsService, private snackbar: MatSnackBar, @Inject(DOCUMENT) private document: Document) {
   }
+
+@HostListener("window:scroll", [])
+
+onWindowScroll() {
+    if (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop > 100) {
+        this.windowScrolled = true;
+    } 
+   else if (this.windowScrolled && window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop < 10) {
+        this.windowScrolled = false;
+    }
+}
+
+
+scrollToTop() {
+  (function smoothscroll() {
+      var currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
+      if (currentScroll > 0) {
+          window.requestAnimationFrame(smoothscroll);
+          window.scrollTo(0, currentScroll - (currentScroll / 8));
+      }
+  })();
+}
 
   ngOnInit(): void {
     this.getCommunities();

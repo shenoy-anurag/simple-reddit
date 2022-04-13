@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, HostListener } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { PostsService } from '../posts.service';
 import { Storage } from '../storage';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-posts',
@@ -10,11 +11,34 @@ import { Storage } from '../storage';
   styleUrls: ['./posts.component.css']
 })
 export class PostsComponent implements OnInit {
+  windowScrolled!: boolean;
   title = "List of Posts";
   posts: any[] = [];
 
-  constructor(private router: Router, private service: PostsService, private snackbar: MatSnackBar) {
+  constructor(private router: Router, private service: PostsService, private snackbar: MatSnackBar, @Inject(DOCUMENT) private document: Document) {
   }
+  @HostListener("window:scroll", [])
+  
+  onWindowScroll() {
+    if (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop > 100) {
+        this.windowScrolled = true;
+    } 
+   else if (this.windowScrolled && window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop < 10) {
+        this.windowScrolled = false;
+    }
+}
+
+
+scrollToTop() {
+  (function smoothscroll() {
+      var currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
+      if (currentScroll > 0) {
+          window.requestAnimationFrame(smoothscroll);
+          window.scrollTo(0, currentScroll - (currentScroll / 8));
+      }
+  })();
+}
+
 
   getPosts() {
     this.service.getPosts().subscribe((response: any) => {

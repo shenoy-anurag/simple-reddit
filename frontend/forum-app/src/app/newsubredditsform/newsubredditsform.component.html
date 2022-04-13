@@ -33,7 +33,17 @@
     &nbsp;
     <!-- Create New Subreddit -->
     &nbsp;&nbsp;
-    <button class='button1 hover-class' color="primary" mat-raised-button (click)="createSubreddit(name.value, description.value)">
+    <button class='button1 hover-class1' color="primary" mat-raised-button (click)="createSubreddit(name.value, description.value)">
         Create Subreddit
     </button>
 </form>
+
+<!--Scroll to top-->
+
+<div class="scroll-to-top " [ngClass]="{'show-scrollTop': windowScrolled}">
+    <button type="button" class="btn active hover-class2" data-toggle="button" aria-pressed="true" (click)="scrollToTop()">
+        <i class="fas fa-chevron-up" ></i>
+        Top
+    </button>
+  </div>
+    
