@@ -3,7 +3,6 @@ package profiles
 import (
 	"context"
 	"net/http"
-	"simple-reddit/comments"
 	"simple-reddit/common"
 	"simple-reddit/configs"
 	// "simple-reddit/comments"
