@@ -3,7 +3,7 @@ package profiles
 import (
 	"context"
 	"net/http"
-	"simple-reddit/comments"
+	//"simple-reddit/comments"
 	"simple-reddit/common"
 	"simple-reddit/configs"
 	"time"
@@ -440,6 +440,52 @@ func GetSavedPosts() gin.HandlerFunc {
 	}
 }
 
+func GetSavedComments() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var savedcommenttReq GetSavedItemRequest
+		// Bind the JSON to the request
+		if err := c.BindJSON(&savedcommenttReq); err != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+		// Validate the request body
+		if validationErr := validate.Struct(&savedcommenttReq); validationErr != nil {
+			c.JSON(
+				http.StatusBadRequest,
+				common.APIResponse{
+					Status:  http.StatusBadRequest,
+					Message: common.API_FAILURE,
+					Data:    map[string]interface{}{"error": validationErr.Error()}},
+			)
+			return
+		}
+		result, err := GetSavedModelComments(savedcommenttReq)
+		if err != nil {
+			c.JSON(
+				http.StatusInternalServerError,
+				common.APIResponse{
+					Status:  http.StatusInternalServerError,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		}
+		c.JSON(
+			http.StatusCreated,
+			common.APIResponse{
+				Status:  http.StatusCreated,
+				Message: common.API_SUCCESS,
+				Data:    map[string]interface{}{"saved_comments": result}},
+		)
+	}
+}
+
 func CreateProfileInDB(profileReq ProfileDBModel) (result *mongo.InsertOneResult, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -608,6 +654,10 @@ func UpdateSavedModelComments(saveCommentReq UpdateSavedCommentRequest) (result 
 		},
 	}
 	result, err = SavedCollection.UpdateOne(ctx, filter, updateQuery)
+	status, err := UpdateProfileSavedPC(saveCommentReq.Username)
+	if status {
+		return result, err
+	}
 	return result, err
 }
 
@@ -661,9 +711,13 @@ func GetSavedModelPosts(savedItemtReq GetSavedItemRequest) (savedPosts []PostDBM
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var SavedPostCommentDB SavedDBModel
-	//var posts []PostDBModel
+	var profileDB ProfileDBModel
 	filter := bson.D{primitive.E{Key: "username", Value: savedItemtReq.Username}}
-	err = SavedCollection.FindOne(ctx, filter).Decode(&SavedPostCommentDB)
+	err = ProfileCollection.FindOne(ctx, filter).Decode(&profileDB)
+	//var posts []PostDBModel
+	filter = bson.D{primitive.E{Key: "username", Value: profileDB.UserName}}
+	// err = SavedCollection.FindOne(ctx, filter).Decode(&SavedPostCommentDB)
+	SavedPostCommentDB = profileDB.SavedPC
 	savedPostIDs := SavedPostCommentDB.SavedPosts
 	//newSaveComment, err := GetComment(saveCommentReq)
 	// updatedSavedPosts = append(updatedSavedPosts, savePostReq.PostID)
@@ -691,14 +745,52 @@ func GetSavedModelPosts(savedItemtReq GetSavedItemRequest) (savedPosts []PostDBM
 	return savedPosts, err
 }
 
-func GetComment(commentReq UpdateSavedCommentRequest) (comments.CommentDBModel, error) {
+func GetSavedModelComments(savedItemtReq GetSavedItemRequest)(savedComments []CommentDBModel,err error){
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	var commentDB comments.CommentDBModel
-	filter := bson.D{primitive.E{Key: "id", Value: commentReq.CommentID}}
-	err := CommentsCollection.FindOne(ctx, filter).Decode(&commentDB)
-	return commentDB, err
+	var SavedPostCommentDB SavedDBModel
+	var profileDB ProfileDBModel
+	filter := bson.D{primitive.E{Key: "username", Value: savedItemtReq.Username}}
+	err = ProfileCollection.FindOne(ctx, filter).Decode(&profileDB)
+	//var posts []PostDBModel
+	filter = bson.D{primitive.E{Key: "username", Value: profileDB.UserName}}
+	// err = SavedCollection.FindOne(ctx, filter).Decode(&SavedPostCommentDB)
+	SavedPostCommentDB = profileDB.SavedPC
+	savedCommentIDs := SavedPostCommentDB.SavedComments
+	//newSaveComment, err := GetComment(saveCommentReq)
+	// updatedSavedPosts = append(updatedSavedPosts, savePostReq.PostID)
+	// updateQuery := bson.D{
+	// 	primitive.E{
+	// 		Key: "$set",
+	// 		Value: bson.D{
+	// 			primitive.E{Key: "savedposts", Value: updatedSavedPosts},
+	// 		},
+	// 	},
+	// }
+	// result, err = SavedCollection.UpdateOne(ctx, filter, updateQuery)
+	for _,commentID := range savedCommentIDs {
+		comment, err := retrieveCommentDetailsByID(commentID)
+		if err != nil {
+			return savedComments, err
+		}
+		savedComments = append(savedComments,comment)
+		// item, err := ConvertPostDBModelToPostResponse(post)
+		// if err != nil {
+		// 	return postResp, err
+		// }
+		// postResp = append(postResp, item)
+	}
+	return savedComments, err
 }
+
+// func GetComment(commentReq UpdateSavedCommentRequest) (comments.CommentDBModel, error) {
+// 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+// 	defer cancel()
+// 	var commentDB comments.CommentDBModel
+// 	filter := bson.D{primitive.E{Key: "id", Value: commentReq.CommentID}}
+// 	err := CommentsCollection.FindOne(ctx, filter).Decode(&commentDB)
+// 	return commentDB, err
+// }
 
 // func FetchPosts(postIDs []primitive.ObjectID) ([]CommunityDBModel,error) { // UserDBModel,error) {
 // 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -738,6 +830,15 @@ func retrievePostDetailsByID(postID primitive.ObjectID) (PostDBModel, error) {
 	filter := bson.D{primitive.E{Key: "_id", Value: postID}}
 	err := PostsCollection.FindOne(ctx, filter).Decode(&postDB)
 	return postDB, err
+}
+
+func retrieveCommentDetailsByID(commentID primitive.ObjectID) (CommentDBModel, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var commentDB CommentDBModel
+	filter := bson.D{primitive.E{Key: "_id", Value: commentID}}
+	err := CommentsCollection.FindOne(ctx, filter).Decode(&commentDB)
+	return commentDB, err
 }
 
 func Routes(router *gin.Engine) {
