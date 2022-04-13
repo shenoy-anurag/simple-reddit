@@ -3,6 +3,7 @@ package profiles
 import (
 	"context"
 	"net/http"
+	"simple-reddit/comments"
 	"simple-reddit/common"
 	"simple-reddit/configs"
 	// "simple-reddit/comments"
@@ -21,22 +22,19 @@ const PROFILE_ROUTE_PREFIX = "/profile"
 const ProfilesCollectionName string = "profiles"
 const UsersCollectionName string = "users"
 const CommentsCollectionName string = "comments"
-const SavedCollectionName string ="saved"
+const SavedCollectionName string = "saved"
 const PostsCollectionName string = "posts"
 
 var ProfileCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, ProfilesCollectionName)
 var UsersCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, UsersCollectionName)
 var CommentsCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, CommentsCollectionName)
-var SavedCollection *mongo.Collection = configs.GetCollection(configs.MongoDB,SavedCollectionName)
+var SavedCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, SavedCollectionName)
 var PostsCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, PostsCollectionName)
 var validate = validator.New()
 
 func CreateProfile(profileReq ProfileDBModel) bool {
 	_, err := CreateProfileInDB(profileReq)
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
 func GetProfile() gin.HandlerFunc {
@@ -65,7 +63,16 @@ func GetProfile() gin.HandlerFunc {
 			return
 		}
 		profileDetails, err := retrieveProfileDetails(profileReq)
-		if err != nil {
+		if err == mongo.ErrNoDocuments {
+			c.JSON(
+				http.StatusNotFound,
+				common.APIResponse{
+					Status:  http.StatusNotFound,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		} else if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
 				common.APIResponse{
@@ -82,7 +89,6 @@ func GetProfile() gin.HandlerFunc {
 				Message: common.API_SUCCESS,
 				Data:    map[string]interface{}{"Profile": profileDetails}},
 		)
-		return
 	}
 }
 
@@ -113,7 +119,16 @@ func EditProfile() gin.HandlerFunc {
 			return
 		}
 		result, err := editProfileDetails(editprofiletReq)
-		if err != nil {
+		if err == mongo.ErrNoDocuments {
+			c.JSON(
+				http.StatusNotFound,
+				common.APIResponse{
+					Status:  http.StatusNotFound,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		} else if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
 				common.APIResponse{
@@ -161,8 +176,17 @@ func DeleteProfile() gin.HandlerFunc {
 			return
 		}
 		// update posts that the user has created
-		postsResult, verifiedPosts, err:=updatePostsForDeletedUser(delProfileReq)
-		if err != nil {
+		postsResult, verifiedPosts, err := updatePostsForDeletedUser(delProfileReq)
+		if err == mongo.ErrNoDocuments {
+			c.JSON(
+				http.StatusNotFound,
+				common.APIResponse{
+					Status:  http.StatusNotFound,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		} else if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
 				common.APIResponse{
@@ -183,7 +207,7 @@ func DeleteProfile() gin.HandlerFunc {
 			return
 		}
 		// Delete the saved record for the user
-		savedResult, verifiedSaved, err:= deleteSaved(delProfileReq)
+		savedResult, verifiedSaved, err := deleteSaved(delProfileReq)
 		if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
@@ -205,8 +229,8 @@ func DeleteProfile() gin.HandlerFunc {
 			return
 		}
 
-			// Delete the profile record for the user
-		profileResult, verifiedProfile, err:= deleteProfile(delProfileReq)
+		// Delete the profile record for the user
+		profileResult, verifiedProfile, err := deleteProfile(delProfileReq)
 		if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
@@ -228,8 +252,8 @@ func DeleteProfile() gin.HandlerFunc {
 			return
 		}
 
-			// Delete the user record for the user
-		userResult,verifiedUser, err := deleteUser(delProfileReq)
+		// Delete the user record for the user
+		userResult, verifiedUser, err := deleteUser(delProfileReq)
 		if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
@@ -256,7 +280,7 @@ func DeleteProfile() gin.HandlerFunc {
 			common.APIResponse{
 				Status:  http.StatusOK,
 				Message: common.API_SUCCESS,
-				Data:    map[string]interface{}{"deletedProfile": profileResult,"deletedUser":userResult,"deletedSaved":savedResult,"updated_posts":postsResult, "username":delProfileReq.Username }},
+				Data:    map[string]interface{}{"deletedProfile": profileResult, "deletedUser": userResult, "deletedSaved": savedResult, "updated_posts": postsResult, "username": delProfileReq.Username}},
 		)
 	}
 }
@@ -530,45 +554,45 @@ func checkProfileExists(UserNameReq string) (bool, error) {
 	return alreadyExists, err
 }
 
-func deleteProfile(delProfileReq DeleteProfileRequest) (*mongo.DeleteResult,bool, error) {
+func deleteProfile(delProfileReq DeleteProfileRequest) (*mongo.DeleteResult, bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	filter := bson.D{primitive.E{Key: "username", Value: delProfileReq.Username}}
 	result, err := ProfileCollection.DeleteOne(ctx, filter)
-	if err!=nil {
-		return result,false,err
+	if err != nil {
+		return result, false, err
 	}
-	return result,true,err
+	return result, true, err
 }
 
-func deleteUser(delProfileReq DeleteProfileRequest) (userResult *mongo.DeleteResult,status bool,err error) {
+func deleteUser(delProfileReq DeleteProfileRequest) (userResult *mongo.DeleteResult, status bool, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	filter := bson.D{primitive.E{Key: "username", Value: delProfileReq.Username}}
 	userDB, err := getUserDetails(delProfileReq.Username)
-	if err!=nil {
-		return userResult,false, err
+	if err != nil {
+		return userResult, false, err
 	}
-	userResult,verifiedUser,err := login(delProfileReq,userDB)
+	userResult, verifiedUser, err := login(delProfileReq, userDB)
 	if !verifiedUser {
-		return userResult,false,err
+		return userResult, false, err
 	}
 	userResult, err = UsersCollection.DeleteOne(ctx, filter)
-	return userResult,true, err
+	return userResult, true, err
 }
 
-func deleteSaved(delProfileReq DeleteProfileRequest) (*mongo.DeleteResult,bool, error) {
+func deleteSaved(delProfileReq DeleteProfileRequest) (*mongo.DeleteResult, bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	filter := bson.D{primitive.E{Key: "username", Value: delProfileReq.Username}}
 	result, err := SavedCollection.DeleteOne(ctx, filter)
-	if err!=nil {
-		return result,false,err
+	if err != nil {
+		return result, false, err
 	}
-	return result,true,err
+	return result, true, err
 }
 
-func updatePostsForDeletedUser(delProfileReq DeleteProfileRequest) (*mongo.UpdateResult,bool, error) {
+func updatePostsForDeletedUser(delProfileReq DeleteProfileRequest) (*mongo.UpdateResult, bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	filter := bson.D{primitive.E{Key: "username", Value: delProfileReq.Username}}
@@ -584,10 +608,10 @@ func updatePostsForDeletedUser(delProfileReq DeleteProfileRequest) (*mongo.Updat
 	}
 	result, err := PostsCollection.UpdateMany(ctx, filter, updateQuery)
 	// result, err = ProfileCollection.UpdateOne(ctx, filter, updateQuery)
-	if err!=nil {
-		return result,false,err
+	if err != nil {
+		return result, false, err
 	}
-	return result,true,err
+	return result, true, err
 }
 
 func getUserDetails(userName string) (UserDBModel, error) {
@@ -599,15 +623,15 @@ func getUserDetails(userName string) (UserDBModel, error) {
 	return user, err
 }
 
-func login(profileReq DeleteProfileRequest,userDB UserDBModel) (resultUser *mongo.DeleteResult,status bool, err error){
+func login(profileReq DeleteProfileRequest, userDB UserDBModel) (resultUser *mongo.DeleteResult, status bool, err error) {
 	err = bcrypt.CompareHashAndPassword([]byte(userDB.Password), []byte(profileReq.Password))
 	if err != nil {
-		return resultUser, false,err
+		return resultUser, false, err
 	}
-	return resultUser,true,err
+	return resultUser, true, err
 }
 
-func CreateSavedPC(UserName string)(SavedDBModel){
+func CreateSavedPC(UserName string) SavedDBModel {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	SavedDB := CreateSavedDBModel(UserName)
@@ -619,7 +643,7 @@ func CreateSavedPC(UserName string)(SavedDBModel){
 
 }
 
-func UpdateSavedModelComments(saveCommentReq UpdateSavedCommentRequest)(result *mongo.UpdateResult,err error){
+func UpdateSavedModelComments(saveCommentReq UpdateSavedCommentRequest) (result *mongo.UpdateResult, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var SavedPostCommentDB SavedDBModel
@@ -640,7 +664,7 @@ func UpdateSavedModelComments(saveCommentReq UpdateSavedCommentRequest)(result *
 	return result, err
 }
 
-func UpdateSavedModelPosts(savePostReq UpdateSavedPostRequest)(result *mongo.UpdateResult,err error){
+func UpdateSavedModelPosts(savePostReq UpdateSavedPostRequest) (result *mongo.UpdateResult, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var SavedPostCommentDB SavedDBModel
@@ -665,7 +689,7 @@ func UpdateSavedModelPosts(savePostReq UpdateSavedPostRequest)(result *mongo.Upd
 	return result, err
 }
 
-func UpdateProfileSavedPC(UserName string)(bool,error){
+func UpdateProfileSavedPC(UserName string) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var SavedPostCommentDB SavedDBModel
@@ -680,13 +704,13 @@ func UpdateProfileSavedPC(UserName string)(bool,error){
 		},
 	}
 	_, nerr := ProfileCollection.UpdateOne(ctx, filter, updateQuery)
-	if nerr!=nil {
+	if nerr != nil {
 		return false, err
 	}
 	return true, err
 }
 
-func GetSavedModelPosts(savedItemtReq GetSavedItemRequest)(savedPosts []PostDBModel,err error){
+func GetSavedModelPosts(savedItemtReq GetSavedItemRequest) (savedPosts []PostDBModel, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var SavedPostCommentDB SavedDBModel
@@ -705,12 +729,12 @@ func GetSavedModelPosts(savedItemtReq GetSavedItemRequest)(savedPosts []PostDBMo
 	// 	},
 	// }
 	// result, err = SavedCollection.UpdateOne(ctx, filter, updateQuery)
-	for _,postID := range savedPostIDs {
+	for _, postID := range savedPostIDs {
 		post, err := retrievePostDetailsByID(postID)
 		if err != nil {
 			return savedPosts, err
 		}
-		savedPosts = append(savedPosts,post)
+		savedPosts = append(savedPosts, post)
 		// item, err := ConvertPostDBModelToPostResponse(post)
 		// if err != nil {
 		// 	return postResp, err
@@ -814,8 +838,8 @@ func retrieveCommentDetailsByID(commentID primitive.ObjectID) (CommentDBModel, e
 
 func Routes(router *gin.Engine) {
 	router.POST(PROFILE_ROUTE_PREFIX, GetProfile())
-	router.PATCH(PROFILE_ROUTE_PREFIX, EditProfile()) // maybe PATCH > POST
-	router.POST(PROFILE_ROUTE_PREFIX+"/delete", DeleteProfile()) // router.DELETE(PROFILE_ROUTE_PREFIX, DeleteProfile()) // DELETE -> POST
+	router.PATCH(PROFILE_ROUTE_PREFIX, EditProfile())                          // maybe PATCH > POST
+	router.POST(PROFILE_ROUTE_PREFIX+"/delete", DeleteProfile())               // router.DELETE(PROFILE_ROUTE_PREFIX, DeleteProfile()) // DELETE -> POST
 	router.PATCH(PROFILE_ROUTE_PREFIX+"/savedcomments", UpdateSavedComments()) // maybe PATCH > POST
 	router.PATCH(PROFILE_ROUTE_PREFIX+"/savedposts", UpdateSavedPosts())
 	router.POST(PROFILE_ROUTE_PREFIX+"/getsavedposts",GetSavedPosts())

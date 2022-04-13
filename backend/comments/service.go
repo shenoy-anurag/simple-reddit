@@ -125,7 +125,16 @@ func DeleteComment() gin.HandlerFunc {
 		}
 
 		result, err := deleteComment(delCommentReq)
-		if err != nil {
+		if err == mongo.ErrNoDocuments {
+			c.JSON(
+				http.StatusNotFound,
+				common.APIResponse{
+					Status:  http.StatusNotFound,
+					Message: common.API_ERROR,
+					Data:    map[string]interface{}{"error": err.Error()}},
+			)
+			return
+		} else if err != nil {
 			c.JSON(
 				http.StatusInternalServerError,
 				common.APIResponse{

@@ -1,8 +1,8 @@
 package users
 
 import (
-	"time"
 	"simple-reddit/profiles"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -25,14 +25,14 @@ type UserResponse struct {
 }
 
 type UserDBModel struct {
-	ID        primitive.ObjectID `bson:"_id"`
-	FirstName string             `json:"firstname,omitempty"`
-	LastName  string             `json:"lastname,omitempty"`
-	Email     string             `json:"email"`
-	Username  string             `json:"username"`
-	Password  string             `json:"password"`
+	ID           primitive.ObjectID   `bson:"_id"`
+	FirstName    string               `json:"firstname,omitempty"`
+	LastName     string               `json:"lastname,omitempty"`
+	Email        string               `json:"email"`
+	Username     string               `json:"username"`
+	Password     string               `json:"password"`
 	Subcriptions []primitive.ObjectID `json:"subcriptions"`
-	Joined    time.Time          `bson:"joined"`
+	Joined       time.Time            `bson:"joined"`
 }
 
 type LoginUserRequest struct {
@@ -49,8 +49,8 @@ type GetSubsciptionsRequest struct {
 }
 
 type UpdateSubsciptionRequest struct {
-	Username string `json:"username" validate:"required"`
-	CommunityName        string `json:"communityname" validate:"required"`
+	Username      string `json:"username" validate:"required"`
+	CommunityName string `json:"communityname" validate:"required"`
 }
 
 type CommunityDBModel struct {
@@ -66,14 +66,14 @@ type CommunityDBModel struct {
 // Convertion functions to convert between different models.
 func ConvertUserRequestToUserDBModel(usrReq CreateUserRequest) UserDBModel {
 	return UserDBModel{
-		ID:        primitive.NewObjectID(),
-		FirstName: usrReq.FirstName,
-		LastName:  usrReq.LastName,
-		Email:     usrReq.Email,
-		Username:  usrReq.Username,
-		Password:  usrReq.Password,
-		Subcriptions: []primitive.ObjectID{},// CreateSubcriptions(),
-		Joined:    time.Now().UTC(),
+		ID:           primitive.NewObjectID(),
+		FirstName:    usrReq.FirstName,
+		LastName:     usrReq.LastName,
+		Email:        usrReq.Email,
+		Username:     usrReq.Username,
+		Password:     usrReq.Password,
+		Subcriptions: []primitive.ObjectID{}, // CreateSubcriptions(),
+		Joined:       time.Now().UTC(),
 	}
 }
 
@@ -95,7 +95,7 @@ func ConvertUserDBModelToProfileDBModel(userDB UserDBModel) profiles.ProfileDBMo
 		Email:     userDB.Email,
 		UserName:  userDB.Username,
 		Karma:     0,
-		SavedPC: profiles.CreateSavedPC(userDB.Username),
+		SavedPC:   profiles.CreateSavedPC(userDB.Username),
 		Birthday:  userDB.Joined,
 	}
 }
