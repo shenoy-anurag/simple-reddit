@@ -1,0 +1,15 @@
+[Unit]
+Description=Service that runs Simple Reddit's backend Server.
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/opt/simple-reddit/backend/simple-reddit-build
+WorkingDirectory=/opt/simple-reddit/backend
+Restart=always
+RestartSec=5
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=%n
