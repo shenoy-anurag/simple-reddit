@@ -59,6 +59,6 @@ td {
     background-color: rgba(255, 0, 0, 0.952);
 }
 
-#hover-class3:hover {
+.hover-class3:hover {
     background-color: rgb(94, 250, 9); 
 } 

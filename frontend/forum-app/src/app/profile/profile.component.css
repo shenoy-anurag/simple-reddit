@@ -92,6 +92,6 @@ mat-card-footer {
     background-color: rgb(241, 14, 14);
 }
 
-#hover-class2:hover {
+.hover-class2:hover {
     background-color: rgb(94, 250, 9); 
 } 
