@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, HostListener } from '@angular/core';
 import { Validators, FormBuilder, ValidatorFn, AbstractControl, ValidationErrors, FormGroup } from '@angular/forms';
 import { SignupService } from '../signup.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Storage } from '../storage';
 import { Router } from '@angular/router';
+import { DOCUMENT } from '@angular/common';
+
 
 export function checkIfMatchingPasswords(passwordKey: string, passwordConfirmationKey: string) {
   return (group: FormGroup) => {
@@ -84,10 +86,11 @@ export function usernameValidator(signupService: any): ValidatorFn {
 })
 
 export class SignupformComponent implements OnInit {
+  windowScrolled!: boolean;
   public showPassword: boolean = false;
   form: FormGroup = new FormGroup({});
 
-  constructor(private router: Router, private snackBar: MatSnackBar, private signupService: SignupService, private fb: FormBuilder) {
+  constructor(private router: Router, private snackBar: MatSnackBar, private signupService: SignupService, private fb: FormBuilder, @Inject(DOCUMENT) private document: Document ) {
     this.form = this.fb.group({
       firstname: ['', [Validators.required]],
       lastname: ['', [Validators.required]],
@@ -100,6 +103,29 @@ export class SignupformComponent implements OnInit {
       validator: checkIfMatchingPasswords('password', 'password2')
     })
   }
+
+  @HostListener("window:scroll", [])
+
+onWindowScroll() {
+    if (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop > 100) {
+        this.windowScrolled = true;
+    } 
+   else if (this.windowScrolled && window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop < 10) {
+        this.windowScrolled = false;
+    }
+}
+
+
+scrollToTop() {
+  (function smoothscroll() {
+      var currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
+      if (currentScroll > 0) {
+          window.requestAnimationFrame(smoothscroll);
+          window.scrollTo(0, currentScroll - (currentScroll / 8));
+      }
+  })();
+}
+
 
   ngOnInit(): void {
   }
