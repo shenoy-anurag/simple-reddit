@@ -66,7 +66,7 @@
 </form>
 
 <br><br>
-<button class="full-width" mat-raised-button
+<button class="full-width hover-class1" mat-raised-button
     (click)="getSignUp(firstname.value, lastname.value, username.value, email.value, password.value)" color="warn">Submit</button>
 
 
@@ -75,3 +75,12 @@
     <a href="#">Terms and Conditions</a> and <a href="#">Policy Privacy</a>
 </p>
 <p class="para-2">Already a user? <a routerLink="/login">Login here</a></p>
+
+<!--Scroll to top-->
+
+  <div class="scroll-to-top " [ngClass]="{'show-scrollTop': windowScrolled}">
+    <button type="button" class="btn active hover-class3" data-toggle="button" aria-pressed="true" (click)="scrollToTop()">
+        <i class="fas fa-chevron-up" ></i>
+        Top
+    </button>
+  </div>
