@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
@@ -20,6 +20,7 @@ import { DeleteuserformComponent } from './deleteuserform/deleteuserform.compone
 import { NewpostformComponent } from './newpostform/newpostform.component';
 import { NewsubredditsformComponent } from './newsubredditsform/newsubredditsform.component';
 import { DeletesubredditsformComponent } from './deletesubredditsform/deletesubredditsform.component';
+import { TermsandconditionsComponent } from './termsandconditions/termsandconditions.component';
 
 
 @NgModule({
@@ -36,6 +37,7 @@ import { DeletesubredditsformComponent } from './deletesubredditsform/deletesubr
     NewpostformComponent,
     NewsubredditsformComponent,
     DeletesubredditsformComponent,
+    TermsandconditionsComponent,
   ],
   imports: [
     BrowserModule,
@@ -45,6 +47,11 @@ import { DeletesubredditsformComponent } from './deletesubredditsform/deletesubr
     AppRoutingModule,
     HttpClientModule,
   ],
+  exports: [
+    NavbarComponent,
+    PostsComponent,
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [PostsService, SubredditsService],
   bootstrap: [AppComponent]
 })
