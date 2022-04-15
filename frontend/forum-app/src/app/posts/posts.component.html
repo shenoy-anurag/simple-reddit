@@ -13,9 +13,8 @@
 
 <!-- Public Posts -->
 <ul *ngFor='let post of this.posts'>
-    <mat-card>
-        <mat-card-header (click)="gotoPost(post._id)" a routerLink="/home", >
-          
+    <mat-card >
+        <mat-card-header>
           <mat-card-title>{{ post.title }}</mat-card-title>
           <mat-card-subtitle>created at {{ post.created_at }}</mat-card-subtitle>
           <mat-card-subtitle> {{ post.upvotes-post.downvotes }} </mat-card-subtitle>
@@ -37,13 +36,17 @@
               Downvote
             </button>
             &nbsp;
+            <button mat-flat-button color="primary" class="hover-class3" (click)="toggleComments(post._id)"><mat-icon>
+              comment
+            </mat-icon></button>
+            &nbsp;&nbsp;
+            <button mat-flat-button color="primary" class="hover-class3" (click)="togglePostSave(post._id)"><mat-icon>
+              collections_bookmark
+            </mat-icon></button>
             &nbsp;
             &nbsp;
             &nbsp;
             &nbsp;
-            <button mat-button color="primary"(click)="toggleComments(post._id)"><mat-icon> comment</mat-icon></button>
-            <button mat-button color="primary"(click)="togglePostSave(post._id)"><mat-icon>bookmark</mat-icon></button>
-
             &nbsp;
             <!-- no post.username field yet -->
             &nbsp;
@@ -53,21 +56,10 @@
               delete
             </mat-icon></button>
         </mat-card-actions>
-
-        <mat-expansion-panel hideToggle>
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              This is the expansion title
-            </mat-panel-title>
-            <mat-panel-description>
-              This is a summary of the content
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-          <p>This is the primary content of the panel.</p>
-        </mat-expansion-panel>
       </mat-card>
       
       <!--Scroll to top-->
+
       <div class="scroll-to-top " [ngClass]="{'show-scrollTop': windowScrolled}">
         <button type="button" class="btn active hover-class4" data-toggle="button" aria-pressed="true" (click)="scrollToTop()">
             <i class="fas fa-chevron-up" ></i>
