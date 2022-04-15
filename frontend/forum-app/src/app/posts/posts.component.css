@@ -85,10 +85,6 @@ mat-card-footer {
     font-size: 18px; 
 } */
 
-#hover-class4:hover {
-    background-color: rgb(94, 250, 9); 
-} 
-
 .hover-class1:hover {
     background-color: rgb(239, 209, 18);
 }
@@ -100,3 +96,12 @@ mat-card-footer {
 .hover-class3:hover {
     background-color: rgb(255, 0, 0);
 }
+
+.hover-class4:hover {
+    background-color: rgb(94, 250, 9); 
+} 
+
+.hover-class5:hover {
+    background-color: rgb(121, 144, 51); 
+} 
+
