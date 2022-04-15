@@ -10,6 +10,7 @@ import { DOCUMENT } from '@angular/common';
   templateUrl: './posts.component.html',
   styleUrls: ['./posts.component.css']
 })
+
 export class PostsComponent implements OnInit {
   windowScrolled!: boolean;
   title = "List of Posts";
@@ -23,21 +24,21 @@ export class PostsComponent implements OnInit {
     if (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop > 100) {
         this.windowScrolled = true;
     } 
-   else if (this.windowScrolled && window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop < 10) {
+    else if (this.windowScrolled && window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop < 10) {
         this.windowScrolled = false;
     }
-}
+  }
 
 
-scrollToTop() {
-  (function smoothscroll() {
-      var currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
-      if (currentScroll > 0) {
-          window.requestAnimationFrame(smoothscroll);
-          window.scrollTo(0, currentScroll - (currentScroll / 8));
-      }
-  })();
-}
+  scrollToTop() {
+    (function smoothscroll() {
+        var currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
+        if (currentScroll > 0) {
+            window.requestAnimationFrame(smoothscroll);
+            window.scrollTo(0, currentScroll - (currentScroll / 8));
+        }
+    })();
+  }
 
 
   getPosts() {
@@ -51,8 +52,26 @@ scrollToTop() {
     });
   }
 
+  gotoPost(post_id: string) {
+    console.log("OPEN POST");
+    
+  }
+
   ngOnInit(): void {
     this.getPosts();
+  }
+
+  toggleComments(post_id: string) {
+    console.log("get comments for post: " + post_id);
+    this.service.getComments(post_id).subscribe((response: any) => {
+      if (response.status == 200) {
+        console.log(response.data);
+      }
+    });
+  }
+
+  togglePostSave(post_id: string) {
+    console.log("toggle save post id: " + post_id);
   }
 
   downvotePost(id: string) {

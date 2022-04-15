@@ -16,6 +16,15 @@ export class PostsService {
     return this.WebReqService.get("comment", queryParams);
   }
 
+  createComment(username: string, post_id: string, parent_id: string, body: string) {
+    return this.WebReqService.post("comment", {
+      "username": username,
+      "post_id": post_id,
+      "parent_id" : parent_id,
+      "body" : body
+    });
+  }
+
   getPosts() {
     // get data from Backend
     return this.WebReqService.post('home', {

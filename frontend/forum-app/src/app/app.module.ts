@@ -20,7 +20,11 @@ import { DeleteuserformComponent } from './deleteuserform/deleteuserform.compone
 import { NewpostformComponent } from './newpostform/newpostform.component';
 import { NewsubredditsformComponent } from './newsubredditsform/newsubredditsform.component';
 import { DeletesubredditsformComponent } from './deletesubredditsform/deletesubredditsform.component';
+<<<<<<< Updated upstream
 import { TermsandconditionsComponent } from './termsandconditions/termsandconditions.component';
+=======
+import { PostpageComponent } from './postpage/postpage.component';
+>>>>>>> Stashed changes
 
 
 @NgModule({
@@ -37,7 +41,11 @@ import { TermsandconditionsComponent } from './termsandconditions/termsandcondit
     NewpostformComponent,
     NewsubredditsformComponent,
     DeletesubredditsformComponent,
+<<<<<<< Updated upstream
     TermsandconditionsComponent,
+=======
+    PostpageComponent,
+>>>>>>> Stashed changes
   ],
   imports: [
     BrowserModule,
