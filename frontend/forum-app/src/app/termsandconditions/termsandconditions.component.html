@@ -135,7 +135,25 @@
 </h2>
 
 <h4>
-    For questions, please contact - <button (click)="copyMessage('ngjohn15@gmail.com'); showMessageSoon()">ngjohn15@gmail.com</button>
+    For questions, please contact - 
+    
+    <br>
+    <button mat-button color="primary" class="hover-class3"(click)="copyMessage('manojjampana@ufl.edu'); showMessageSoon1()">
+        manojjampana@ufl.edu
+    </button>
+    <br>
+    <button mat-button color="primary" class="hover-class3" (click)="copyMessage('johnng@ufl.edu'); showMessageSoon2()">
+        johnng@ufl.edu
+    </button>
+    <br>
+    <button mat-button color="primary" class="hover-class3" (click)="copyMessage('shenoy.a@ufl.edu'); showMessageSoon3()">
+        shenoy.a@ufl.edu
+    </button>
+    <br>
+    <button mat-button color="primary" class="hover-class3" (click)="copyMessage('gsanthanam@ufl.edu'); showMessageSoon4()">
+        gsanthanam@ufl.edu
+    </button>
+
     <p *ngIf="showMyMessage">->Email Copied<-</p>
     <!-- <a href= ngjohn15@gmail.com>"ngjohn15@gmail.com"</a> -->
 </h4>
