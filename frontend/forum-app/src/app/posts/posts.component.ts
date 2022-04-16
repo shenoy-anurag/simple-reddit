@@ -10,40 +10,44 @@ import { DOCUMENT } from '@angular/common';
   templateUrl: './posts.component.html',
   styleUrls: ['./posts.component.css']
 })
+
 export class PostsComponent implements OnInit {
   windowScrolled!: boolean;
   title = "List of Posts";
   posts: any[] = [];
+  comments = new Map([]);
+  // comments: any[] = [];
 
-  constructor(private router: Router, private service: PostsService, private snackbar: MatSnackBar, @Inject(DOCUMENT) private document: Document) {
-  }
+  constructor(private router: Router, private service: PostsService, private snackbar: MatSnackBar, @Inject(DOCUMENT) private document: Document) {}
   @HostListener("window:scroll", [])
   
   onWindowScroll() {
     if (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop > 100) {
         this.windowScrolled = true;
     } 
-   else if (this.windowScrolled && window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop < 10) {
+    else if (this.windowScrolled && window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop < 10) {
         this.windowScrolled = false;
     }
-}
+  }
 
 
-scrollToTop() {
-  (function smoothscroll() {
-      var currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
-      if (currentScroll > 0) {
-          window.requestAnimationFrame(smoothscroll);
-          window.scrollTo(0, currentScroll - (currentScroll / 8));
-      }
-  })();
-}
+  scrollToTop() {
+    (function smoothscroll() {
+        var currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
+        if (currentScroll > 0) {
+            window.requestAnimationFrame(smoothscroll);
+            window.scrollTo(0, currentScroll - (currentScroll / 8));
+        }
+    })();
+  }
 
 
   getPosts() {
     this.service.getPosts().subscribe((response: any) => {
       if (response.status == 200) {
         this.posts = response.data.posts;
+
+        this.getAllComments(this.posts);
       }
       else {
         this.posts = []
@@ -51,8 +55,62 @@ scrollToTop() {
     });
   }
 
+  gotoPost(post_id: string) {
+    console.log("OPEN POST");
+    
+  }
+
   ngOnInit(): void {
     this.getPosts();
+  }
+
+  // gets all the comments from a given post id
+  getComments(post_id: string) {
+    this.service.getComments(post_id).subscribe((response: any) => {
+      if (response.status == 200) {
+        return response.data;
+      }
+      else {
+        return null;
+      }
+    });
+  }
+
+  // gets all the comments for all posts
+  getAllComments(posts: any[]) {
+    // loop through all posts
+    posts.forEach((post) => {
+      this.comments.set(post._id, this.getComments(post._id));
+    });
+  }
+
+  toggleComments(post_id: string) {
+    console.log("get comments for post: " + post_id);
+    this.service.getComments(post_id).subscribe((response: any) => {
+      if (response.status == 200) {
+        console.log(response.data);
+      }
+    });
+  }
+
+  getPostInfo(post_id: string) {
+    // Navigate to post page
+    this.router.navigate(['/post/'+post_id]);
+  }
+
+  togglePostSave(post_id: string) {
+    console.log("toggle save post id: " + post_id);
+    if (Storage.isLoggedIn) {
+      this.service.savePost(Storage.username, post_id).subscribe((response: any) => {
+        console.log(response);
+        if (response.status == 201) {
+          this.snackbar.open("Post saved", "Dismiss", { duration: 500 });
+        }
+      });
+    }
+    else {
+      this.snackbar.open("Log in to save posts", "Dismiss", { duration: 1500 });
+    }
   }
 
   downvotePost(id: string) {

@@ -15,10 +15,11 @@
 <!-- Public Subreddits -->
 <ul *ngFor="let subreddit of this.subreddits">
     <mat-card>
+        <div (click)="gotoCommunityPage(subreddit._id)">
         <mat-card-header>
             <mat-card-title>{{subreddit.name}}</mat-card-title>
         </mat-card-header>
-
+        </div>
         <mat-card-content>
           <p>
               {{ subreddit.description}}
@@ -52,5 +53,4 @@
             Top
         </button>
       </div>
-        
 </ul>

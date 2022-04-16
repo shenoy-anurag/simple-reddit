@@ -1,0 +1,35 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>{{subreddit.name}}</mat-card-title>
+    </mat-card-header>
+    <mat-card-subtitle>
+        Subscribers: {{ subreddit.subscriber_count}}
+    </mat-card-subtitle>
+    <mat-card-subtitle>
+        Created on: {{ subreddit.created_at}}
+    </mat-card-subtitle>
+
+    <mat-card-content>
+      <p>
+          {{ subreddit.description}}
+      </p>
+    </mat-card-content>
+    <!-- Upvote and Downvote the Subreddits -->
+    <mat-card-actions>
+        <button mat-flat-button color="primary" class="hover-class1">
+            Upvote
+        </button>
+        &nbsp;
+        &nbsp;
+        <button mat-flat-button color="primary" class="hover-class2">
+            Downvote
+        </button>
+        &nbsp;
+        &nbsp;
+        &nbsp;
+
+        <!-- <button mat-button color="warn" (click)="deleteCommunity(subreddit.name, 'johntest')">
+            <mat-icon>delete</mat-icon>
+        </button> -->
+    </mat-card-actions>
+</mat-card>

@@ -21,6 +21,8 @@ import { NewpostformComponent } from './newpostform/newpostform.component';
 import { NewsubredditsformComponent } from './newsubredditsform/newsubredditsform.component';
 import { DeletesubredditsformComponent } from './deletesubredditsform/deletesubredditsform.component';
 import { TermsandconditionsComponent } from './termsandconditions/termsandconditions.component';
+import { PostpageComponent } from './postpage/postpage.component';
+import { CommunitypageComponent } from './communitypage/communitypage.component';
 
 
 @NgModule({
@@ -38,6 +40,8 @@ import { TermsandconditionsComponent } from './termsandconditions/termsandcondit
     NewsubredditsformComponent,
     DeletesubredditsformComponent,
     TermsandconditionsComponent,
+    PostpageComponent,
+    CommunitypageComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +13,8 @@ export class WebRequestService {
     this.ROOT_URL = 'http://localhost:8080';
   }
 
-  get(uri: string) {
-    return this.http.get(`${this.ROOT_URL}/${uri}`);
+  get(uri: string, quertyParams: HttpParams) {
+    return this.http.get(`${this.ROOT_URL}/${uri}`, { params: quertyParams});
   }
 
   post(uri: string, payload: Object) {

@@ -11,6 +11,8 @@ import { NewpostformComponent } from './newpostform/newpostform.component';
 import { NewsubredditsformComponent} from './newsubredditsform/newsubredditsform.component';
 import { DeletesubredditsformComponent } from './deletesubredditsform/deletesubredditsform.component';
 import { TermsandconditionsComponent } from './termsandconditions/termsandconditions.component';
+import { PostpageComponent } from './postpage/postpage.component';
+import { CommunitypageComponent } from './communitypage/communitypage.component';
 
 const routes: Routes = [
   {path: 'login', component: LoginComponent},
@@ -23,6 +25,8 @@ const routes: Routes = [
   {path: 'newsubredditsform', component: NewsubredditsformComponent},
   {path: 'deletesubredditsform', component: DeletesubredditsformComponent},
   {path: 'termsandconditions', component: TermsandconditionsComponent},
+  {path: 'post/:postID', component: PostpageComponent},
+  {path: 'subreddits/:communityID', component: CommunitypageComponent},
   {path: '', redirectTo: '/home', pathMatch:'full'},
 ];
 
