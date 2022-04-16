@@ -15,14 +15,14 @@
 <ul *ngFor='let post of this.posts'>
   <mat-card>
     <mat-card-header>
-      <div (click)="getPostInfo(post._id)">
+      <div (click)="gotoPost(post._id)">
         <mat-card-title>{{ post.title }}</mat-card-title>
         <mat-card-subtitle>created at {{ post.created_at }}</mat-card-subtitle>
         <mat-card-subtitle> {{ post.upvotes-post.downvotes }} </mat-card-subtitle>
     </div>
     </mat-card-header>
     <mat-card-content>
-      <div (click)="getPostInfo(post._id)">
+      <div (click)="gotoPost(post._id)">
       <p>
         {{post.body}}
       </p>
@@ -40,7 +40,7 @@
         Downvote
       </button>
       &nbsp;
-      <button mat-flat-button color="primary" class="hover-class3" (click)="toggleComments(post._id)">
+      <button mat-flat-button color="primary" class="hover-class3" (click)="gotoPost(post._id)">
         <mat-icon>
           comment
         </mat-icon>
@@ -57,14 +57,6 @@
       &nbsp;
       &nbsp;
       <!-- no post.username field yet -->
-      &nbsp;
-      &nbsp;
-      &nbsp;
-      <button mat-button color="warn" (click)="deletePost(post._id, post.title, post.username)">
-        <mat-icon>
-          delete
-        </mat-icon>
-      </button>
     </mat-card-actions>
     <!-- Comments -->
     <ul *ngFor="let comment of comments">

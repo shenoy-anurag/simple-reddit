@@ -55,11 +55,6 @@ export class PostsComponent implements OnInit {
     });
   }
 
-  gotoPost(post_id: string) {
-    console.log("OPEN POST");
-    
-  }
-
   ngOnInit(): void {
     this.getPosts();
   }
@@ -84,16 +79,7 @@ export class PostsComponent implements OnInit {
     });
   }
 
-  toggleComments(post_id: string) {
-    console.log("get comments for post: " + post_id);
-    this.service.getComments(post_id).subscribe((response: any) => {
-      if (response.status == 200) {
-        console.log(response.data);
-      }
-    });
-  }
-
-  getPostInfo(post_id: string) {
+  gotoPost(post_id: string) {
     // Navigate to post page
     this.router.navigate(['/post/'+post_id]);
   }

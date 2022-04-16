@@ -6,7 +6,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Storage } from '../storage';
 import { ProfileService } from '../profile.service';
 import { Router } from '@angular/router';
-import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-newpostform',
@@ -18,14 +17,9 @@ export class NewpostformComponent implements OnInit {
   windowScrolled!: boolean;
   communities: any[] = [];
   profile: any;
-  // communities: any[] = [
-  //   {value: '6247263303a4c16c6d6470de', viewValue: 'Sociology'},
-  //   {value: '6247263303a4c16c6d6470de', viewValue: 'Pizza'},
-  //   {value: '6247263303a4c16c6d6470de', viewValue: 'Tacos'},
-  // ];
   selectedCommunity: string = "";
   form: FormGroup = new FormGroup({});
-  constructor(private service1: SubredditsService, private service2: ProfileService, private signupService: SignupService, private fb: FormBuilder, private snackBar: MatSnackBar, @Inject(DOCUMENT) private document: Document) {
+  constructor(private router: Router, private service1: SubredditsService, private service2: ProfileService, private signupService: SignupService, private fb: FormBuilder, private snackBar: MatSnackBar) {
     this.form = this.fb.group({
       username: ['', [Validators.required]],
       title: ['', [Validators.required]],
@@ -93,19 +87,22 @@ scrollToTop() {
     // console.log("testing the code")
     console.log("new post: " + title + " " + "community: " + community + " " + body);
     if (Storage.isLoggedIn) {
-    this.signupService.createPost(this.profile.username, community, title, body).subscribe((response: any) => {
-      console.log(response);
-      if(response.status == 201 && response.message == "success"){
-        this.snackBar.open("New post created.", "Dismiss", { duration: 1500 });
-       }
-      else {
-        // Something else is wrong
-        this.snackBar.open("Failed to create new post", "Dismiss", { duration: 1500 });
-      }
-    });
-  }
-  else {
-    this.snackBar.open("Log in to vote on posts", "Dismiss", { duration: 1500 });
-  }
+      this.signupService.createPost(this.profile.username, community, title, body).subscribe((response: any) => {
+        console.log(response);
+        if(response.status == 201 && response.message == "success"){
+          this.snackBar.open("New post created.", "Dismiss"), { duration: 1500 };
+
+          // navigate to home
+          this.router.navigate(['home']);
+        }
+        else {
+          // Something else is wrong
+          this.snackBar.open("Failed to create new post", "Dismiss"), { duration: 1500 };
+        }
+      });
+    }
+    else {
+      this.snackBar.open("Log in to vote on posts", "Dismiss"), { duration: 1500 };
+    }
   }
 }
