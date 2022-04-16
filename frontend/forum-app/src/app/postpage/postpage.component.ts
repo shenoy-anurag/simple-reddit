@@ -15,13 +15,13 @@ export class PostpageComponent implements OnInit {
   post_id: string;
   post: any;
   posts: any[];
+  comments: any[];
 
   ngOnInit(): void {
     this.post_id = this.route.snapshot.paramMap.get('postID');
     console.log("post id: ", this.post_id);
     this.getPosts();
-
-    console.log("test");
+    this.getCommentsForPost();
   }
 
   getPosts(): void {
@@ -38,6 +38,19 @@ export class PostpageComponent implements OnInit {
         });
       }
     });
+  }
+
+  addComment(): void {
+    console.log("Addd a comment");
+  }
+  
+  getCommentsForPost(): void {
+    // this.comments =
+    this.service.getComments(this.post_id).subscribe((response: any) => {
+      if (response.status == 200) {
+        this.comments = response.data.comments;
+      }
+    })
   }
 
   downvotePost(id: string) {

@@ -15,11 +15,14 @@
         Upvote
       </button>
       &nbsp; &nbsp;
-      <!-- <button mat-button>Downvote</button> -->
       <button mat-flat-button color="primary" class="hover-class3" (click)="downvotePost(post._id)">
         Downvote
       </button>
-      &nbsp;&nbsp;
+      &nbsp;
+      <button mat-flat-button color="primary" class="hover-class3" (click)="addComment()">
+        <mat-icon> add_comment</mat-icon>
+      </button>
+      &nbsp;
       <button mat-flat-button color="primary" class="hover-class3" (click)="togglePostSave(post._id)">
         <mat-icon>
           collections_bookmark
@@ -40,4 +43,11 @@
         </mat-icon>
       </button>
     </mat-card-actions>
+
+    <!-- Comments -->
+    <mat-card-footer *ngIf="this.comments.length > 0">
+        <ul *ngFor='let comment of this.comments'>
+            {{ comment.body }}
+        </ul>
+    </mat-card-footer>
   </mat-card>
