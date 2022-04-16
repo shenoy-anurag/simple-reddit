@@ -60,10 +60,6 @@ export class PostsComponent implements OnInit {
     
   }
 
-  getPostList() {
-    return this.posts;
-  }
-
   ngOnInit(): void {
     this.getPosts();
   }
@@ -83,10 +79,7 @@ export class PostsComponent implements OnInit {
   // gets all the comments for all posts
   getAllComments(posts: any[]) {
     // loop through all posts
-    console.log(posts);
     posts.forEach((post) => {
-      console.log(post._id);
-      console.log(this.getComments(post._id));
       this.comments.set(post._id, this.getComments(post._id));
     });
   }
@@ -98,6 +91,11 @@ export class PostsComponent implements OnInit {
         console.log(response.data);
       }
     });
+  }
+
+  getPostInfo(post_id: string) {
+    // Navigate to post page
+    this.router.navigate(['/postpage/'+post_id]);
   }
 
   togglePostSave(post_id: string) {

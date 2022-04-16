@@ -24,7 +24,7 @@ const routes: Routes = [
   {path: 'newsubredditsform', component: NewsubredditsformComponent},
   {path: 'deletesubredditsform', component: DeletesubredditsformComponent},
   {path: 'termsandconditions', component: TermsandconditionsComponent},
-  // {path: 'home/:id', component: PostpageComponent},
+  {path: 'postpage/:postID', component: PostpageComponent},
   {path: '', redirectTo: '/home', pathMatch:'full'},
 ];
 
