@@ -15,9 +15,10 @@ export class PostsComponent implements OnInit {
   windowScrolled!: boolean;
   title = "List of Posts";
   posts: any[] = [];
+  comments = new Map([]);
+  // comments: any[] = [];
 
-  constructor(private router: Router, private service: PostsService, private snackbar: MatSnackBar, @Inject(DOCUMENT) private document: Document) {
-  }
+  constructor(private router: Router, private service: PostsService, private snackbar: MatSnackBar, @Inject(DOCUMENT) private document: Document) {}
   @HostListener("window:scroll", [])
   
   onWindowScroll() {
@@ -45,6 +46,8 @@ export class PostsComponent implements OnInit {
     this.service.getPosts().subscribe((response: any) => {
       if (response.status == 200) {
         this.posts = response.data.posts;
+
+        this.getAllComments(this.posts);
       }
       else {
         this.posts = []
@@ -57,8 +60,35 @@ export class PostsComponent implements OnInit {
     
   }
 
+  getPostList() {
+    return this.posts;
+  }
+
   ngOnInit(): void {
     this.getPosts();
+  }
+
+  // gets all the comments from a given post id
+  getComments(post_id: string) {
+    this.service.getComments(post_id).subscribe((response: any) => {
+      if (response.status == 200) {
+        return response.data;
+      }
+      else {
+        return null;
+      }
+    });
+  }
+
+  // gets all the comments for all posts
+  getAllComments(posts: any[]) {
+    // loop through all posts
+    console.log(posts);
+    posts.forEach((post) => {
+      console.log(post._id);
+      console.log(this.getComments(post._id));
+      this.comments.set(post._id, this.getComments(post._id));
+    });
   }
 
   toggleComments(post_id: string) {
@@ -72,6 +102,17 @@ export class PostsComponent implements OnInit {
 
   togglePostSave(post_id: string) {
     console.log("toggle save post id: " + post_id);
+    if (Storage.isLoggedIn) {
+      this.service.savePost(Storage.username, post_id).subscribe((response: any) => {
+        console.log(response);
+        if (response.status == 201) {
+          this.snackbar.open("Post saved", "Dismiss", { duration: 500 });
+        }
+      });
+    }
+    else {
+      this.snackbar.open("Log in to save posts", "Dismiss", { duration: 1500 });
+    }
   }
 
   downvotePost(id: string) {
@@ -103,11 +144,6 @@ export class PostsComponent implements OnInit {
     else {
       this.snackbar.open("Log in to vote on posts", "Dismiss", { duration: 1500 });
     }
-
-    // getComments works
-    // this.service.getComments(id).subscribe((response: any) => {
-    //   console.log(response);
-    // });
   }
 
   deletePost(id: string, title: string, postusername: string) { 

@@ -25,6 +25,13 @@ export class PostsService {
     });
   }
 
+  savePost(username: string, post_id: string) {
+    return this.WebReqService.patch('profile/savedposts', {
+      "username": username,
+      "post_id": post_id
+    });
+  }
+
   getPosts() {
     // get data from Backend
     return this.WebReqService.post('home', {
