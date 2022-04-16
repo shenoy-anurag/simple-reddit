@@ -14,7 +14,7 @@ import { SignupService } from '../signup.service';
 export class SubredditsComponent implements OnInit {
   windowScrolled!: boolean;
   subreddits: any[] = [];
-  constructor(private service: SubredditsService, private snackbar: MatSnackBar, @Inject(DOCUMENT) private document: Document) {
+  constructor(private router: Router, private service: SubredditsService, private snackbar: MatSnackBar, @Inject(DOCUMENT) private document: Document) {
   }
 
 @HostListener("window:scroll", [])
@@ -111,5 +111,10 @@ scrollToTop() {
         this.subreddits = []
       }
     });
+  }
+
+  gotoCommunityPage(communityID: string) {
+    // Navigate to post page
+    this.router.navigate(['/subreddits/'+communityID]);
   }
 }

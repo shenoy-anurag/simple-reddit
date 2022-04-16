@@ -95,7 +95,7 @@ export class PostsComponent implements OnInit {
 
   getPostInfo(post_id: string) {
     // Navigate to post page
-    this.router.navigate(['/postpage/'+post_id]);
+    this.router.navigate(['/post/'+post_id]);
   }
 
   togglePostSave(post_id: string) {

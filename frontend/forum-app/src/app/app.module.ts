@@ -22,6 +22,7 @@ import { NewsubredditsformComponent } from './newsubredditsform/newsubredditsfor
 import { DeletesubredditsformComponent } from './deletesubredditsform/deletesubredditsform.component';
 import { TermsandconditionsComponent } from './termsandconditions/termsandconditions.component';
 import { PostpageComponent } from './postpage/postpage.component';
+import { CommunitypageComponent } from './communitypage/communitypage.component';
 
 
 @NgModule({
@@ -40,6 +41,7 @@ import { PostpageComponent } from './postpage/postpage.component';
     DeletesubredditsformComponent,
     TermsandconditionsComponent,
     PostpageComponent,
+    CommunitypageComponent,
   ],
   imports: [
     BrowserModule,
