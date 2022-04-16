@@ -24,8 +24,6 @@ export class CommunitypageComponent implements OnInit {
         this.subreddits = response.data.communities;
 
         this.subreddits.forEach(s => {
-          console.log(s._id);
-
           if (s._id == this.communityID) {
             this.subreddit = s;
           }

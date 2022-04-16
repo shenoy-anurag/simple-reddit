@@ -2,6 +2,12 @@
     <mat-card-header>
         <mat-card-title>{{subreddit.name}}</mat-card-title>
     </mat-card-header>
+    <mat-card-subtitle>
+        Subscribers: {{ subreddit.subscriber_count}}
+    </mat-card-subtitle>
+    <mat-card-subtitle>
+        Created on: {{ subreddit.created_at}}
+    </mat-card-subtitle>
 
     <mat-card-content>
       <p>
