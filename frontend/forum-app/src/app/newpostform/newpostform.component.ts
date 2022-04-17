@@ -19,7 +19,7 @@ export class NewpostformComponent implements OnInit {
   profile: any;
   selectedCommunity: string = "";
   form: FormGroup = new FormGroup({});
-  constructor(private router: Router, private service1: SubredditsService, private service2: ProfileService, private signupService: SignupService, private fb: FormBuilder, private snackBar: MatSnackBar) {
+  constructor(private router: Router, private service1: SubredditsService, private signupService: SignupService, private fb: FormBuilder, private snackBar: MatSnackBar) {
     this.form = this.fb.group({
       username: ['', [Validators.required]],
       title: ['', [Validators.required]],
@@ -52,25 +52,8 @@ scrollToTop() {
 
   getCommunities() {
     this.service1.getSubreddits().subscribe((response: any) => {
-      console.log(response.data.communities);
       if (response.status == 200) {
         this.communities = response.data.communities;
-      }
-      else {
-      }
-    });
-
-    this.service2.getProfile(Storage.username).subscribe((response: any) => {
-      console.log(response);
-      console.log(response.status);
-      
-      if (response.status == 200) {
-        console.log(response.data.Profile.username);
-        console.log(response.data.Profile.email);
-        this.profile = {
-          "username": response.data.Profile.username,
-          "email": response.data.Profile.email,
-        }
       }
     });
   }
@@ -84,11 +67,8 @@ scrollToTop() {
   }
 
   createPost(community: string, title: string, body: string) {
-    // console.log("testing the code")
-    console.log("new post: " + title + " " + "community: " + community + " " + body);
     if (Storage.isLoggedIn) {
-      this.signupService.createPost(this.profile.username, community, title, body).subscribe((response: any) => {
-        console.log(response);
+      this.signupService.createPost(Storage.username, community, title, body).subscribe((response: any) => {
         if(response.status == 201 && response.message == "success"){
           this.snackBar.open("New post created.", "Dismiss"), { duration: 1500 };
 
