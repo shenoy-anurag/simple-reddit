@@ -172,6 +172,33 @@
     on our Services, see “Your Choices” below).
 </h4>
 
+<h2>
+    Contact Information:
+</h2>
+
+<h4>
+    For questions, please contact - 
+    
+    <br>
+    <button mat-button color="primary" class="hover-class3"(click)="copyMessage('manojjampana@ufl.edu'); showMessageSoon1()">
+        manojjampana@ufl.edu
+    </button>
+    <br>
+    <button mat-button color="primary" class="hover-class3" (click)="copyMessage('johnng@ufl.edu'); showMessageSoon2()">
+        johnng@ufl.edu
+    </button>
+    <br>
+    <button mat-button color="primary" class="hover-class3" (click)="copyMessage('shenoy.a@ufl.edu'); showMessageSoon3()">
+        shenoy.a@ufl.edu
+    </button>
+    <br>
+    <button mat-button color="primary" class="hover-class3" (click)="copyMessage('gsanthanam@ufl.edu'); showMessageSoon4()">
+        gsanthanam@ufl.edu
+    </button>
+
+    <p *ngIf="showMyMessage">->Email Copied<-</p>
+    
+</h4>
 
 
 <button mat-flat-button color="primary" class="hover-class1" routerLink="/home">
