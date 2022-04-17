@@ -40,13 +40,15 @@
         Downvote
       </button>
       &nbsp;
-      <button mat-flat-button color="primary" class="hover-class3" (click)="toggleComments(post._id)">
+      &nbsp;
+      <button mat-flat-button color="primary" class="hover-class6" (click)="toggleComments(post._id)">
         <mat-icon>
           comment
         </mat-icon>
       </button>
       &nbsp;&nbsp;
-      <button mat-flat-button color="primary" class="hover-class3" (click)="togglePostSave(post._id)">
+      &nbsp;
+      <button mat-flat-button color="accent" class="hover-class7" (click)="togglePostSave(post._id)">
         <mat-icon>
           collections_bookmark
         </mat-icon>
@@ -59,7 +61,7 @@
       <!-- no post.username field yet -->
       &nbsp;
       &nbsp;
-      &nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;
       <button mat-button color="warn" (click)="deletePost(post._id, post.title, post.username)">
         <mat-icon>
           delete
