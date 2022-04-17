@@ -23,6 +23,7 @@ import { DeletesubredditsformComponent } from './deletesubredditsform/deletesubr
 import { TermsandconditionsComponent } from './termsandconditions/termsandconditions.component';
 import { PostpageComponent } from './postpage/postpage.component';
 import { CommunitypageComponent } from './communitypage/communitypage.component';
+import { PrivacypolicyComponent } from './privacypolicy/privacypolicy.component';
 
 
 @NgModule({
@@ -42,6 +43,7 @@ import { CommunitypageComponent } from './communitypage/communitypage.component'
     TermsandconditionsComponent,
     PostpageComponent,
     CommunitypageComponent,
+    PrivacypolicyComponent,
   ],
   imports: [
     BrowserModule,
