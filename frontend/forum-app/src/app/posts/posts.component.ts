@@ -3,7 +3,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { PostsService } from '../posts.service';
 import { Storage } from '../storage';
-import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-posts',
@@ -18,7 +17,7 @@ export class PostsComponent implements OnInit {
   comments = new Map([]);
   // comments: any[] = [];
 
-  constructor(private router: Router, private service: PostsService, private snackbar: MatSnackBar, @Inject(DOCUMENT) private document: Document) {}
+  constructor(private router: Router, private service: PostsService, private snackbar: MatSnackBar) {}
   @HostListener("window:scroll", [])
   
   onWindowScroll() {
