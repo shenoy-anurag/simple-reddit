@@ -94,7 +94,15 @@
     <!-- <a href= ngjohn15@gmail.com>"ngjohn15@gmail.com"</a> -->
 </h4>
 
-
 <button mat-flat-button color="primary" class="hover-class1" routerLink="/home">
     Back
 </button>
+
+<!--Scroll to top-->
+
+<div class="scroll-to-top " [ngClass]="{'show-scrollTop': windowScrolled}">
+    <button type="button" class="btn active hover-class2" data-toggle="button" aria-pressed="true" (click)="scrollToTop()">
+        <i class="fas fa-chevron-up" ></i>
+        Top
+    </button>
+  </div>
