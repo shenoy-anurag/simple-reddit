@@ -5,7 +5,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProfileService } from '../profile.service';
 import { Storage } from '../storage';
 import { Router } from '@angular/router';
-import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-newsubredditsform',
@@ -17,7 +16,7 @@ export class NewsubredditsformComponent implements OnInit {
   windowScrolled!: boolean;
   profile: any
   form: FormGroup = new FormGroup({});
-  constructor(private signupService: SignupService,private service1: ProfileService , private fb: FormBuilder, private snackBar: MatSnackBar, private service: ProfileService, @Inject(DOCUMENT) private document: Document) {
+  constructor(private router: Router, private signupService: SignupService,private service1: ProfileService , private fb: FormBuilder, private snackBar: MatSnackBar, private service: ProfileService) {
     this.form = this.fb.group({
       username: ['', [Validators.required]],
       name: ['', [Validators.required]],
@@ -84,6 +83,9 @@ scrollToTop() {
     console.log(response.message);
      if(response.status == 201 && response.message == "success"){
       this.snackBar.open("New subreddit created.", "Dismiss"), { duration: 2000 };
+
+      // navigate to subreddits
+      this.router.navigate(['subreddits']);
      }
      else if(response.status == 200 && response.message == "failure"){
        this.snackBar.open("Community with that name already exists","Dismiss"), { duration:4000};
@@ -96,7 +98,7 @@ scrollToTop() {
     }
 
   else{
-    this.snackBar.open("Log in to vote on posts", "Dismiss", { duration: 1500 });
+    this.snackBar.open("Log in to vote on posts", "Dismiss"), { duration: 1500 };
   }
   }
 }

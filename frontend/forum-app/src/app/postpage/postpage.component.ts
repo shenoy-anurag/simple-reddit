@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PostsService } from '../posts.service';
 import { Storage } from '../storage';
 
@@ -11,7 +11,7 @@ import { Storage } from '../storage';
 })
 export class PostpageComponent implements OnInit {
 
-  constructor(private route: ActivatedRoute, private service: PostsService, private snackbar: MatSnackBar) { }
+  constructor(private router: Router, private route: ActivatedRoute, private service: PostsService, private snackbar: MatSnackBar) { }
   post_id: string;
   post: any;
   posts: any[];
@@ -19,7 +19,6 @@ export class PostpageComponent implements OnInit {
 
   ngOnInit(): void {
     this.post_id = this.route.snapshot.paramMap.get('postID');
-    console.log("post id: ", this.post_id);
     this.getPosts();
     this.getCommentsForPost();
   }
@@ -28,10 +27,7 @@ export class PostpageComponent implements OnInit {
     this.service.getPosts().subscribe((response: any) => {
       if (response.status == 200) {
         this.posts = response.data.posts;
-        
         this.posts.forEach(p => {
-          console.log(p._id);
-
           if (p._id == this.post_id) {
             this.post = p;
           }
@@ -40,8 +36,20 @@ export class PostpageComponent implements OnInit {
     });
   }
 
-  addComment(): void {
-    console.log("Addd a comment");
+  addComment(post_id: string, body: string): void {
+    if (Storage.isLoggedIn) {
+      this.service.createComment(Storage.username, post_id, null, body).subscribe((response: any) => {
+        if (response.status == 200) {
+          this.snackbar.open("Comment added", "Dismiss", { duration: 500 });
+
+          // refresh page to update
+          this.getCommentsForPost();
+        }
+      });
+    }
+    else {
+      this.snackbar.open("Log in to vote on posts", "Dismiss", { duration: 1500 });
+    }
   }
   
   getCommentsForPost(): void {
@@ -85,20 +93,19 @@ export class PostpageComponent implements OnInit {
   }
 
   deletePost(id: string, title: string, postusername: string) { 
-    console.log(id+","+title+","+postusername);
-    if (Storage.isLoggedIn && postusername == Storage.username) {
-      console.log("Deleting post: " + title + "id: " + id + " username: " + Storage.username);
+    if (Storage.isLoggedIn) {
       this.service.deletePost(id).subscribe((response: any) => {
+        console.log(response);
         if (response.status == 200) {
           this.snackbar.open("Post Deleted", "Dismiss", {duration: 1500 });
 
           // update posts
           this.getPosts
+
+          // navigate to home
+          this.router.navigate(['home']);
         }
       });
-    }
-    else if (postusername != Storage.username) {
-      this.snackbar.open("You are not owner of this post.", "Dismiss", {duration: 1500 });
     }
     else {
       this.snackbar.open("You need to be logged in to delete posts", "Dismiss", {duration: 1500});
@@ -106,7 +113,6 @@ export class PostpageComponent implements OnInit {
   }
 
   togglePostSave(post_id: string) {
-    console.log("toggle save post id: " + post_id);
     if (Storage.isLoggedIn) {
       this.service.savePost(Storage.username, post_id).subscribe((response: any) => {
         console.log(response);

@@ -19,9 +19,6 @@
         Downvote
       </button>
       &nbsp;
-      <button mat-flat-button color="primary" class="hover-class6" (click)="addComment()">
-        <mat-icon> add_comment</mat-icon>
-      </button>
       &nbsp;
       <button mat-flat-button color="accent" class="hover-class7" (click)="togglePostSave(post._id)">
         <mat-icon>
@@ -44,10 +41,29 @@
       </button>
     </mat-card-actions>
 
+    <!-- Create New Comment -->
+    <mat-card-actions>
+      <mat-form-field appearance="fill">
+        <mat-label>Add a Comment</mat-label>
+        <textarea #body matInput></textarea>
+        <button mat-button color="primary" (click)="addComment(post._id, body.value)">
+          Add Comment <mat-icon> add_comment</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-card-actions>
+
     <!-- Comments -->
     <mat-card-footer *ngIf="this.comments.length > 0">
         <ul *ngFor='let comment of this.comments'>
-            {{ comment.body }}
+            <mat-card>
+              <mat-card-header>
+                {{ comment.upvotes - comment.downvotes }}
+                {{ comment.username}}
+              </mat-card-header>
+              <mat-card-content>
+                {{ comment.body }}
+              </mat-card-content>
+            </mat-card>
         </ul>
     </mat-card-footer>
   </mat-card>
