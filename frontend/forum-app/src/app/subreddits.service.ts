@@ -20,6 +20,13 @@ export class SubredditsService {
     });
   }
 
+  subscribeToSubreddit(username: string, community_name: string) {
+    return this.WebReqService.post("users/UpdateSubsciptions", {
+      "username" : username,
+      "communityname":community_name
+    })
+  }
+
   constructor(private WebReqService: WebRequestService) { }
 }
 

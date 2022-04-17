@@ -19,14 +19,12 @@ export class PostpageComponent implements OnInit {
 
   ngOnInit(): void {
     this.post_id = this.route.snapshot.paramMap.get('postID');
-    console.log("post id: ", this.post_id);
     this.getPosts();
     this.getCommentsForPost();
   }
 
   getPosts(): void {
     this.service.getPosts().subscribe((response: any) => {
-      console.log(response);
       if (response.status == 200) {
         this.posts = response.data.posts;
         this.posts.forEach(p => {
@@ -95,13 +93,11 @@ export class PostpageComponent implements OnInit {
   }
 
   deletePost(id: string, title: string, postusername: string) { 
-    console.log(id+","+title+","+postusername);
     if (Storage.isLoggedIn) {
-      console.log("Deleting post: " + title + "id: " + id + " username: " + Storage.username);
       this.service.deletePost(id).subscribe((response: any) => {
         console.log(response);
         if (response.status == 200) {
-          this.snackbar.open("Post Deleted", "Dismiss"), {duration: 1500 };
+          this.snackbar.open("Post Deleted", "Dismiss", {duration: 1500 });
 
           // update posts
           this.getPosts
@@ -112,12 +108,11 @@ export class PostpageComponent implements OnInit {
       });
     }
     else {
-      this.snackbar.open("You need to be logged in to delete posts", "Dismiss"), {duration: 1500};
+      this.snackbar.open("You need to be logged in to delete posts", "Dismiss", {duration: 1500});
     }
   }
 
   togglePostSave(post_id: string) {
-    console.log("toggle save post id: " + post_id);
     if (Storage.isLoggedIn) {
       this.service.savePost(Storage.username, post_id).subscribe((response: any) => {
         console.log(response);
