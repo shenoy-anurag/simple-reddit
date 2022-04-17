@@ -40,13 +40,19 @@
         Downvote
       </button>
       &nbsp;
+<<<<<<< HEAD
       <button mat-flat-button color="primary" class="hover-class3" (click)="gotoPost(post._id)">
+=======
+      &nbsp;
+      <button mat-flat-button color="primary" class="hover-class6" (click)="toggleComments(post._id)">
+>>>>>>> main
         <mat-icon>
           comment
         </mat-icon>
       </button>
       &nbsp;&nbsp;
-      <button mat-flat-button color="primary" class="hover-class3" (click)="togglePostSave(post._id)">
+      &nbsp;
+      <button mat-flat-button color="accent" class="hover-class7" (click)="togglePostSave(post._id)">
         <mat-icon>
           collections_bookmark
         </mat-icon>
@@ -57,6 +63,17 @@
       &nbsp;
       &nbsp;
       <!-- no post.username field yet -->
+<<<<<<< HEAD
+=======
+      &nbsp;
+      &nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      <button mat-button color="warn" (click)="deletePost(post._id, post.title, post.username)">
+        <mat-icon>
+          delete
+        </mat-icon>
+      </button>
+>>>>>>> main
     </mat-card-actions>
     <!-- Comments -->
     <ul *ngFor="let comment of comments">
@@ -86,4 +103,12 @@
 
 <button mat-raised-button color="warn" class="hover-class5" routerLink="/termsandconditions">
   Terms and Conditions
+</button>
+
+&nbsp;
+&nbsp;
+&nbsp;
+
+<button mat-raised-button color="warn" class="hover-class5" routerLink="/privacypolicy">
+  Privacy Policy
 </button>

@@ -29,7 +29,7 @@ mat-card-header {
 }
 
 mat-card-content {
-    width: 87%;
+    width: 90.10%;
     background: rgb(220, 182, 212); 
     padding:35px !important;
 }
@@ -105,3 +105,10 @@ mat-card-footer {
     background-color: rgb(121, 144, 51); 
 } 
 
+.hover-class6:hover {
+    background-color: rgb(186, 184, 79); 
+} 
+
+.hover-class7:hover {
+    background-color: rgb(218, 119, 49); 
+} 
