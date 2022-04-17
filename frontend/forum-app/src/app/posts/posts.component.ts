@@ -102,31 +102,26 @@ export class PostsComponent implements OnInit {
   downvotePost(id: string) {
     if (Storage.isLoggedIn) {
       this.service.votePost(id, Storage.username, -1).subscribe((response: any) => {
-        if (response.status == 200) {
+        if (response.status == 200 && response.message == "success") {
           this.getPosts();
-          this.snackbar.open("Downvote Succesfull", "Dismiss", { duration: 1500 });
-        }
-
-        if (response.status == 500) {
-          this.snackbar.open("Downvote Unsuccesfull", "Dismiss", { duration: 1500 });
         }
       });
     }
     else {
-      this.snackbar.open("Log in to vote on posts", "Dismiss", { duration: 1500 });
+      this.snackbar.open("Log in to vote on posts", "Dismiss"), { duration: 1500 };
     }
   }
 
   upvotePost(id: string) {
     if (Storage.isLoggedIn) {
       this.service.votePost(id, Storage.username, 1).subscribe((response: any) => {
-        if (response.status == 200) {
+        if (response.status == 200 && response.message == "success") {
           this.getPosts();
         }
       });
     }
     else {
-      this.snackbar.open("Log in to vote on posts", "Dismiss", { duration: 1500 });
+      this.snackbar.open("Log in to vote on posts", "Dismiss"), { duration: 1500 };
     }
   }
 
@@ -136,7 +131,7 @@ export class PostsComponent implements OnInit {
       console.log("Deleting post: " + title + "id: " + id + " username: " + Storage.username);
       this.service.deletePost(id).subscribe((response: any) => {
         if (response.status == 200) {
-          this.snackbar.open("Post Deleted", "Dismiss", {duration: 1500 });
+          this.snackbar.open("Post Deleted", "Dismiss"), {duration: 1500 };
 
           // update posts
           this.getPosts
@@ -144,10 +139,10 @@ export class PostsComponent implements OnInit {
       });
     }
     else if (postusername != Storage.username) {
-      this.snackbar.open("You are not owner of this post.", "Dismiss", {duration: 1500 });
+      this.snackbar.open("You are not owner of this post.", "Dismiss"), {duration: 1500 };
     }
     else {
-      this.snackbar.open("You need to be logged in to delete posts", "Dismiss", {duration: 1500});
+      this.snackbar.open("You need to be logged in to delete posts", "Dismiss"), {duration: 1500};
     }
   }
 }
