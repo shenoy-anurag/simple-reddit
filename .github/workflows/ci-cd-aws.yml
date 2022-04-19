@@ -10,16 +10,46 @@ jobs:
       # Step 1
       - uses: actions/checkout@v2
       # Step 2
+      - name: Use Node.js 16.14.2
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16.14.2
+        cache: 'npm'
+      # Step 3
+      - name: Build
+        run: |
+          cd frontend/forum-app
+          npm install
+          npm install -g @angular/cli@13.1.4
+          ng build
+      # Step 4
+      - name: Compress
+        run: |
+          tar -zcvf dist.targ.gz dist
+      # Step 5
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      # Step 6
+      - name: Upload dist archive to S3 bucket
+        run: |
+          aws s3 sync dist.targ.gz s3://${{ secrets.AWS_S3_BUCKET_NAME }} --delete
+          cd ../..
+
+      # Step 7
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
           go-version: 1.17
-      # Step 3
+      # Step 8
       - name: Build
         run: |
           cd backend
           go build main.go
-      # Step 4
+      # Step 9
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:

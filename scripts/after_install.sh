@@ -9,9 +9,21 @@ go mod download
 sudo mv /opt/simple-reddit/scripts/simple-reddit-backend.service /etc/systemd/system
 sudo systemctl daemon-reload
 
-# Download all dependencies for simple-reddit's frontend
-cd /opt/simple-reddit/frontend/forum-app
-npm install
-npm install -g @angular/cli
+# # Download all dependencies for simple-reddit's frontend
+# cd /opt/simple-reddit/frontend/forum-app
+# npm install
+# npm install -g @angular/cli
 
-mkdir dist
+# mkdir dist
+
+set -xe
+
+# Copy tar.gz file from S3 bucket to simple-reddit folder
+aws s3 cp s3://anurags-personal/dist.tar.gz /opt/simple-reddit/frontend/forum-app
+
+cd /opt/simple-reddit/frontend/forum-app
+
+tar -xzvf dist.tar.gz
+
+# Ensure the ownership permissions are correct.
+chown -R ubuntu:ubuntu /opt/simple-reddit/frontend/forum-app/dist
