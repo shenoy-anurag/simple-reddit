@@ -6,3 +6,8 @@ echo "Running server..."
 # nohup ./simple-reddit-build & disown  # doesn't work as it is blocking in AWS CodeDeploy
 sudo systemctl start simple-reddit-backend.service
 echo "Server is now up!"
+
+# # Build Angular app
+# ng build
+# sudo cp -r dist/ /var/www/simple-reddit/
+# sudo service nginx restart
