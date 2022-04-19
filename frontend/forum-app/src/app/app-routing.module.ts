@@ -15,6 +15,7 @@ import { PrivacypolicyComponent } from './privacypolicy/privacypolicy.component'
 import { PostpageComponent } from './postpage/postpage.component';
 import { CommunitypageComponent } from './communitypage/communitypage.component';
 import { ContentpolicyComponent } from './contentpolicy/contentpolicy.component';
+import { ModpolicyComponent } from './modpolicy/modpolicy.component';
 
 const routes: Routes = [
   {path: 'login', component: LoginComponent},
@@ -29,6 +30,7 @@ const routes: Routes = [
   {path: 'termsandconditions', component: TermsandconditionsComponent},
   {path: 'privacypolicy' , component: PrivacypolicyComponent},
   {path:'contentpolicy' , component: ContentpolicyComponent},
+  {path: 'modpolicy' , component: ModpolicyComponent},
   {path: 'post/:postID', component: PostpageComponent},
   {path: 'subreddits/:communityID', component: CommunitypageComponent},
   {path: '', redirectTo: '/home', pathMatch:'full'},
