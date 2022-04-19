@@ -1,13 +1,15 @@
 import { Component, OnInit, Inject, HostListener } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Storage } from '../storage';
 import { Router } from '@angular/router';
 import { DOCUMENT } from '@angular/common';
+
 @Component({
-  selector: 'app-privacypolicy',
-  templateUrl: './privacypolicy.component.html',
-  styleUrls: ['./privacypolicy.component.css']
+  selector: 'app-contentpolicy',
+  templateUrl: './contentpolicy.component.html',
+  styleUrls: ['./contentpolicy.component.css']
 })
-export class PrivacypolicyComponent implements OnInit {
+export class ContentpolicyComponent implements OnInit {
 
   windowScrolled!: boolean;
 
@@ -75,6 +77,7 @@ scrollToTop() {
       this.showMyMessage = true
     }, 1500)
   }
+  
 
   ngOnInit(): void {
   }

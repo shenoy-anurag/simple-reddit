@@ -24,6 +24,8 @@ import { TermsandconditionsComponent } from './termsandconditions/termsandcondit
 import { PostpageComponent } from './postpage/postpage.component';
 import { CommunitypageComponent } from './communitypage/communitypage.component';
 import { PrivacypolicyComponent } from './privacypolicy/privacypolicy.component';
+import { ContentpolicyComponent } from './contentpolicy/contentpolicy.component';
+import { ModpolicyComponent } from './modpolicy/modpolicy.component';
 
 
 @NgModule({
@@ -44,6 +46,8 @@ import { PrivacypolicyComponent } from './privacypolicy/privacypolicy.component'
     PostpageComponent,
     CommunitypageComponent,
     PrivacypolicyComponent,
+    ContentpolicyComponent,
+    ModpolicyComponent,
   ],
   imports: [
     BrowserModule,
