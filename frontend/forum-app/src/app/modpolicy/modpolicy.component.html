@@ -4,19 +4,174 @@
     </strong>
 </b></h1>
 
-<h3> Info will be added Soon</h3>
+<h2>
+    <b>
+        1. Engage in Good Faith
+    </b>
+</h2>
+
+<h4>
+    Healthy communities are those where participants engage in good faith, 
+    and with an assumption of good faith for their co-collaborators. 
+    It’s not appropriate to attack your own users. Communities are active, 
+    in relation to their size and purpose, and where they are not, they are open to ideas 
+    and leadership that may make them more active.
+
+</h4>
+
+<h2>
+    <b>2. Management of your own Community</b>
+</h2>
+
+<h4>
+    Moderators are important to the Simple Reddit ecosystem. In order to have some consistency:
+</h4>
+
+<h3>
+    Community Descriptions:
+</h3>
+
+<h4>
+    Please describe what your community is, so that all users can find what they are looking for on the site.
+</h4>
+
+<h3>
+    Clear, Concise, and Consistent Guidelines:
+</h3>
+
+<h4>
+    Healthy communities have agreed upon clear, concise, and consistent guidelines for participation.
+    These guidelines are flexible enough to allow for some deviation and are updated when needed. 
+    Secret Guidelines aren’t fair to your users—transparency is important to the platform.
+
+</h4>
+
+<h3>
+    Stable and Active Teams of Moderators:
+</h3>
+
+<h4>
+    Healthy communities have moderators who are around to answer questions of their community and engage with the admins.
+
+</h4>
+
+<h3>
+    Association to a Brand:
+</h3>
+
+<h4>
+    We love that so many of you want to talk about brands and provide a forum for discussion. 
+    Remember to always flag your community as “unofficial” and be clear in your community description 
+    that you don’t actually represent that brand.
+
+</h4>
+
+<h3>
+    Use of Email:
+</h3>
+
+<h4>
+    Please provide an email address for us to contact you. While not always needed, 
+    certain security tools may require use of email address so that we can contact you and 
+    verify who you are as a moderator of your community.
+
+</h4>
+
+<h3>
+    Appeals:
+</h3>
+
+<h4>
+    Healthy communities allow for appropriate discussion of moderator actions.
+    Appeals to your actions should be taken seriously. Moderator responses to appeals 
+    by their users should be consistent, germane to the issue raised and work through education, not punishment.
+
+</h4>
+
+<h2>
+    <b>
+        3. Remember the Content Policy
+    </b>
+</h2>
+
+<h4>
+    You are obligated to comply with our
+    <button mat-button color="primary" routerLink="/contentpolicy">
+        "Content Policy"
+    </button> 
+     <!-- "Content Policy." -->
+</h4>
+
+<h2>
+    <b>
+        4. Management of Multiple Communities
+    </b>
+</h2>
+
+<h4>
+    We know management of multiple communities can be difficult, but we expect you to manage communities
+    as isolated communities and not use a breach of one set of community rules to ban a user from 
+    another community. In addition, camping or sitting on communities for long periods of time for the 
+    sake of holding onto them is prohibited.
+</h4>
+
+<h2>
+    <b>
+        5. Respect the Platform
+    </b>
+</h2>
+
+<h4>
+    Simple Reddit may, at its discretion, intervene to take control of a community when it believes it 
+    in the best interest of the community or the website. This should happen rarely (e.g., a top moderator
+    abandons a thriving community), but when it does, our goal is to keep the platform alive and vibrant, 
+    as well as to ensure your community can reach people interested in that community. Finally, 
+    when the admins contact you, we ask that you respond within a reasonable amount of time.
+
+</h4>
+
+<h4>
+    Where moderators consistently are in violation of these guidelines, Simple Reddit may step in with actions 
+    to heal the issues - sometimes pure education of the moderator will do, but these actions could potentially 
+    include dropping you down the moderator list, removing moderator status, prevention of future moderation 
+    rights, as well as account deletion. We hope permanent actions will never become necessary.
+
+</h4>
 
 <h2>
     Contact Information:
 </h2>
 
 <h4>
-    <!-- For questions, please contact - <button (click)="copyMessage('ngjohn15@gmail.com'); showMessageSoon()">ngjohn15@gmail.com</button>
-    <p *ngIf="showMyMessage">->Email Copied<-</p> -->
-    <a href= ngjohn15@gmail.com>"ngjohn15@gmail.com"</a>
-</h4>
+    For questions, please contact - 
+    
+    <br>
+    <button mat-button color="primary" class="hover-class3"(click)="copyMessage('manojjampana@ufl.edu'); showMessageSoon1()">
+        manojjampana@ufl.edu
+    </button>
+    <br>
+    <button mat-button color="primary" class="hover-class3" (click)="copyMessage('johnng@ufl.edu'); showMessageSoon2()">
+        johnng@ufl.edu
+    </button>
+    <br>
+    <button mat-button color="primary" class="hover-class3" (click)="copyMessage('shenoy.a@ufl.edu'); showMessageSoon3()">
+        shenoy.a@ufl.edu
+    </button>
+    <br>
+    <button mat-button color="primary" class="hover-class3" (click)="copyMessage('gsanthanam@ufl.edu'); showMessageSoon4()">
+        gsanthanam@ufl.edu
+    </button>
 
+    <p *ngIf="showMyMessage">->Email Copied<-</p>
+</h4>
 
 <button mat-flat-button color="primary" class="hover-class1" routerLink="/home">
     Back
 </button> 
+
+<div class="scroll-to-top " [ngClass]="{'show-scrollTop': windowScrolled}">
+    <button type="button" class="btn active hover-class2" data-toggle="button" aria-pressed="true" (click)="scrollToTop()">
+        <i class="fas fa-chevron-up" ></i>
+        Top
+    </button>
+</div>

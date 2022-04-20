@@ -11,3 +11,8 @@ echo "Server is now up!"
 # ng build
 # sudo cp -r dist/ /var/www/simple-reddit/
 # sudo service nginx restart
+
+# Copy Angular build folder dist to nginx sites-enabled's simple-reddit site's location
+sudo cp -r /opt/simple-reddit/frontend/forum-app/dist/ /var/www/simple-reddit/
+
+sudo service nginx restart

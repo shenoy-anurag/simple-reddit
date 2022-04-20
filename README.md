@@ -60,6 +60,9 @@ Summary of Sprint 2 is [here](https://github.com/shenoy-anurag/simple-reddit/blo
 ## Sprint 3
 Summary of Sprint 3 is [here](https://github.com/shenoy-anurag/simple-reddit/blob/main/Sprint3.md).
 
+## Sprint 4
+Summary of Sprint 4 is [here](https://github.com/shenoy-anurag/simple-reddit/blob/main/Sprint4.md)
+
 ## Authors
 * **Manoj Jampana** - [manojjampana](https://github.com/manojjampana)
 * **John Ng** - [NgJohn15](https://github.com/NgJohn15)

@@ -1,4 +1,4 @@
-# Sprint 3
+# Sprint 4
 
 ## Project Board
 <https://github.com/shenoy-anurag/simple-reddit/projects/7>
@@ -15,14 +15,28 @@ For Sprint 4, backend devs focused on Testing and Deployment. Go tests cases hav
 
 #### APIs
 ##### Profile
-- Saved Posts
+- Get Saved Posts
+- Get Saved Comments
+- Update Saved Comments
+- Updated Saved Posts
+- Get Community Subscibers
+- Update Subscribers
+- Get Subscriptions
+- Update Subscriptions
 
 #### Go Tests:
-- Save Post
+- Saved Posts
+- Saved Comments
+- Community Subscribers
+- Profile Subscriptions
 
 Checkout the test results [here](https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#testing).
 
 #### Bugs:
+- Request validation error for GetAllCommunities API
+- Update Subscription API isn't affecting the subscribers count of the community #288
+- Security risk, the saved Posts APIs are returning DBModels #340
+- Saved Comments API are returning DB Models, Security risk #341
 
 Demo video and wiki: <https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#sprint-4-back-end-demo>
 
