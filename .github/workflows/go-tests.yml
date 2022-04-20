@@ -25,7 +25,9 @@ jobs:
         go-version: 1.17
 
     - name: Run Tests
-      run: go test -v ./backend/tests
+      run: |
+          cd backend
+          go test -v ./tests
       env:
         CI: true
         MONGO_URI: 'mongodb://localhost:27017'

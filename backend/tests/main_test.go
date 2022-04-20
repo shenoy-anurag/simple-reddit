@@ -21,7 +21,7 @@ import (
 
 var router http.Handler
 
-// customed request headers for token authorization and so on
+// custom request headers for token authorization and so on
 var customHeaders = make(map[string]string, 0)
 
 func init() {
@@ -45,6 +45,10 @@ func CreateCollections(MongoDB *mongo.Database) {
 func ReplaceCollectionObjects(MongoDB *mongo.Database) {
 	users.UsersCollection = configs.GetCollection(MongoDB, users.UsersCollectionName)
 	profiles.ProfileCollection = configs.GetCollection(MongoDB, profiles.ProfilesCollectionName)
+	profiles.UsersCollection = configs.GetCollection(MongoDB, profiles.UsersCollectionName)
+	profiles.CommentsCollection = configs.GetCollection(MongoDB, profiles.CommentsCollectionName)
+	profiles.SavedCollection = configs.GetCollection(MongoDB, profiles.SavedCollectionName)
+	profiles.PostsCollection = configs.GetCollection(MongoDB, profiles.PostsCollectionName)
 	communities.CommunityCollection = configs.GetCollection(MongoDB, communities.CommunitiesCollectionName)
 	posts.PostsCollection = configs.GetCollection(MongoDB, posts.PostsCollectionName)
 	comments.CommentsCollection = configs.GetCollection(MongoDB, comments.CommentsCollectionName)

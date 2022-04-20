@@ -3,6 +3,7 @@ package profiles
 import (
 	"context"
 	"net/http"
+
 	//"simple-reddit/comments"
 	"simple-reddit/common"
 	"simple-reddit/configs"
@@ -745,7 +746,7 @@ func GetSavedModelPosts(savedItemtReq GetSavedItemRequest) (savedPosts []PostDBM
 	return savedPosts, err
 }
 
-func GetSavedModelComments(savedItemtReq GetSavedItemRequest)(savedComments []CommentDBModel,err error){
+func GetSavedModelComments(savedItemtReq GetSavedItemRequest) (savedComments []CommentDBModel, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var SavedPostCommentDB SavedDBModel
@@ -768,12 +769,12 @@ func GetSavedModelComments(savedItemtReq GetSavedItemRequest)(savedComments []Co
 	// 	},
 	// }
 	// result, err = SavedCollection.UpdateOne(ctx, filter, updateQuery)
-	for _,commentID := range savedCommentIDs {
+	for _, commentID := range savedCommentIDs {
 		comment, err := retrieveCommentDetailsByID(commentID)
 		if err != nil {
 			return savedComments, err
 		}
-		savedComments = append(savedComments,comment)
+		savedComments = append(savedComments, comment)
 		// item, err := ConvertPostDBModelToPostResponse(post)
 		// if err != nil {
 		// 	return postResp, err
