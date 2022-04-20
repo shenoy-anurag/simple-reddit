@@ -2,6 +2,7 @@ package posts
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"simple-reddit/common"
 	"simple-reddit/configs"
@@ -20,8 +21,11 @@ const POST_ROUTE_PREFIX = "/post"
 const HOME_ROUTE_PREFIX = "/home"
 
 const PostsCollectionName string = "posts"
+const PostsVotingHistoryCollectionName string = "posts_voting_history"
 
 var PostsCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, PostsCollectionName)
+var PostsVotingHistoryCollection *mongo.Collection = configs.GetCollection(configs.MongoDB, PostsVotingHistoryCollectionName)
+
 var validate = validator.New()
 
 func CreatePost() gin.HandlerFunc {
@@ -346,14 +350,14 @@ func Vote() gin.HandlerFunc {
 			)
 			return
 		}
-		result, err := UpDownVotePosts(voteReq)
+		result, status, err := UpDownVotePosts(voteReq)
 		if err != nil {
 			c.JSON(
 				http.StatusOK,
 				common.APIResponse{
 					Status:  http.StatusOK,
 					Message: common.API_ERROR,
-					Data:    map[string]interface{}{"error": err.Error()}},
+					Data:    map[string]interface{}{"error": err.Error(), "vote_status": status}},
 			)
 			return
 		}
@@ -363,7 +367,7 @@ func Vote() gin.HandlerFunc {
 			common.APIResponse{
 				Status:  http.StatusOK,
 				Message: common.API_SUCCESS,
-				Data:    map[string]interface{}{"updated": result}},
+				Data:    map[string]interface{}{"updated": result, "vote_status": status}},
 		)
 	}
 }
@@ -383,7 +387,8 @@ func CheckPostExists(postReq DeletePostRequest) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var post PostDBModel
-	filter := bson.M{"$and": []bson.M{{"username": postReq.UserName}, {"_id": postReq.ID}}}
+	// filter := bson.M{"$and": []bson.M{{"username": postReq.UserName}, {"_id": postReq.ID}}}
+	filter := bson.D{primitive.E{Key: "_id", Value: postReq.ID}}
 	//cursor, err := postCollection.FindOne(ctx, filter)
 	err := PostsCollection.FindOne(ctx, filter).Decode(&post)
 	if err != nil {
@@ -411,8 +416,8 @@ func retrievePostDetails(postReq GetPostRequest) ([]PostResponse, error) {
 	var posts []PostDBModel
 	var postResp []PostResponse
 	filter := bson.M{"$and": []bson.M{{"username": postReq.UserName}, {"community_id": postReq.CommunityID}}} //bson.D{primitive.E{Key: "community_id", Value: postReq.CommunityID}, primitive.E{Key: "username", Value: postReq.UserName}}
-	cursor, err := PostsCollection.Find(ctx, filter)
-	if err = cursor.All(ctx, &posts); err != nil {
+	cursor, _ := PostsCollection.Find(ctx, filter)
+	if err := cursor.All(ctx, &posts); err != nil {
 		return postResp, err
 	}
 	for _, post := range posts {
@@ -422,7 +427,7 @@ func retrievePostDetails(postReq GetPostRequest) ([]PostResponse, error) {
 		}
 		postResp = append(postResp, item)
 	}
-	return postResp, err
+	return postResp, nil
 }
 
 func retrieveFeedDetails(feedReq GetFeedRequest) ([]PostResponse, int64, error) {
@@ -459,7 +464,7 @@ func retrieveFeedDetails(feedReq GetFeedRequest) ([]PostResponse, int64, error) 
 		//fmt.Println("in feedReq.NumberOfPosts < 1")
 		feedOptions.SetLimit(10)
 	}
-	cursor, err := PostsCollection.Find(ctx, feedFilter, feedOptions)
+	cursor, _ := PostsCollection.Find(ctx, feedFilter, feedOptions)
 	if err = cursor.All(ctx, &posts); err != nil {
 		return postResp, postCount, err
 	}
@@ -540,45 +545,65 @@ func RankMostPosts() (result *mongo.UpdateResult, err error) {
 	return result, err
 }
 
-func UpDownVotePosts(voteReq VoteRequest) (result *mongo.UpdateResult, err error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
+func UpDownVotePosts(voteReq VoteRequest) (result *mongo.UpdateResult, vote_status string, err error) {
 	// updating the data in db
-	delPostReq, err := ConvertVotePostReqToDeletePostReq(voteReq)
+	delPostReq, _ := ConvertVotePostReqToDeletePostReq(voteReq)
+	// log.Println(delPostReq)
 	postExists, err := CheckPostExists(delPostReq)
-	postDB, err := GetPostbyID(delPostReq)
+	// log.Println("postExists", postExists, err)
 	if !postExists {
-		return result, err
+		return result, "", err
 	}
-	filter := bson.M{"$and": []bson.M{{"username": voteReq.UserName}, {"_id": voteReq.ID}}}
-	updateQuery := bson.D{
-		primitive.E{
-			Key:   "$set",
-			Value: bson.D{},
-		},
+	postHist, err := retrievePostVoteHistForUser(voteReq.ID, voteReq.UserName)
+	if err != nil && err != mongo.ErrNoDocuments {
+		return result, "voted", err
 	}
+	// log.Println("postHist", postHist, err)
+
+	var is_upvote bool = false
+	var is_remove_vote bool = false
 	if voteReq.Vote > 0 {
-		updateQuery = bson.D{
-			primitive.E{
-				Key: "$set",
-				Value: bson.D{
-					primitive.E{Key: "upvotes", Value: postDB.Upvotes + 1}, // + voteReq.Vote},
-				},
-			},
+		if postHist.ID == primitive.NilObjectID {
+			is_upvote = true
+		} else if postHist.IsUpvoted {
+			return result, "voted", nil
+		} else if postHist.IsDownvoted {
+			is_remove_vote = true
+			is_upvote = true
+		}
+	} else if voteReq.Vote < 0 {
+		if postHist.ID == primitive.NilObjectID {
+			is_upvote = false
+		} else if postHist.IsDownvoted {
+			return result, "voted", nil
+		} else if postHist.IsUpvoted {
+			is_remove_vote = true
+			is_upvote = false
 		}
 	}
-	if voteReq.Vote < 0 {
-		updateQuery = bson.D{
-			primitive.E{
-				Key: "$set",
-				Value: bson.D{
-					primitive.E{Key: "downvotes", Value: postDB.Downvotes + 1}, // voteReq.Vote},
-				},
-			},
+	result, err = updateVotePost(voteReq.ID, is_upvote, is_remove_vote)
+	log.Println("result", result, err)
+	if err != nil {
+		return result, "error", err
+	}
+
+	if is_remove_vote {
+		_, err := deletePostVoteHistForUser(voteReq.ID, voteReq.UserName)
+		// log.Println("del", err)
+		return result, "deleted", err
+	} else {
+		pVoteHist, err := ConvertPVRToPVHDBModel(voteReq)
+		// log.Println("pVoteHist", pVoteHist)
+		if err != nil {
+			return result, "error", err
+		}
+		_, err = createPostVoteHistInDB(pVoteHist)
+		// log.Println("createPostVoteHist", pVoteHist)
+		if err != nil {
+			return result, "error", err
 		}
 	}
-	result, err = PostsCollection.UpdateOne(ctx, filter, updateQuery)
-	return result, err
+	return result, "voted", nil
 }
 
 func Routes(router *gin.Engine) {
