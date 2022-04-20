@@ -23,6 +23,36 @@ export class PostpageComponent implements OnInit {
     this.getCommentsForPost();
   }
 
+  upvoteComment(comment_id: string) {
+    if (Storage.isLoggedIn) {
+      this.service.voteComment(comment_id, Storage.username, "upvote").subscribe((response: any) => {
+        if (response.status == 200 && response.message == "success") {
+          // Refresh page
+          this.getPosts();
+          this.getCommentsForPost();
+        }
+      });
+    }
+    else {
+      this.snackbar.open("Log in to upvote comments", "Dismiss", { duration: 1500 });
+    }
+  }
+
+  downvoteComment(comment_id: string) {
+    if (Storage.isLoggedIn) {
+      this.service.voteComment(comment_id, Storage.username, "downvote").subscribe((response: any) => {
+        if (response.status == 200 && response.message == "success") {
+          // Refresh page
+          this.getPosts();
+          this.getCommentsForPost();
+        }
+      });
+    }
+    else {
+      this.snackbar.open("Log in to upvote comments", "Dismiss", { duration: 1500 });
+    }
+  }
+
   getPosts(): void {
     this.service.getPosts().subscribe((response: any) => {
       if (response.status == 200) {

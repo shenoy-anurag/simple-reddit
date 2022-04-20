@@ -55,4 +55,12 @@ export class PostsService {
       "vote": vote
     });
   }
+
+  voteComment(comment_id: string, username: string, vote: string) {
+    return this.WebReqService.post("comment/vote", {
+      "username": username,
+      "comment_id": comment_id,
+      "vote": vote
+    });
+  }
 }
