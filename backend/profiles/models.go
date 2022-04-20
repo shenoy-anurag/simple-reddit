@@ -71,6 +71,15 @@ type PostDBModel struct {
 	CreatedAt   time.Time          `bson:"created_at"`
 }
 
+type PostResponse struct {
+	ID        primitive.ObjectID `json:"_id"`
+	Title     string             `json:"title"`
+	Body      string             `json:"body"`
+	Upvotes   int                `json:"upvotes"`
+	Downvotes int                `json:"downvotes"`
+	CreatedAt time.Time          `json:"created_at"`
+}
+
 type CommentDBModel struct {
 	ID         primitive.ObjectID `bson:"_id"`
 	UserName   string             `bson:"username"`
@@ -85,6 +94,22 @@ type CommentDBModel struct {
 	IsDeleted  bool               `bson:"is_deleted"`
 	CreatedAt  time.Time          `bson:"created_at"`
 	DeletedAt  time.Time          `bson:"deleted_at"`
+}
+
+type CommentResponse struct {
+	ID         primitive.ObjectID `json:"_id"`
+	UserName   string             `json:"username"`
+	PostId     primitive.ObjectID `json:"post_id"`
+	ParentId   primitive.ObjectID `json:"parent_id"`
+	Body       string             `json:"body"`
+	Upvotes    int                `json:"upvotes"`
+	Downvotes  int                `json:"downvotes"`
+	TotalVotes int                `json:"total_votes"`
+	IsRoot     bool               `json:"is_root"`
+	IsVotable  bool               `json:"is_votable"`
+	IsDeleted  bool               `json:"is_deleted"`
+	CreatedAt  time.Time          `json:"created_at"`
+	DeletedAt  time.Time          `json:"deleted_at"`
 }
 
 type UpdateSavedPostRequest struct {
