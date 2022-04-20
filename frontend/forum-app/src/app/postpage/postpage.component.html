@@ -20,13 +20,16 @@
       </button>
       &nbsp;
       &nbsp;
-      <button mat-flat-button color="accent" class="hover-class7" (click)="togglePostSave(post._id)">
+      <button mat-flat-button color="accent" class="hover-class4" (click)="togglePostSave(post._id)">
         <mat-icon>
           collections_bookmark
         </mat-icon>
       </button>
       &nbsp;
       &nbsp;
+      <button mat-flat-button color="accent" class="hover-class5" (click)="editPost(post)">
+        <mat-icon>edit</mat-icon>
+      </button>
       &nbsp;
       &nbsp;
       &nbsp;
@@ -69,6 +72,9 @@
                 </button>
                 <button mat-button color="primary" (click)="downvoteComment(comment._id)">
                   <mat-icon>thumb_down</mat-icon>
+                </button>
+                <button mat-button color="primary" (click)="saveComment(comment._id)">
+                  <mat-icon>save</mat-icon>
                 </button>
               </mat-card-actions>
             </mat-card>
