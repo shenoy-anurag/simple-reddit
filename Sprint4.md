@@ -33,6 +33,10 @@ For Sprint 4, backend devs focused on Testing and Deployment. Go tests cases hav
 Checkout the test results [here](https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#testing).
 
 #### Bugs:
+- Request validation error for GetAllCommunities API
+- Update Subscription API isn't affecting the subscribers count of the community #288
+- Security risk, the saved Posts APIs are returning DBModels #340
+- Saved Comments API are returning DB Models, Security risk #341
 
 Demo video and wiki: <https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#sprint-4-back-end-demo>
 
