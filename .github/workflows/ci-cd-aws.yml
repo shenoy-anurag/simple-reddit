@@ -25,7 +25,8 @@ jobs:
       # Step 4
       - name: Compress
         run: |
-          tar -zcvf dist.tar.gz frontend/forum-app/dist
+          cd frontend/forum-app
+          tar -zcvf dist.tar.gz dist
       # Step 5
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -36,9 +37,8 @@ jobs:
       # Step 6
       - name: Upload dist archive to S3 bucket
         run: |
-          pwd
-          aws s3 sync dist.tar.gz s3://${{ secrets.AWS_S3_BUCKET_NAME }} --delete
-          cd ../..
+          cd frontend/forum-app
+          aws s3 cp dist.tar.gz s3://${{ secrets.AWS_S3_BUCKET_NAME }}
 
       # Step 7
       - name: Set up Go
