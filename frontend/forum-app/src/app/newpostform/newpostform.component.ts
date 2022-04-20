@@ -1,10 +1,9 @@
-import { Component, OnInit , Inject, HostListener } from '@angular/core';
-import { FormBuilder, FormGroup, Validator, Validators } from '@angular/forms';
+import { Component, OnInit, HostListener } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SubredditsService } from '../subreddits.service';
 import { SignupService } from '../signup.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Storage } from '../storage';
-import { ProfileService } from '../profile.service';
 import { Router } from '@angular/router';
 
 @Component({

@@ -16,6 +16,16 @@ export class PostsService {
     return this.WebReqService.get("comment", queryParams);
   }
 
+  // Unable to edit community
+  editPost(post_id: string, username: string, title: string, body: string) {
+    return this.WebReqService.patch("post", {
+      "id": post_id,
+      "username": username,
+      "title": title,
+      "body": body
+    });
+  }
+
   createComment(username: string, post_id: string, parent_id: string, body: string) {
     return this.WebReqService.post("comment", {
       "username": username,

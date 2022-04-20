@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PostsService } from '../posts.service';
 import { Storage } from '../storage';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { EditpostComponent } from '../editpost/editpost.component';
 
 @Component({
   selector: 'app-postpage',
@@ -11,7 +13,8 @@ import { Storage } from '../storage';
 })
 export class PostpageComponent implements OnInit {
 
-  constructor(private router: Router, private route: ActivatedRoute, private service: PostsService, private snackbar: MatSnackBar) { }
+  constructor(private dialog: MatDialog, private router: Router, private route: ActivatedRoute, private service: PostsService, private snackbar: MatSnackBar, private matdialog: MatDialog) {
+   }
   post_id: string;
   post: any;
   posts: any[];
@@ -21,6 +24,22 @@ export class PostpageComponent implements OnInit {
     this.post_id = this.route.snapshot.paramMap.get('postID');
     this.getPosts();
     this.getCommentsForPost();
+  }
+
+  editPost(post: any) {
+    console.log("EDITING A POST");
+    if (Storage.isLoggedIn) {
+      let dialogRef = this.dialog.open(EditpostComponent, {data: {post: post}});
+
+      // Update page
+      console.log("HELP");
+      this.ngOnInit();
+      console.log("test");
+    }
+    else {
+      this.snackbar.open("Log In to edit posts", "Dismiss", { duration: 1500 });
+    }
+    
   }
 
   upvoteComment(comment_id: string) {

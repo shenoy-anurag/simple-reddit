@@ -7,7 +7,7 @@ import { PostsService } from './posts.service';
 import { SubredditsService } from './subreddits.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgMaterialModule } from './ng-material/ng-material.module';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SignupformComponent } from './signupform/signupform.component';
 import { AppRoutingModule} from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
@@ -26,6 +26,7 @@ import { CommunitypageComponent } from './communitypage/communitypage.component'
 import { PrivacypolicyComponent } from './privacypolicy/privacypolicy.component';
 import { ContentpolicyComponent } from './contentpolicy/contentpolicy.component';
 import { ModpolicyComponent } from './modpolicy/modpolicy.component';
+import { EditpostComponent } from './editpost/editpost.component';
 
 
 @NgModule({
@@ -48,7 +49,9 @@ import { ModpolicyComponent } from './modpolicy/modpolicy.component';
     PrivacypolicyComponent,
     ContentpolicyComponent,
     ModpolicyComponent,
+    EditpostComponent,
   ],
+  entryComponents: [EditpostComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -58,6 +61,7 @@ import { ModpolicyComponent } from './modpolicy/modpolicy.component';
     HttpClientModule,
   ],
   exports: [
+    NgMaterialModule,
     NavbarComponent,
     PostsComponent,
   ],
