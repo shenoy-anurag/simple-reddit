@@ -23,6 +23,36 @@ export class PostpageComponent implements OnInit {
     this.getCommentsForPost();
   }
 
+  upvoteComment(comment_id: string) {
+    if (Storage.isLoggedIn) {
+      this.service.voteComment(comment_id, Storage.username, "upvote").subscribe((response: any) => {
+        if (response.status == 200 && response.message == "success") {
+          // Refresh page
+          this.getPosts();
+          this.getCommentsForPost();
+        }
+      });
+    }
+    else {
+      this.snackbar.open("Log in to upvote comments", "Dismiss", { duration: 1500 });
+    }
+  }
+
+  downvoteComment(comment_id: string) {
+    if (Storage.isLoggedIn) {
+      this.service.voteComment(comment_id, Storage.username, "downvote").subscribe((response: any) => {
+        if (response.status == 200 && response.message == "success") {
+          // Refresh page
+          this.getPosts();
+          this.getCommentsForPost();
+        }
+      });
+    }
+    else {
+      this.snackbar.open("Log in to upvote comments", "Dismiss", { duration: 1500 });
+    }
+  }
+
   getPosts(): void {
     this.service.getPosts().subscribe((response: any) => {
       if (response.status == 200) {
@@ -43,6 +73,7 @@ export class PostpageComponent implements OnInit {
           this.snackbar.open("Comment added", "Dismiss", { duration: 500 });
 
           // refresh page to update
+          this.getPosts();
           this.getCommentsForPost();
         }
       });
@@ -66,11 +97,6 @@ export class PostpageComponent implements OnInit {
       this.service.votePost(id, Storage.username, -1).subscribe((response: any) => {
         if (response.status == 200) {
           this.getPosts();
-          this.snackbar.open("Downvote Succesfull", "Dismiss", { duration: 1500 });
-        }
-
-        if (response.status == 500) {
-          this.snackbar.open("Downvote Unsuccesfull", "Dismiss", { duration: 1500 });
         }
       });
     }

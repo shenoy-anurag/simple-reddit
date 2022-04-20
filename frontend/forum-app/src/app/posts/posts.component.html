@@ -32,12 +32,12 @@
       <!-- <button mat-button>Upvote</button> -->
       &nbsp;
       <button mat-flat-button color="primary" class="hover-class2" (click)="upvotePost(post._id)">
-        Upvote
+        <mat-icon>thumb_up</mat-icon>
       </button>
       &nbsp; &nbsp;
       <!-- <button mat-button>Downvote</button> -->
       <button mat-flat-button color="primary" class="hover-class3" (click)="downvotePost(post._id)">
-        Downvote
+        <mat-icon>thumb_down</mat-icon>
       </button>
       &nbsp;
       <button mat-flat-button color="primary" class="hover-class6" (click)="gotoPost(post._id)">
@@ -61,23 +61,7 @@
       &nbsp;
       &nbsp;
       &nbsp;&nbsp;&nbsp;&nbsp;
-      <button mat-button color="warn" (click)="deletePost(post._id, post.title, post.username)">
-        <mat-icon>
-          delete
-        </mat-icon>
-      </button>
     </mat-card-actions>
-    <!-- Comments -->
-    <ul *ngFor="let comment of comments">
-      <mat-card>
-        <mat-card-content>
-          <p>
-            {{ comment.get(post._id)}}
-            test
-          </p>
-        </mat-card-content>
-      </mat-card>
-    </ul>
   </mat-card>
 </ul>
 <!--Scroll to top-->
