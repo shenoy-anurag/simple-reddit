@@ -42,6 +42,19 @@ export class PostpageComponent implements OnInit {
     
   }
 
+  saveComment(comment_id: string) {
+    if (Storage.isLoggedIn) {
+      this.service.saveComment(Storage.username, comment_id).subscribe((response: any) => {
+        if (response.status == 200) {
+          this.snackbar.open("Comment saved", "Dismiss", { duration: 1500 });           
+        }
+      });
+    }
+    else {
+      this.snackbar.open("Log in to save comments", "Dismiss", { duration: 1500 });
+    }
+  }
+
   upvoteComment(comment_id: string) {
     if (Storage.isLoggedIn) {
       this.service.voteComment(comment_id, Storage.username, "upvote").subscribe((response: any) => {

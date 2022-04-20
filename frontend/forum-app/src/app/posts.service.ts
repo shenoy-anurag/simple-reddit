@@ -26,15 +26,6 @@ export class PostsService {
     });
   }
 
-  createComment(username: string, post_id: string, parent_id: string, body: string) {
-    return this.WebReqService.post("comment", {
-      "username": username,
-      "post_id": post_id,
-      "parent_id" : parent_id,
-      "body" : body
-    });
-  }
-
   savePost(username: string, post_id: string) {
     return this.WebReqService.patch('profile/savedposts', {
       "username": username,
@@ -71,6 +62,22 @@ export class PostsService {
       "username": username,
       "comment_id": comment_id,
       "vote": vote
+    });
+  }
+
+  createComment(username: string, post_id: string, parent_id: string, body: string) {
+    return this.WebReqService.post("comment", {
+      "username": username,
+      "post_id": post_id,
+      "parent_id" : parent_id,
+      "body" : body
+    });
+  }
+
+  saveComment(username: string, comment_id: string) {
+    return this.WebReqService.patch("profile/savedcomments", {
+      "username": username,
+      "comment_id" : comment_id
     });
   }
 }
