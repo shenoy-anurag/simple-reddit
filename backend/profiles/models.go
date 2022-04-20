@@ -152,6 +152,51 @@ func ConvertProfileDBModelToProfileResponse(profileDB ProfileDBModel) ProfileRes
 	}
 }
 
+func ConvertPostDBModelToPostResponse(postDB PostDBModel) (PostResponse, error) {
+	var err error
+	return PostResponse{
+		ID:        postDB.ID,
+		Title:     postDB.Title,
+		Body:      postDB.Body,
+		Upvotes:   postDB.Upvotes,
+		Downvotes: postDB.Downvotes,
+		CreatedAt: postDB.CreatedAt,
+	}, err
+}
+
+// func ConvertCVRToCVHDBModel(cVoteReq CommentVoteRequest) (CommentVoteHistoryDBModel, error) {
+// 	cVHDbModel := CommentVoteHistoryDBModel{}
+// 	newId := primitive.NewObjectID()
+//
+// 	comment_id, err := primitive.ObjectIDFromHex(cVoteReq.CommentId)
+// 	if err != nil {
+// 		return cVHDbModel, err
+// 	}
+// 	var is_upvote bool = false
+// 	var is_downvote bool = false
+// 	if cVoteReq.Vote == UPVOTE {
+// 		is_upvote = true
+// 	} else if cVoteReq.Vote == DOWNVOTE {
+// 		is_downvote = true
+// 	} else {
+// 		return cVHDbModel, err
+// 	}
+// 	currTime := time.Now().UTC()
+// 	return CommentVoteHistoryDBModel{
+// 		ID:            newId,
+// 		UserName:      cVoteReq.UserName,
+// 		CommentId:     comment_id,
+// 		IsUpvoted:     is_upvote,
+// 		IsDownvoted:   is_downvote,
+// 		CreatedAt:     currTime,
+// 		LastUpdatedAt: currTime,
+// 	}, nil
+// }
+
+func ConvertCommentDBModelToCommentResponse(comment CommentDBModel) CommentResponse {
+	return CommentResponse(comment)
+}
+
 func CreateSavedDBModel(UserName string) SavedDBModel {
 	return SavedDBModel{
 		ID:            primitive.NewObjectID(),
