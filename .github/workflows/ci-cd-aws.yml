@@ -22,10 +22,14 @@ jobs:
           npm install
           npm install -g @angular/cli@13.1.4
           ng build
+          ls
+          pwd
       # Step 4
       - name: Compress
         run: |
-          tar -zcvf dist.targ.gz dist
+          ls
+          pwd
+          tar -zcvf dist.tar.gz frontend/forum-app/dist
       # Step 5
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -36,6 +40,7 @@ jobs:
       # Step 6
       - name: Upload dist archive to S3 bucket
         run: |
+          pwd
           aws s3 sync dist.targ.gz s3://${{ secrets.AWS_S3_BUCKET_NAME }} --delete
           cd ../..
 
