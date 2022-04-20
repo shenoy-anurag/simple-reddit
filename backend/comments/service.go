@@ -101,7 +101,7 @@ func DeleteComment() gin.HandlerFunc {
 		var delCommentReq DeleteCommentRequest
 
 		// validate the request body
-		if err := c.BindQuery(&delCommentReq); err != nil {
+		if err := c.BindJSON(&delCommentReq); err != nil {
 			c.JSON(
 				http.StatusBadRequest,
 				common.APIResponse{
@@ -280,5 +280,5 @@ func Routes(router *gin.Engine) {
 	router.POST(COMMENTS_ROUTE_CREATE, CreateComment())
 	router.GET(COMMENTS_ROUTE_GET, GetComments())
 	router.POST(COMMENTS_ROUTE_VOTE, VoteComment())
-	router.DELETE(COMMENTS_ROUTE_DELETE, DeleteComment())
+	router.POST(COMMENTS_ROUTE_DELETE+"/delete", DeleteComment()) // changed to POST method temporarily
 }
