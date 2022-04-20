@@ -2,13 +2,15 @@
 
 https://github.com/shenoy-anurag/simple-reddit
 
-[![go build](https://github.com/shenoy-anurag/simple-reddit/actions/workflows/go-build.yml/badge.svg?branch=main)](https://github.com/shenoy-anurag/simple-reddit/actions/workflows/go-build.yml)
 [![angular build](https://github.com/shenoy-anurag/simple-reddit/actions/workflows/angular-build.yml/badge.svg?branch=main)](https://github.com/shenoy-anurag/simple-reddit/actions/workflows/angular-build.yml)
+[![go build](https://github.com/shenoy-anurag/simple-reddit/actions/workflows/go-build.yml/badge.svg?branch=main)](https://github.com/shenoy-anurag/simple-reddit/actions/workflows/go-build.yml)
+[![go tests](https://github.com/shenoy-anurag/simple-reddit/actions/workflows/go-tests.yml/badge.svg)](https://github.com/shenoy-anurag/simple-reddit/actions/workflows/go-tests.yml)
+
 [![AWS Deploy](https://github.com/shenoy-anurag/simple-reddit/actions/workflows/ci-cd-aws.yml/badge.svg)](https://github.com/shenoy-anurag/simple-reddit/actions/workflows/ci-cd-aws.yml)
 
 Frontend is deployed to <http://3.21.236.152:4200/>
 
-Backend is Deployed to <http://3.21.236.152:8080/ping>
+Backend is deployed to <http://3.21.236.152:8080/ping>
 
 ### Description:
 
