@@ -189,9 +189,13 @@ func TestDeleteComment(t *testing.T) {
 	}
 
 	// Upvoting comment created in TestCreateComment()
-	queryStr := "?" + "comment_id=" + commentID
+	// queryStr := "?" + "comment_id=" + commentID
 
-	req, err := t_utils.MakeRequest(t_utils.DELETE, comments.COMMENTS_ROUTE_DELETE+queryStr, nil)
+	// req, err := t_utils.MakeRequest(t_utils.DELETE, comments.COMMENTS_ROUTE_DELETE+queryStr, nil)
+	var body = comments.DeleteCommentRequest{
+		CommentId: commentID,
+	}
+	req, err := t_utils.MakeRequest(t_utils.POST, comments.COMMENTS_ROUTE_DELETE+"/delete", body)
 	if err != nil {
 		return
 	}
