@@ -2,19 +2,6 @@
     Editing Post {{ data.post.title }}
 </h1>
 
-<!-- Post Community -->
-<mat-form-field class="full-width" appearance="fill">
-    <mat-label>Community</mat-label>
-    <mat-select name="community" formControlName="community" [(value)]="selectedCommunity">
-        <mat-option #community *ngFor="let community of communities" [value]="community._id">
-            {{ community.name }}
-        </mat-option>
-        <mat-error *ngIf="f['community'].touched && f['community'].invalid">
-            Community cannot be empty
-        </mat-error>
-    </mat-select>
-</mat-form-field>
-
 <!-- Post Title -->
 <mat-form-field class="full-width" appearance="fill">
     <mat-label>Title</mat-label>
@@ -34,6 +21,6 @@
     </mat-error>
 </mat-form-field>
 
-<button mat-raised-button [mat-dialog-close]="true" (click)="editPost(data.post._id, selectedCommunity, title.value, body.value)">
+<button mat-raised-button [mat-dialog-close]="true" (click)="editPost(data.post._id, title.value, body.value)">
     Edit Post
 </button>

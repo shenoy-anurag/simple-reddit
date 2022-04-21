@@ -80,4 +80,11 @@ export class PostsService {
       "comment_id" : comment_id
     });
   }
+
+  deleteComment(username: string, comment_id: string) {
+    return this.WebReqService.post("comment/delete", {
+      "username": username,
+      "comment_id" : comment_id
+    });
+  }
 }
