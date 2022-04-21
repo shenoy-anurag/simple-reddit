@@ -10,8 +10,8 @@ export class WebRequestService {
   constructor(private http: HttpClient) { 
     // this.ROOT_URL = 'http://3.145.146.32:27017';
     // this.ROOT_URL = 'http://3.145.146.32:8080'
-    // this.ROOT_URL = 'http://localhost:8080';
-    this.ROOT_URL = 'http://3.21.236.152:4200';
+    this.ROOT_URL = 'http://localhost:8080';
+    // this.ROOT_URL = 'http://3.21.236.152:4200';
   }
 
   get(uri: string, quertyParams: HttpParams) {
