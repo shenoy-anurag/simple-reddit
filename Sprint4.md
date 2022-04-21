@@ -47,19 +47,26 @@ https://user-images.githubusercontent.com/19914954/164343869-386aba29-215e-423f-
 - Only user who created post could vote on it #352
 
 ## Frontend
-User Stories for Frontend
 
+### Tasks
+User Stories for Frontend
 - View Posts
+- Edit Posts
 - Rate Posts
-- Add and Delete Comments
-- User should be able to edit existing posts
-- User can now create a post or community only while logged in
-- Responsive pages
+- Save Posts
+- Add Comments
+- Delete Comments
+- Users can subscribe to a community
+- Users can now only create a post or community only while logged in
+- Dynamic pages for each post and each community
 - Support
 - Terms and Conditions
 - Privacy Policy
 - Content Policy
 - Mod Policy
+
+### Testing
+- Updated Cypress testing for new system changes
 
 [Userstories and Issues Closed](https://github.com/shenoy-anurag/simple-reddit/issues?q=is%3Aissue+is%3Aclosed+label%3Asprint4+label%3A%22User+Stories+-+FE%22)
 
