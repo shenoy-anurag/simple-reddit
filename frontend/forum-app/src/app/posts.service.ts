@@ -82,7 +82,7 @@ export class PostsService {
   }
 
   deleteComment(username: string, comment_id: string) {
-    return this.WebReqService.post("comment", {
+    return this.WebReqService.post("comment/delete", {
       "comment_id": comment_id
     });
   }

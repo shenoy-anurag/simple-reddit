@@ -45,12 +45,15 @@ export class PostpageComponent implements OnInit {
     if (Storage.isLoggedIn) {
       this.service.deleteComment(Storage.username, comment_id).subscribe((response: any) => {
         if (response.status == 200) {
-          this.snackbar.open("Comment saved", "Dismiss", { duration: 1500 });           
+          this.snackbar.open("Comment deleted", "Dismiss", { duration: 1500 });           
+
+          this.getPosts();
+          this.getCommentsForPost();
         }
       });
     }
     else {
-      this.snackbar.open("Log in to save comments", "Dismiss", { duration: 1500 });
+      this.snackbar.open("Log in to delete comments", "Dismiss", { duration: 1500 });
     }
   }
 
