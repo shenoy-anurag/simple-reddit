@@ -8,13 +8,11 @@ User Stories for backend
 
 [Userstories and Issues Closed](https://github.com/shenoy-anurag/simple-reddit/issues?q=is%3Aissue+is%3Aclosed+label%3Asprint4+label%3A%22User+Stories+-+BE%22)
 
-
-For Sprint 4, backend devs focused on Testing and Deployment. Go tests cases have been written for Saved Posts and Comments APIs.
+For Sprint 4, backend developers focused on Subscription and Save-To-Profile APIs and Testing and Deployment. Go tests cases have been written for Saved Posts, CRUD for Profiles and Comments APIs.
 
 ### Accomplishments:
 
 #### APIs
-##### Profile
 - Get Saved Posts
 - Get Saved Comments
 - Update Saved Comments
@@ -24,21 +22,29 @@ For Sprint 4, backend devs focused on Testing and Deployment. Go tests cases hav
 - Get Subscriptions
 - Update Subscriptions
 
+#### API Demo Video
+https://user-images.githubusercontent.com/19914954/164345268-cbf9c181-1c5f-47f8-8940-ffdb18aefb9d.mp4
+
 #### Go Tests:
 - Saved Posts
 - Saved Comments
 - Community Subscribers
 - Profile Subscriptions
+- Signup For Profile
+- Get Profile
+- Edit Profile
+- Delete Profile
 
-Checkout the test results [here](https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#testing).
+#### Testing Video:
+https://user-images.githubusercontent.com/19914954/164343869-386aba29-215e-423f-83cf-304df1b9028b.mp4
 
 #### Bugs:
 - Request validation error for GetAllCommunities API
 - Update Subscription API isn't affecting the subscribers count of the community #288
 - Security risk, the saved Posts APIs are returning DBModels #340
 - Saved Comments API are returning DB Models, Security risk #341
-
-Demo video and wiki: <https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#sprint-4-back-end-demo>
+- No limit on number of votes on a Post by a single User #346
+- Only user who created post could vote on it #352
 
 ## Frontend
 User Stories for Frontend
