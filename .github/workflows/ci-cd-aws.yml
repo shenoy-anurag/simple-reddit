@@ -2,6 +2,12 @@ name: AWS Deploy
 on:
   push:
     branches: [ aws_deployment ]
+  workflow_dispatch:
+    inputs:
+        tags:
+          description: 'Test scenario tags'
+          required: false 
+          type: boolean
 
 jobs:
   continuous-integration:
