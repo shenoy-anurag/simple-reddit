@@ -30,7 +30,7 @@ export class EditpostComponent implements OnInit {
     this.getCommunities();
   }
   
-  editPost(post_id: string, community: string, title: string, body: string) {
+  editPost(post_id: string, title: string, body: string) {
     if (Storage.isLoggedIn) {
       this.postservice.editPost(post_id, Storage.username, title, body).subscribe((response: any) => {
         if (response.status == 200) {
