@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Storage } from '../storage';
 import { SubredditsService } from '../subreddits.service';
 
@@ -11,7 +11,7 @@ import { SubredditsService } from '../subreddits.service';
 })
 export class CommunitypageComponent implements OnInit {
 
-  constructor(private route: ActivatedRoute, private service: SubredditsService, private snackbar: MatSnackBar) { }
+  constructor(private router: Router, private route: ActivatedRoute, private service: SubredditsService, private snackbar: MatSnackBar) { }
   subreddit: any;
   subreddits: any[];
   communityID: string;
@@ -37,6 +37,30 @@ export class CommunitypageComponent implements OnInit {
     });
   }
 
+  deleteCommunity(title: string, communityUser: string) {
+    // check if user is logged in
+    if (Storage.isLoggedIn) {
+      if (communityUser != Storage.username) {
+        this.snackbar.open("You are not the community owner. You do not have permission to delete this community.", "Dismiss", { duration: 1500 });
+      }
+      else {
+        console.log(Storage.username + "," + title);
+        this.service.deleteSubreddit(Storage.username, title).subscribe((response: any) => {
+          if (response.status == 200) {
+            this.snackbar.open(title + " has been deleted.", "Dismiss", { duration: 1500 });          }
+
+            // update communities
+            this.getCommunities();
+            
+            this.router.navigate(['subreddits']);
+        });
+      }
+    }
+    else {
+      this.snackbar.open("You are not logged in. Please log in to delete communities.", "Dismiss", {duration: 1500});
+    }
+  }
+
   subscribeToCommunity(communityName: string) {
     if (Storage.isLoggedIn) {
       this.service.subscribeToSubreddit(Storage.username, communityName).subscribe((response: any) => {
@@ -45,6 +69,8 @@ export class CommunitypageComponent implements OnInit {
 
           // update communities
           this.getCommunities();
+
+          
         }
       });
     }

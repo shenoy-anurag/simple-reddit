@@ -11,23 +11,23 @@
     </mat-card-content>
     <mat-card-actions>
       &nbsp;
-      <button mat-flat-button color="primary" class="hover-class2" (click)="upvotePost(post._id)">
+      <button name="upvoteButton" mat-flat-button color="primary" class="hover-class2" (click)="upvotePost(post._id)">
         <mat-icon>thumb_up</mat-icon>
       </button>
       &nbsp; &nbsp;
-      <button mat-flat-button color="primary" class="hover-class3" (click)="downvotePost(post._id)">
+      <button name="downvoteButton" mat-flat-button color="primary" class="hover-class3" (click)="downvotePost(post._id)">
         <mat-icon>thumb_down</mat-icon>
       </button>
       &nbsp;
       &nbsp;
-      <button mat-flat-button color="accent" class="hover-class4" (click)="togglePostSave(post._id)">
+      <button name="togglePostSaveButton" mat-flat-button color="accent" class="hover-class4" (click)="togglePostSave(post._id)">
         <mat-icon>
           collections_bookmark
         </mat-icon>
       </button>
       &nbsp;
       &nbsp;
-      <button mat-flat-button color="accent" class="hover-class5" (click)="editPost(post)">
+      <button name="editPostButton" mat-flat-button color="accent" class="hover-class5" (click)="editPost(post)">
         <mat-icon>edit</mat-icon>
       </button>
       &nbsp;
@@ -37,7 +37,7 @@
       &nbsp;
       &nbsp;
       &nbsp;
-      <button mat-button color="warn" (click)="deletePost(post._id, post.title, post.username)">
+      <button name="deletePostButton" mat-button color="warn" (click)="deletePost(post._id, post.title, post.username)">
         <mat-icon>
           delete
         </mat-icon>
@@ -46,7 +46,7 @@
 
     <!-- Create New Comment -->
     <mat-card-actions>
-      <mat-form-field appearance="fill">
+      <mat-form-field appearance="fill" class="full-width">
         <mat-label>Add a Comment</mat-label>
         <textarea #body matInput></textarea>
         <button mat-button color="primary" class="hover-class5" (click)="addComment(post._id, body.value)">

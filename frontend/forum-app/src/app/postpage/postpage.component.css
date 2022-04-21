@@ -7,7 +7,7 @@
 /* } */
 
 .full-width {
-    width: 120%;
+    width: 80%;
 }
 
 mat-card{
@@ -15,21 +15,21 @@ mat-card{
     /* align-items: left; */
     display:center;
     justify-content: space-between;
-    width: 145%;
+    width: auto;
     margin-left:auto;
     margin-right:auto;  
     vertical-align:middle;
 }
 
 mat-card-header {
-    width: 97%;
+    width: auto;
     background: rgb(194, 228, 146);
     padding: 8px !important;
     margin-top: 5px !important;
 }
 
 mat-card-content {
-    width: 87%;
+    width: auto;
     background: rgb(220, 182, 212); 
     padding:25px !important;
 }
@@ -40,10 +40,9 @@ mat-card-actions {
 } 
   
 mat-card-footer {
-    width: 150%;
+    width: 100%;
     background: rgb(167, 165, 165); 
-    margin:0;
-    padding: 20px;
+    padding: 10px;
 }
 
 .scroll-to-top {
