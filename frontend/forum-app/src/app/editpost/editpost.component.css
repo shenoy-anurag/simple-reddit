@@ -61,3 +61,11 @@ td {
 #hover-class2:hover {
     background-color: rgb(94, 250, 9); 
 } 
+
+.hover-class3:hover {
+    background-color: rgb(255, 0, 0);
+}
+
+.hover-class4:hover {
+    background-color: rgb(94, 250, 9); 
+} 
