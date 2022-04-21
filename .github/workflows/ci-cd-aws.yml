@@ -1,7 +1,7 @@
 name: AWS Deploy
 on:
   push:
-    branches: [ main ]
+    branches: [ aws_deployment ]
 
 jobs:
   continuous-integration:
