@@ -1,26 +1,34 @@
-.left {
-    text-align: left;
-    justify-content: left;
-    justify-items: left;
+mat-card {
+    display:center;
+    justify-content: center;
+    /* justify-content: space-between; */
+    width: 200%;
+    margin-left:auto;
+    margin-right:auto;  
+    /* vertical-align:middle; */
 }
 
 mat-card-header {
+    /* width: 97%; */
     background: rgb(194, 228, 146);
-    padding: 7px !important;
+    padding: 8px !important;
     margin-top: 5px !important;
 }
 
 mat-card-content {
+    /* width: 90.10%; */
     background: rgb(220, 182, 212); 
-    padding:30px !important;
+    padding:35px !important;
 }
 
 mat-card-actions {
-    padding:3px;
+    /* width: 120%; */
+    padding:8px;
 } 
   
 mat-card-footer {
-    background: rgb(153, 149, 149); 
+    /* width: 100%; */
+    background: rgb(167, 165, 165); 
     margin:0;
     padding: 20px;
 }
@@ -38,32 +46,16 @@ mat-card-footer {
     right: 15px;
     opacity: 0;
     transition: all .2s ease-in-out;
-   }
+}
 
-   .show-scrollTop {
+.show-scrollTop {
     display: flex;
     position: fixed;
     background-color: rgb(122, 230, 20);
     font-size: 16px;
     opacity: 1;
     transition: all .2s ease-in-out;
-   }
-
-   /* .scroll-to-top {
-    display: none; 
-    position: fixed; 
-    bottom: 20px; 
-    right: 30px; 
-    z-index: 99; 
-    border: none; 
-    outline: none; 
-    background-color: red; 
-    color: white; 
-    cursor: pointer; 
-    padding: 15px; 
-    border-radius: 10px; 
-    font-size: 18px; 
-} */
+}
 
 .hover-class5:hover {
     background-color: rgb(94, 250, 9); 
