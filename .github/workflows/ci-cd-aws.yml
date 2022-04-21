@@ -2,6 +2,12 @@ name: AWS Deploy
 on:
   push:
     branches: [ aws_deployment ]
+  workflow_dispatch:
+    inputs:
+        tags:
+          description: 'Test scenario tags'
+          required: false 
+          type: boolean
 
 jobs:
   continuous-integration:
@@ -64,7 +70,7 @@ jobs:
   continuous-deployment:
     runs-on: ubuntu-latest
     needs: [continuous-integration]
-    if: github.ref == 'refs/heads/main'
+    # if: github.ref == 'refs/heads/aws_deployment'
     steps:
       # Step 1
       - name: Configure AWS credentials
