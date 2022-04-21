@@ -16,23 +16,22 @@
     </mat-card-content>
     <!-- Upvote and Downvote the Subreddits -->
     <mat-card-actions>
-        <button mat-flat-button color="primary" class="hover-class1">
+        <button id="downvoteButton" mat-flat-button color="primary" class="hover-class1">
             <mat-icon>thumb_up</mat-icon>
         </button>
         &nbsp;
         &nbsp;
-        <button mat-flat-button color="primary" class="hover-class2">
+        <button id="upvoteButton" mat-flat-button color="primary" class="hover-class2">
             <mat-icon>thumb_down</mat-icon>
         </button>
         &nbsp;
         &nbsp;
         &nbsp;
-        <button mat-flat-button color="primary" class="hover-class3" (click)="subscribeToCommunity(subreddit.name)">
+        <button id="subscribeButton" mat-flat-button color="primary" class="hover-class3" (click)="subscribeToCommunity(subreddit.name)">
             Subscribe
         </button>
-
-        <!-- <button mat-button color="warn" (click)="deleteCommunity(subreddit.name, 'johntest')">
+        <button id="deleteCommunityButton" mat-button color="warn" (click)="deleteCommunity(subreddit.name, 'johntest')">
             <mat-icon>delete</mat-icon>
-        </button> -->
+        </button>
     </mat-card-actions>
 </mat-card>
