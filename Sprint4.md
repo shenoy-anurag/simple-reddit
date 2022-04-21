@@ -48,7 +48,18 @@ https://user-images.githubusercontent.com/19914954/164343869-386aba29-215e-423f-
 
 ## Frontend
 User Stories for Frontend
+
 - View Posts
+- Rate Posts
+- Add and Delete Comments
+- User should be able to edit existing posts
+- User can now create a post or community only while logged in
+- Responsive pages
+- Support
+- Terms and Conditions
+- Privacy Policy
+- Content Policy
+- Mod Policy
 
 [Userstories and Issues Closed](https://github.com/shenoy-anurag/simple-reddit/issues?q=is%3Aissue+is%3Aclosed+label%3Asprint4+label%3A%22User+Stories+-+FE%22)
 
@@ -56,6 +67,10 @@ User Stories for Frontend
 
 For Sprint 4, frontend devs focused on:
 - Posts
+- Posts,Communities,Comments,Raitings
+- Edit existing Posts
+- Terms,Privacy,Content,Mod Policies
+- Support Info
 
 #### Angular Unit Testing and Testing using Cypress:
 
