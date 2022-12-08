@@ -79,6 +79,9 @@ For Sprint 4, frontend devs focused on:
 - Terms,Privacy,Content,Mod Policies
 - Support Info
 
+### Application in Action
+https://user-images.githubusercontent.com/34638485/164382796-d8b04846-25c4-40eb-9aaf-e7e070dba6ae.mp4
+
 #### Angular Unit Testing and Testing using Cypress:
 
 Frontend Demo video and wiki: <https://github.com/shenoy-anurag/simple-reddit/wiki/Demo#sprint-4-frontend-demo>
